@@ -6,13 +6,21 @@
           <h1>八股记忆</h1>
           <p class="subtitle">艾宾浩斯记忆辅助系统</p>
         </div>
-        <LibrarySelector 
-          :libraries="libraries"
-          :activeLibraryId="activeLibraryId"
-          :activeLibrary="activeLibrary"
-          @select="handleLibrarySwitch"
-          @manage="openLibraryManager"
-        />
+        <div class="header-right">
+          <div class="save-status" :class="saveStatus">
+            <span v-if="saveStatus === 'saving'" class="status-icon saving">●</span>
+            <span v-else-if="saveStatus === 'saved'" class="status-icon saved">✓</span>
+            <span v-else-if="saveStatus === 'error'" class="status-icon error">!</span>
+            <span class="status-text">{{ getSaveStatusText() }}</span>
+          </div>
+          <LibrarySelector 
+            :libraries="libraries"
+            :activeLibraryId="activeLibraryId"
+            :activeLibrary="activeLibrary"
+            @select="handleLibrarySwitch"
+            @manage="openLibraryManager"
+          />
+        </div>
       </div>
     </header>
 
@@ -124,6 +132,7 @@ import LibraryManager from './components/LibraryManager.vue'
 import { useQuestions } from './composables/useQuestions'
 import { useProgress } from './composables/useProgress'
 import { useLibraries } from './composables/useLibraries'
+import { useAutoSave } from './composables/useAutoSave'
 import { saveUIStateByLibrary, loadUIStateByLibrary } from './utils/storage'
 
 const tabs = [
@@ -152,6 +161,13 @@ const {
   deleteLibrary, 
   switchLibrary 
 } = useLibraries()
+const { 
+  lastSaveTime, 
+  isSaving, 
+  saveStatus, 
+  startAutoSave, 
+  formatLastSaveTime 
+} = useAutoSave()
 
 const questionCounts = ref({})
 const learnedCounts = ref({})
@@ -159,6 +175,16 @@ const learnedCounts = ref({})
 onMounted(async () => {
   loadLibraries()
   await loadLibraryData(activeLibraryId.value)
+  
+  startAutoSave(() => {
+    saveProgress()
+    saveUIStateByLibrary(activeLibraryId.value, {
+      currentTab: currentTab.value,
+      selectedCategory: selectedCategory.value,
+      currentIndex: currentIndex.value,
+      categoryIndexMap: categoryIndexMap.value
+    })
+  }, 30000)
 })
 
 async function loadLibraryData(libraryId) {
@@ -258,6 +284,13 @@ function getAnswerPreview(answer) {
   const maxLength = 150
   if (answer.length <= maxLength) return answer
   return answer.substring(0, maxLength) + '...'
+}
+
+function getSaveStatusText() {
+  if (saveStatus.value === 'saving') return '保存中...'
+  if (saveStatus.value === 'saved') return '已保存'
+  if (saveStatus.value === 'error') return '保存失败'
+  return formatLastSaveTime()
 }
 
 const currentQuestion = computed(() => {
@@ -360,6 +393,64 @@ async function handleDeleteLibrary(id) {
 .subtitle {
   color: #7f8c8d;
   font-size: 0.9rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  background: #f0f0f0;
+  color: #7f8c8d;
+  transition: all 0.3s;
+}
+
+.save-status.saving {
+  background: #e8f4fd;
+  color: #3498db;
+}
+
+.save-status.saved {
+  background: #e8f8f0;
+  color: #27ae60;
+}
+
+.save-status.error {
+  background: #fde8e8;
+  color: #e74c3c;
+}
+
+.status-icon {
+  font-weight: bold;
+}
+
+.status-icon.saving {
+  animation: pulse 1s infinite;
+}
+
+.status-icon.saved {
+  color: #27ae60;
+}
+
+.status-icon.error {
+  color: #e74c3c;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-text {
+  white-space: nowrap;
 }
 
 .tabs {
@@ -505,6 +596,17 @@ async function handleDeleteLibrary(id) {
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+  
+  .save-status {
+    font-size: 0.75rem;
+    padding: 4px 10px;
   }
   
   .tabs {

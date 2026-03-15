@@ -10,12 +10,12 @@
     
     <div class="question-content">
       <h3 class="question-title">问题</h3>
-      <div class="question-text">{{ question.question }}</div>
+      <div class="question-text markdown-body" v-html="renderMarkdown(question.question)"></div>
     </div>
     
     <div class="answer-section" v-if="showAnswer">
       <h3 class="answer-title">答案</h3>
-      <div class="answer-text">{{ question.answer }}</div>
+      <div class="answer-text markdown-body" v-html="renderMarkdown(question.answer)"></div>
     </div>
     
     <div class="actions">
@@ -52,6 +52,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { renderMarkdown } from '../utils/markdown'
 
 const props = defineProps({
   question: {
@@ -151,7 +152,6 @@ function handleAnswer(remembered) {
   font-size: 1.1rem;
   line-height: 1.8;
   color: #2c3e50;
-  white-space: pre-wrap;
 }
 
 .answer-section {
@@ -166,7 +166,6 @@ function handleAnswer(remembered) {
   font-size: 1rem;
   line-height: 1.8;
   color: #34495e;
-  white-space: pre-wrap;
 }
 
 .actions {

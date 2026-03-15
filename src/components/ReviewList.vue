@@ -104,7 +104,7 @@ function handleAnswer({ questionId, remembered }) {
   emit('review', { questionId, remembered })
   
   const idx = props.questions.findIndex(q => q.id === questionId)
-  if (idx !== -1 && remembered) {
+  if (idx !== -1) {
     setTimeout(() => {
       if (currentQuestion.value && currentQuestion.value.id === questionId) {
         if (idx < props.questions.length - 1) {
