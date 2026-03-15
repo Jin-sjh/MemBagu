@@ -8,6 +8,14 @@ const voices = [
   { id: 'zh-CN-XiaoyiNeural', name: '晓伊', gender: '女声', style: '活泼' }
 ]
 
+function getApiUrl(path) {
+  const baseUrl = import.meta.env.VITE_API_URL || ''
+  if (baseUrl) {
+    return baseUrl + path
+  }
+  return path
+}
+
 export function useAudioGenerator() {
   const categories = ref([])
   const selectedCategories = ref([])
@@ -59,7 +67,7 @@ export function useAudioGenerator() {
   
   async function loadCategories() {
     try {
-      const response = await fetch('/api/audio/categories')
+      const response = await fetch(getApiUrl('/api/audio/categories'))
       const data = await response.json()
       
       if (data.success) {
@@ -113,7 +121,7 @@ export function useAudioGenerator() {
     }
     
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(getApiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -197,7 +205,7 @@ export function useAudioGenerator() {
   
   async function loadExistingFiles() {
     try {
-      const response = await fetch('/api/audio/list')
+      const response = await fetch(getApiUrl('/api/audio/list'))
       const data = await response.json()
       
       if (data.success) {
@@ -226,7 +234,7 @@ export function useAudioGenerator() {
     previewError.value = null
     
     try {
-      const response = await fetch('/api/audio/preview', {
+      const response = await fetch(getApiUrl('/api/audio/preview'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

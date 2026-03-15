@@ -7,6 +7,7 @@
           <p class="subtitle">艾宾浩斯记忆辅助系统</p>
         </div>
         <div class="header-right">
+          <Auth ref="authRef" @login="handleLogin" @logout="handleLogout" />
           <div class="save-status" :class="saveStatus">
             <span v-if="saveStatus === 'saving'" class="status-icon saving">●</span>
             <span v-else-if="saveStatus === 'saved'" class="status-icon saved">✓</span>
@@ -129,11 +130,21 @@ import SearchBox from './components/SearchBox.vue'
 import AudioGenerator from './components/AudioGenerator.vue'
 import LibrarySelector from './components/LibrarySelector.vue'
 import LibraryManager from './components/LibraryManager.vue'
+import Auth from './components/Auth.vue'
 import { useQuestions } from './composables/useQuestions'
 import { useProgress } from './composables/useProgress'
 import { useLibraries } from './composables/useLibraries'
 import { useAutoSave } from './composables/useAutoSave'
-import { saveUIStateByLibrary, loadUIStateByLibrary } from './utils/storage'
+import { 
+  saveUIStateByLibrary, 
+  loadUIStateByLibrary,
+  syncProgressToCloud,
+  loadProgressFromCloud,
+  syncUIStateToCloud,
+  loadUIStateFromCloud,
+  syncLibrariesToCloud,
+  loadLibrariesFromCloud
+} from './utils/storage'
 
 const tabs = [
   { id: 'review', name: '待复习' },
@@ -171,9 +182,11 @@ const {
 
 const questionCounts = ref({})
 const learnedCounts = ref({})
+const authRef = ref(null)
+const isLoggedIn = ref(false)
 
 onMounted(async () => {
-  loadLibraries()
+  await loadLibraries()
   await loadLibraryData(activeLibraryId.value)
   
   startAutoSave(() => {
@@ -184,6 +197,9 @@ onMounted(async () => {
       currentIndex: currentIndex.value,
       categoryIndexMap: categoryIndexMap.value
     })
+    if (isLoggedIn.value) {
+      syncToCloud()
+    }
   }, 30000)
 })
 
@@ -357,6 +373,81 @@ async function handleDeleteLibrary(id) {
     if (activeLibraryId.value === id) {
       await loadLibraryData(activeLibraryId.value)
     }
+  }
+}
+
+async function handleLogin(user) {
+  isLoggedIn.value = true
+  
+  const cloudLibraries = await loadLibrariesFromCloud()
+  if (cloudLibraries.success && cloudLibraries.data.length > 0) {
+    libraries.value = cloudLibraries.data
+    saveLibraries(libraries.value)
+  }
+  
+  if (activeLibraryId.value) {
+    await syncFromCloud(activeLibraryId.value)
+  }
+}
+
+function handleLogout() {
+  isLoggedIn.value = false
+}
+
+async function syncToCloud() {
+  if (!isLoggedIn.value || !activeLibraryId.value) return
+  
+  if (authRef.value) {
+    authRef.value.setSyncStatus('syncing')
+  }
+  
+  await syncProgressToCloud(activeLibraryId.value, progressMap.value)
+  await syncUIStateToCloud(activeLibraryId.value, {
+    currentTab: currentTab.value,
+    selectedCategory: selectedCategory.value,
+    currentIndex: currentIndex.value,
+    categoryIndexMap: categoryIndexMap.value
+  })
+  await syncLibrariesToCloud(libraries.value)
+  
+  if (authRef.value) {
+    authRef.value.setSyncStatus('synced')
+    setTimeout(() => {
+      if (authRef.value) {
+        authRef.value.setSyncStatus('idle')
+      }
+    }, 2000)
+  }
+}
+
+async function syncFromCloud(libraryId) {
+  if (!isLoggedIn.value) return
+  
+  if (authRef.value) {
+    authRef.value.setSyncStatus('syncing')
+  }
+  
+  const progressResult = await loadProgressFromCloud(libraryId)
+  if (progressResult.success && Object.keys(progressResult.data).length > 0) {
+    progressMap.value = progressResult.data
+    saveProgress()
+  }
+  
+  const uiResult = await loadUIStateFromCloud(libraryId)
+  if (uiResult.success && uiResult.data) {
+    currentTab.value = uiResult.data.currentTab || 'review'
+    selectedCategory.value = uiResult.data.selectedCategory || 'all'
+    currentIndex.value = uiResult.data.currentIndex || 0
+    categoryIndexMap.value = uiResult.data.categoryIndexMap || {}
+  }
+  
+  if (authRef.value) {
+    authRef.value.setSyncStatus('synced')
+    setTimeout(() => {
+      if (authRef.value) {
+        authRef.value.setSyncStatus('idle')
+      }
+    }, 2000)
   }
 }
 </script>

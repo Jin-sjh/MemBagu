@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ebbinghaus-audio-server
+    env: node
+    region: singapore
+    buildCommand: npm install
+    startCommand: node server/audio-server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3002

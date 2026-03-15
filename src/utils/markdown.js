@@ -16,10 +16,16 @@ marked.setOptions({
   gfm: true
 })
 
+const renderer = new marked.Renderer()
+
+renderer.image = function(href, title, text) {
+  return `<img src="${href}" alt="${text || ''}" title="${title || ''}" loading="lazy" onerror="this.style.display='none'">`
+}
+
 export function renderMarkdown(text) {
   if (!text) return ''
   
-  const html = marked.parse(text)
+  const html = marked.parse(text, { renderer })
   
   return html
 }

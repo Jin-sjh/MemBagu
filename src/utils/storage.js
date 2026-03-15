@@ -233,3 +233,153 @@ export function hasOldData() {
   return localStorage.getItem(STORAGE_KEY) !== null ||
          localStorage.getItem(UI_STATE_KEY) !== null
 }
+
+import { supabase, getCurrentUser, isSupabaseConfigured } from './supabase.js'
+
+export async function syncProgressToCloud(libraryId, progress) {
+  if (!isSupabaseConfigured()) return { success: false, error: 'Supabase not configured' }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false, error: 'Not authenticated' }
+  
+  const records = Object.entries(progress).map(([questionId, data]) => ({
+    user_id: user.id,
+    library_id: libraryId,
+    question_id: questionId,
+    status: data.status || 'new',
+    next_review: data.nextReview || null,
+    review_count: data.reviewCount || 0,
+    ease_factor: data.easeFactor || 2.5,
+    interval: data.interval || 0
+  }))
+  
+  if (records.length === 0) return { success: true }
+  
+  const { error } = await supabase
+    .from('progress')
+    .upsert(records, { onConflict: 'user_id,library_id,question_id' })
+  
+  if (error) {
+    console.error('Failed to sync progress to cloud:', error)
+    return { success: false, error: error.message }
+  }
+  
+  return { success: true }
+}
+
+export async function loadProgressFromCloud(libraryId) {
+  if (!isSupabaseConfigured()) return { success: false, data: {} }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false, data: {} }
+  
+  const { data, error } = await supabase
+    .from('progress')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('library_id', libraryId)
+  
+  if (error) {
+    console.error('Failed to load progress from cloud:', error)
+    return { success: false, data: {} }
+  }
+  
+  const progress = {}
+  if (data) {
+    data.forEach(record => {
+      progress[record.question_id] = {
+        status: record.status,
+        nextReview: record.next_review,
+        reviewCount: record.review_count,
+        easeFactor: record.ease_factor,
+        interval: record.interval
+      }
+    })
+  }
+  
+  return { success: true, data: progress }
+}
+
+export async function syncUIStateToCloud(libraryId, state) {
+  if (!isSupabaseConfigured()) return { success: false }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false }
+  
+  const { error } = await supabase
+    .from('ui_state')
+    .upsert({
+      user_id: user.id,
+      library_id: libraryId,
+      state: state,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,library_id' })
+  
+  return !error
+}
+
+export async function loadUIStateFromCloud(libraryId) {
+  if (!isSupabaseConfigured()) return { success: false, data: null }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false, data: null }
+  
+  const { data, error } = await supabase
+    .from('ui_state')
+    .select('state')
+    .eq('user_id', user.id)
+    .eq('library_id', libraryId)
+    .single()
+  
+  if (error) {
+    return { success: false, data: null }
+  }
+  
+  return { success: true, data: data?.state || null }
+}
+
+export async function syncLibrariesToCloud(libraries) {
+  if (!isSupabaseConfigured()) return { success: false }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false }
+  
+  const records = libraries.map(lib => ({
+    user_id: user.id,
+    library_id: lib.id,
+    name: lib.name,
+    config: lib.config || {}
+  }))
+  
+  if (records.length === 0) return { success: true }
+  
+  const { error } = await supabase
+    .from('libraries')
+    .upsert(records, { onConflict: 'user_id,library_id' })
+  
+  return !error
+}
+
+export async function loadLibrariesFromCloud() {
+  if (!isSupabaseConfigured()) return { success: false, data: [] }
+  
+  const user = await getCurrentUser()
+  if (!user) return { success: false, data: [] }
+  
+  const { data, error } = await supabase
+    .from('libraries')
+    .select('*')
+    .eq('user_id', user.id)
+  
+  if (error) {
+    return { success: false, data: [] }
+  }
+  
+  const libraries = (data || []).map(record => ({
+    id: record.library_id,
+    name: record.name,
+    config: record.config || {}
+  }))
+  
+  return { success: true, data: libraries }
+}

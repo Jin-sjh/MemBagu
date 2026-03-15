@@ -46,3 +46,31 @@ function deepClone(obj, map = new WeakMap()) {
 3. **类型判断**：使用 Array.isArray 区分数组和对象
 4. **递归克隆**：遍历对象自身属性，递归调用 deepClone
 5. **WeakMap 优势**：弱引用不会阻止垃圾回收，避免内存泄漏
+
+## 【问题】
+手写实现数组去重，要求使用 Map 方法。
+
+## 【回答】
+```javascript
+function uniqueByMap(arr) {
+  const map = new Map();
+  for (let item of arr) {
+    if (!map.has(item)) {
+      map.set(item, true);
+    }
+  }
+  return [...map.keys()];
+}
+```
+
+## 【问题】
+手写实现数组去重，要求使用 filter 方法。
+
+## 【回答】
+```javascript
+function uniqueByFilter(arr) {
+  return arr.filter((item, index) => {
+    return arr.indexOf(item) === index;
+  });
+}
+```

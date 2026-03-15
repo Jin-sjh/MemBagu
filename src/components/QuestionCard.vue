@@ -1,5 +1,5 @@
 <template>
-  <div class="question-card" v-if="question">
+  <div class="question-card" :class="{ 'fullscreen-mode': fullscreen }" v-if="question">
     <div class="question-header">
       <span class="category">{{ question.category }}</span>
       <span class="topic">{{ question.topic }}</span>
@@ -8,14 +8,16 @@
       </span>
     </div>
     
-    <div class="question-content">
-      <h3 class="question-title">问题</h3>
-      <div class="question-text markdown-body" v-html="renderMarkdown(question.question)"></div>
-    </div>
-    
-    <div class="answer-section" v-if="showAnswer">
-      <h3 class="answer-title">答案</h3>
-      <div class="answer-text markdown-body" v-html="renderMarkdown(question.answer)"></div>
+    <div class="content-wrapper">
+      <div class="question-content">
+        <h3 class="question-title">问题</h3>
+        <div class="question-text markdown-body" v-html="renderMarkdown(question.question)"></div>
+      </div>
+      
+      <div class="answer-section" v-if="showAnswer">
+        <h3 class="answer-title">答案</h3>
+        <div class="answer-text markdown-body" v-html="renderMarkdown(question.answer)"></div>
+      </div>
     </div>
     
     <div class="actions">
@@ -67,6 +69,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  fullscreen: {
+    type: Boolean,
+    default: false
+  },
   currentIndex: {
     type: Number,
     default: 0
@@ -105,11 +111,26 @@ function handleAnswer(remembered) {
   padding: 24px;
 }
 
+.question-card.fullscreen-mode {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  overflow-y: auto;
+}
+
 .question-header {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+.fullscreen-mode .question-header {
+  margin-bottom: 30px;
 }
 
 .category {
@@ -136,8 +157,17 @@ function handleAnswer(remembered) {
   font-size: 0.85rem;
 }
 
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+}
+
 .question-content {
   margin-bottom: 24px;
+}
+
+.fullscreen-mode .question-content {
+  margin-bottom: 32px;
 }
 
 .question-title,
@@ -148,10 +178,21 @@ function handleAnswer(remembered) {
   font-weight: 500;
 }
 
+.fullscreen-mode .question-title,
+.fullscreen-mode .answer-title {
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
 .question-text {
   font-size: 1.1rem;
   line-height: 1.8;
   color: #2c3e50;
+}
+
+.fullscreen-mode .question-text {
+  font-size: 1.25rem;
+  line-height: 2;
 }
 
 .answer-section {
@@ -162,10 +203,21 @@ function handleAnswer(remembered) {
   border-left: 4px solid #3498db;
 }
 
+.fullscreen-mode .answer-section {
+  padding: 28px 32px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+}
+
 .answer-text {
   font-size: 1rem;
   line-height: 1.8;
   color: #34495e;
+}
+
+.fullscreen-mode .answer-text {
+  font-size: 1.1rem;
+  line-height: 2;
 }
 
 .actions {
@@ -175,6 +227,12 @@ function handleAnswer(remembered) {
   margin-bottom: 20px;
 }
 
+.fullscreen-mode .actions {
+  gap: 20px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
 .btn {
   padding: 12px 32px;
   border: none;
@@ -182,6 +240,11 @@ function handleAnswer(remembered) {
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.2s;
+}
+
+.fullscreen-mode .btn {
+  padding: 14px 40px;
+  font-size: 1.05rem;
 }
 
 .btn:disabled {

@@ -129,6 +129,16 @@
   max-width: 100%;
   box-sizing: content-box;
   background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px 0;
+  display: block;
+}
+
+.markdown-body img:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.01);
+  transition: all 0.3s ease;
 }
 
 .markdown-body hr {

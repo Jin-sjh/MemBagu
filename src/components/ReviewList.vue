@@ -34,10 +34,16 @@
     <div class="review-modal" v-if="currentQuestion">
       <div class="modal-content">
         <button class="close-btn" @click="closeReview">×</button>
+        <div class="modal-header">
+          <span class="progress-indicator">
+            {{ currentIndex + 1 }} / {{ questions.length }}
+          </span>
+        </div>
         <QuestionCard 
           :question="currentQuestion"
           :progress="getProgress(currentQuestion.id)"
           :showNavigation="false"
+          :fullscreen="true"
           @answer="handleAnswer"
         />
       </div>
@@ -68,6 +74,7 @@ const props = defineProps({
 const emit = defineEmits(['review'])
 
 const currentQuestion = ref(null)
+const currentIndex = ref(0)
 
 const headerTitle = computed(() => {
   if (props.selectedCategory === 'all') {
@@ -94,10 +101,12 @@ function getStatusText(questionId) {
 
 function startReview(question) {
   currentQuestion.value = question
+  currentIndex.value = props.questions.findIndex(q => q.id === question.id)
 }
 
 function closeReview() {
   currentQuestion.value = null
+  currentIndex.value = 0
 }
 
 function handleAnswer({ questionId, remembered }) {
@@ -109,6 +118,7 @@ function handleAnswer({ questionId, remembered }) {
       if (currentQuestion.value && currentQuestion.value.id === questionId) {
         if (idx < props.questions.length - 1) {
           currentQuestion.value = props.questions[idx + 1]
+          currentIndex.value = idx + 1
         } else {
           closeReview()
         }
@@ -250,43 +260,63 @@ function handleAnswer({ questionId, remembered }) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 0;
 }
 
 .modal-content {
   background: white;
-  border-radius: 12px;
-  max-width: 600px;
+  border-radius: 0;
+  max-width: 100%;
   width: 100%;
-  max-height: 80vh;
+  height: 100%;
   overflow-y: auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
   border: none;
-  background: #f0f0f0;
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7f8c8d;
-  z-index: 1;
+  color: #555;
+  z-index: 1001;
+  transition: all 0.2s;
 }
 
 .close-btn:hover {
-  background: #e0e0e0;
+  background: rgba(0, 0, 0, 0.2);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.modal-header {
+  padding: 20px 60px 0;
+  text-align: center;
+}
+
+.progress-indicator {
+  display: inline-block;
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 </style>

@@ -6,11 +6,24 @@ import {
   setActiveLibraryId,
   migrateOldData
 } from '../utils/storage'
+import { getAvailableLibraries } from '../utils/parser'
 
 const libraries = ref([])
 const activeLibraryId = ref(null)
 
 const API_BASE_URL = 'http://localhost:3002'
+
+const libraryNameMap = {
+  'frontend': '前端八股库',
+  'leetcode': 'LeetCode题库',
+  'AI': 'AI八股库'
+}
+
+const libraryColorMap = {
+  'frontend': '#3498db',
+  'leetcode': '#e74c3c',
+  'AI': '#9b59b6'
+}
 
 const defaultLibrary = {
   id: 'frontend',
@@ -25,12 +38,31 @@ export function useLibraries() {
     return libraries.value.find(lib => lib.id === activeLibraryId.value) || null
   })
 
-  function loadLibraries() {
+  async function loadLibraries() {
     const saved = loadLibrariesFromStorage()
+    
+    const actualLibraryIds = await getAvailableLibraries()
+    
+    const actualLibraries = actualLibraryIds.map(id => ({
+      id,
+      name: libraryNameMap[id] || `${id}题库`,
+      description: `${libraryNameMap[id] || id}面试题库`,
+      color: libraryColorMap[id] || getRandomColor(),
+      createdAt: Date.now()
+    }))
+    
     if (saved && saved.length > 0) {
-      libraries.value = saved
+      const savedIds = new Set(saved.map(lib => lib.id))
+      const newLibraries = actualLibraries.filter(lib => !savedIds.has(lib.id))
+      
+      if (newLibraries.length > 0) {
+        libraries.value = [...saved, ...newLibraries]
+        saveLibrariesToStorage(libraries.value)
+      } else {
+        libraries.value = saved
+      }
     } else {
-      libraries.value = [defaultLibrary]
+      libraries.value = actualLibraries.length > 0 ? actualLibraries : [defaultLibrary]
       saveLibrariesToStorage(libraries.value)
     }
 

@@ -305,6 +305,9 @@ app.post('/api/audio/preview', async (req, res) => {
 })
 
 const PORT = process.env.PORT || 3002
-app.listen(PORT, () => {
-  console.log(`Audio server running on http://localhost:${PORT}`)
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost'
+
+app.listen(PORT, HOST, () => {
+  console.log(`Audio server running on http://${HOST}:${PORT}`)
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
 })
