@@ -7,6 +7,30 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
+export async function handleAuthCallback() {
+  if (!supabase) return { success: false }
+  
+  const hashParams = new URLSearchParams(window.location.hash.substring(1))
+  const accessToken = hashParams.get('access_token')
+  const refreshToken = hashParams.get('refresh_token')
+  const type = hashParams.get('type')
+  
+  if (accessToken) {
+    const { data, error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    })
+    
+    if (!error) {
+      window.history.replaceState({}, document.title, window.location.pathname)
+      return { success: true, type, user: data.user }
+    }
+    return { success: false, error }
+  }
+  
+  return { success: false }
+}
+
 export async function signIn(email, password) {
   if (!supabase) return { data: null, error: new Error('Supabase not configured') }
   const { data, error } = await supabase.auth.signInWithPassword({

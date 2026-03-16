@@ -77,6 +77,7 @@ import {
   signOut, 
   getCurrentUser, 
   onAuthStateChange,
+  handleAuthCallback,
   isSupabaseConfigured 
 } from '../utils/supabase.js'
 
@@ -106,6 +107,12 @@ onMounted(async () => {
   if (!isConfigured.value) {
     loading.value = false
     return
+  }
+  
+  const callbackResult = await handleAuthCallback()
+  if (callbackResult.success) {
+    user.value = callbackResult.user
+    emit('login', callbackResult.user)
   }
   
   const currentUser = await getCurrentUser()
