@@ -114,67 +114,95 @@ function handleReset() {
 }
 
 .statistics h2 {
-  font-size: 1.3rem;
-  color: #2c3e50;
-  margin-bottom: 24px;
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 575.98px) {
+  .statistics h2 {
+    margin-bottom: var(--spacing-lg);
+  }
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767.98px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stats-grid {
+    margin-bottom: var(--spacing-lg);
   }
 }
 
 .stat-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
   text-align: center;
 }
 
+@media (max-width: 575.98px) {
+  .stat-card {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+
 .stat-value {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 8px;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
 }
 
 .stat-value.learned {
-  color: #3498db;
+  color: var(--color-primary);
 }
 
 .stat-value.due {
-  color: #e74c3c;
+  color: var(--color-danger);
 }
 
 .stat-value.mastered {
-  color: #27ae60;
+  color: var(--color-success);
 }
 
 .stat-label {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .progress-section,
 .retention-section,
 .category-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 575.98px) {
+  .progress-section,
+  .retention-section,
+  .category-section {
+    margin-bottom: var(--spacing-lg);
+  }
 }
 
 .progress-section h3,
 .retention-section h3,
 .category-section h3 {
-  font-size: 1rem;
-  color: #2c3e50;
-  margin-bottom: 12px;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
 }
 
 .retention-value {
@@ -184,65 +212,78 @@ function handleReset() {
 }
 
 .retention-value .value {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 8vw, 2.5rem);
   font-weight: 700;
-  color: #27ae60;
+  color: var(--color-success);
 }
 
 .retention-value .unit {
-  font-size: 1.2rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
 }
 
 .category-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 575.98px) {
+  .category-list {
+    gap: var(--spacing-sm);
+  }
 }
 
 .category-item {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+@media (max-width: 575.98px) {
+  .category-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
 }
 
 .category-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .category-name {
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--color-text);
 }
 
 .category-count {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .actions-section {
-  padding-top: 20px;
+  padding-top: var(--spacing-lg);
   border-top: 1px solid #eee;
   text-align: center;
 }
 
 .btn {
-  padding: 12px 32px;
+  padding: var(--spacing-sm) var(--spacing-xl);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .btn-danger {
-  background: #e74c3c;
+  background: var(--color-danger);
   color: white;
 }
 
 .btn-danger:hover {
-  background: #c0392b;
+  background: var(--color-danger-dark);
 }
 </style>

@@ -137,34 +137,46 @@ function handleAnswer({ questionId, remembered }) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 575.98px) {
+  .review-header {
+    margin-bottom: var(--spacing-md);
+  }
 }
 
 .review-header h2 {
-  font-size: 1.3rem;
-  color: #2c3e50;
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
+  color: var(--color-text);
 }
 
 .count {
-  background: #e74c3c;
+  background: var(--color-danger);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 .review-item {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
-  border-left: 4px solid #3498db;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  border-left: 4px solid var(--color-primary);
   transition: all 0.2s;
+}
+
+@media (max-width: 575.98px) {
+  .review-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
 }
 
 .review-item:hover {
@@ -172,37 +184,39 @@ function handleAnswer({ questionId, remembered }) {
 }
 
 .review-item.status-new {
-  border-left-color: #27ae60;
+  border-left-color: var(--color-success);
 }
 
 .review-item.status-overdue {
-  border-left-color: #e74c3c;
+  border-left-color: var(--color-danger);
 }
 
 .review-item.status-soon {
-  border-left-color: #f39c12;
+  border-left-color: var(--color-warning);
 }
 
 .item-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
 }
 
 .category {
-  font-size: 0.85rem;
-  color: #3498db;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .status {
-  font-size: 0.85rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .item-question {
-  font-size: 1rem;
-  color: #2c3e50;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -211,47 +225,54 @@ function handleAnswer({ questionId, remembered }) {
 }
 
 .item-actions {
-  margin-top: 12px;
+  margin-top: var(--spacing-sm);
   text-align: right;
 }
 
 .btn {
-  padding: 8px 20px;
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .btn-small {
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   padding: 6px 16px;
 }
 
 .btn-small:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 .empty {
   text-align: center;
-  padding: 60px 20px;
+  padding: 60px var(--spacing-lg);
+}
+
+@media (max-width: 575.98px) {
+  .empty {
+    padding: 40px var(--spacing-md);
+  }
 }
 
 .empty-icon {
-  font-size: 4rem;
-  margin-bottom: 16px;
+  font-size: clamp(3rem, 10vw, 4rem);
+  margin-bottom: var(--spacing-md);
 }
 
 .empty p {
-  color: #7f8c8d;
-  margin-bottom: 8px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
 }
 
 .hint {
-  font-size: 0.9rem;
-  color: #95a5a6 !important;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light) !important;
 }
 
 .review-modal {
@@ -268,6 +289,12 @@ function handleAnswer({ questionId, remembered }) {
   padding: 0;
 }
 
+@media (max-width: 767.98px) {
+  .review-modal {
+    align-items: stretch;
+  }
+}
+
 .modal-content {
   background: white;
   border-radius: 0;
@@ -280,10 +307,34 @@ function handleAnswer({ questionId, remembered }) {
   flex-direction: column;
 }
 
+@media (min-width: 768px) {
+  .modal-content {
+    max-width: 90%;
+    width: 90%;
+    max-height: 90vh;
+    height: auto;
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (min-width: 992px) {
+  .modal-content {
+    max-width: 80%;
+    width: 80%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .modal-content {
+    max-width: 70%;
+    width: 70%;
+  }
+}
+
 .close-btn {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
   width: 48px;
   height: 48px;
   border: none;
@@ -297,6 +348,18 @@ function handleAnswer({ questionId, remembered }) {
   color: #555;
   z-index: 1001;
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+@media (max-width: 575.98px) {
+  .close-btn {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
 }
 
 .close-btn:hover {
@@ -306,17 +369,36 @@ function handleAnswer({ questionId, remembered }) {
 }
 
 .modal-header {
-  padding: 20px 60px 0;
+  padding: var(--spacing-lg) 60px 0;
   text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .modal-header {
+    padding: var(--spacing-lg) var(--spacing-lg) 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .modal-header {
+    padding: var(--spacing-md) var(--spacing-md) 0;
+  }
 }
 
 .progress-indicator {
   display: inline-block;
   background: rgba(52, 152, 219, 0.1);
-  color: #3498db;
-  padding: 8px 20px;
+  color: var(--color-primary);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border-radius: 20px;
-  font-size: 0.95rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+  .progress-indicator {
+    padding: 6px var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
 }
 </style>

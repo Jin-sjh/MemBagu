@@ -46,57 +46,95 @@ const shouldCollapse = computed(() => props.categories.length > COLLAPSE_THRESHO
 .category-filter {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .filter-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-sm);
   overflow: hidden;
   transition: all 0.3s ease;
+}
+
+@media (max-width: 575.98px) {
+  .filter-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: var(--spacing-xs);
+  }
+  
+  .filter-buttons::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .filter-buttons.collapsed {
   max-height: 48px;
 }
 
+@media (max-width: 575.98px) {
+  .filter-buttons.collapsed {
+    max-height: none;
+  }
+}
+
 .filter-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
   background: white;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
   color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: var(--touch-target-min);
+}
+
+@media (max-width: 575.98px) {
+  .filter-btn {
+    padding: 6px var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
 }
 
 .filter-btn:hover {
-  border-color: #3498db;
-  color: #3498db;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .filter-btn.active {
-  background: #3498db;
-  border-color: #3498db;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
 .toggle-btn {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
+  padding: 6px var(--spacing-sm);
+  border: 1px solid var(--color-border);
   background: white;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: #666;
   align-self: flex-start;
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
+}
+
+@media (max-width: 575.98px) {
+  .toggle-btn {
+    display: none;
+  }
 }
 
 .toggle-btn:hover {
-  border-color: #3498db;
-  color: #3498db;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 </style>
