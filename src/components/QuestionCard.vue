@@ -107,8 +107,15 @@ function handleAnswer(remembered) {
 <style scoped>
 .question-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+@media (max-width: 575.98px) {
+  .question-card {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
 }
 
 .question-card.fullscreen-mode {
@@ -122,31 +129,57 @@ function handleAnswer(remembered) {
   overflow-y: auto;
 }
 
+@media (max-width: 767.98px) {
+  .question-card.fullscreen-mode {
+    padding: var(--spacing-lg);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .question-card.fullscreen-mode {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (min-width: 1200px) {
+  .question-card.fullscreen-mode {
+    max-width: 1200px;
+    padding: var(--spacing-xl) 80px;
+  }
+}
+
 .question-header {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
 }
 
 .fullscreen-mode .question-header {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 575.98px) {
+  .question-header {
+    margin-bottom: var(--spacing-md);
+  }
 }
 
 .category {
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .topic {
-  background: #e8e8e8;
+  background: var(--color-border);
   color: #555;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .progress-badge {
@@ -154,7 +187,7 @@ function handleAnswer(remembered) {
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .content-wrapper {
@@ -163,88 +196,133 @@ function handleAnswer(remembered) {
 }
 
 .question-content {
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .fullscreen-mode .question-content {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 575.98px) {
+  .question-content {
+    margin-bottom: var(--spacing-md);
+  }
 }
 
 .question-title,
 .answer-title {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  margin-bottom: 12px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
   font-weight: 500;
 }
 
 .fullscreen-mode .question-title,
 .fullscreen-mode .answer-title {
-  font-size: 1rem;
-  margin-bottom: 16px;
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-md);
 }
 
 .question-text {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 3vw, 1.1rem);
   line-height: 1.8;
-  color: #2c3e50;
+  color: var(--color-text);
 }
 
 .fullscreen-mode .question-text {
-  font-size: 1.25rem;
+  font-size: clamp(1.1rem, 4vw, 1.25rem);
   line-height: 2;
 }
 
 .answer-section {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 24px;
-  border-left: 4px solid #3498db;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border-left: 4px solid var(--color-primary);
 }
 
 .fullscreen-mode .answer-section {
-  padding: 28px 32px;
-  margin-bottom: 32px;
-  border-radius: 12px;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 575.98px) {
+  .answer-section {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .fullscreen-mode .answer-section {
+    padding: var(--spacing-md);
+  }
 }
 
 .answer-text {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   line-height: 1.8;
   color: #34495e;
 }
 
 .fullscreen-mode .answer-text {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 3vw, 1.1rem);
   line-height: 2;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
 .fullscreen-mode .actions {
-  gap: 20px;
+  gap: var(--spacing-lg);
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: var(--spacing-lg);
+}
+
+@media (max-width: 575.98px) {
+  .actions {
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .fullscreen-mode .actions {
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+  }
 }
 
 .btn {
   padding: 12px 32px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
+}
+
+@media (max-width: 575.98px) {
+  .btn {
+    padding: 10px 24px;
+    font-size: var(--font-size-sm);
+  }
 }
 
 .fullscreen-mode .btn {
   padding: 14px 40px;
-  font-size: 1.05rem;
+  font-size: clamp(1rem, 2.5vw, 1.05rem);
+}
+
+@media (max-width: 575.98px) {
+  .fullscreen-mode .btn {
+    padding: 12px 28px;
+    font-size: var(--font-size-sm);
+  }
 }
 
 .btn:disabled {
@@ -253,30 +331,30 @@ function handleAnswer(remembered) {
 }
 
 .btn-primary {
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 .btn-success {
-  background: #27ae60;
+  background: var(--color-success);
   color: white;
 }
 
 .btn-success:hover:not(:disabled) {
-  background: #219a52;
+  background: var(--color-success-dark);
 }
 
 .btn-danger {
-  background: #e74c3c;
+  background: var(--color-danger);
   color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #c0392b;
+  background: var(--color-danger-dark);
 }
 
 .btn-secondary {
@@ -292,18 +370,32 @@ function handleAnswer(remembered) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 20px;
+  padding-top: var(--spacing-lg);
   border-top: 1px solid #eee;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 575.98px) {
+  .navigation {
+    padding-top: var(--spacing-md);
+    flex-wrap: wrap;
+  }
 }
 
 .page-info {
-  color: #7f8c8d;
-  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
-  color: #7f8c8d;
+  padding: 60px var(--spacing-lg);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 575.98px) {
+  .empty-state {
+    padding: 40px var(--spacing-md);
+  }
 }
 </style>

@@ -210,20 +210,21 @@ defineExpose({
 .auth-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 .auth-disabled {
-  padding: 6px 12px;
+  padding: 6px var(--spacing-sm);
   background: #f0f0f0;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: #999;
 }
 
 .auth-loading {
-  padding: 6px 12px;
-  font-size: 0.8rem;
+  padding: 6px var(--spacing-sm);
+  font-size: var(--font-size-xs);
   color: #666;
 }
 
@@ -235,58 +236,76 @@ defineExpose({
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
-  padding: 20px;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-lg);
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 100;
   min-width: 280px;
 }
 
+@media (max-width: 575.98px) {
+  .form-container {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 0;
+    min-width: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
+  }
+}
+
 .form-title {
-  margin: 0 0 16px 0;
-  font-size: 1.1rem;
-  color: #2c3e50;
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
   text-align: center;
 }
 
 .form-group {
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .form-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 16px;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--color-primary);
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 10px var(--spacing-lg);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .btn-primary {
   width: 100%;
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 .btn-primary:disabled {
@@ -295,10 +314,10 @@ defineExpose({
 }
 
 .btn-logout {
-  padding: 6px 12px;
+  padding: 6px var(--spacing-sm);
   background: #f0f0f0;
   color: #666;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
 }
 
 .btn-logout:hover {
@@ -306,11 +325,11 @@ defineExpose({
 }
 
 .form-switch {
-  margin: 12px 0 0 0;
+  margin: var(--spacing-sm) 0 0 0;
   text-align: center;
-  color: #3498db;
+  color: var(--color-primary);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .form-switch:hover {
@@ -318,31 +337,39 @@ defineExpose({
 }
 
 .form-error {
-  margin: 12px 0 0 0;
-  color: #e74c3c;
-  font-size: 0.85rem;
+  margin: var(--spacing-sm) 0 0 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
   text-align: center;
 }
 
 .auth-user {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 .user-email {
-  font-size: 0.85rem;
-  color: #2c3e50;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+@media (max-width: 575.98px) {
+  .user-email {
+    max-width: 100px;
+    font-size: var(--font-size-xs);
+  }
+}
+
 .sync-status {
   padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 .sync-status.idle {
@@ -351,26 +378,16 @@ defineExpose({
 
 .sync-status.syncing {
   background: #e8f4fd;
-  color: #3498db;
+  color: var(--color-primary);
 }
 
 .sync-status.synced {
   background: #e8f8f0;
-  color: #27ae60;
+  color: var(--color-success);
 }
 
 .sync-status.error {
   background: #fde8e8;
-  color: #e74c3c;
-}
-
-@media (max-width: 600px) {
-  .user-email {
-    max-width: 100px;
-  }
-  
-  .form-container {
-    right: -20px;
-  }
+  color: var(--color-danger);
 }
 </style>

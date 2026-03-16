@@ -88,19 +88,27 @@ defineExpose({
 .current-library {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #f8f9fa;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
   min-width: 140px;
+  min-height: var(--touch-target-min);
+}
+
+@media (max-width: 575.98px) {
+  .current-library {
+    min-width: 120px;
+    padding: 6px var(--spacing-sm);
+  }
 }
 
 .current-library:hover {
   background: #fff;
-  border-color: #3498db;
+  border-color: var(--color-primary);
 }
 
 .library-color {
@@ -112,8 +120,8 @@ defineExpose({
 
 .library-name {
   flex: 1;
-  font-size: 0.9rem;
-  color: #2c3e50;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,7 +129,7 @@ defineExpose({
 
 .dropdown-icon {
   font-size: 0.7rem;
-  color: #7f8c8d;
+  color: var(--color-text-secondary);
   transition: transform 0.2s;
 }
 
@@ -135,37 +143,51 @@ defineExpose({
   left: 0;
   min-width: 200px;
   background: white;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 100;
   overflow: hidden;
+}
+
+@media (max-width: 575.98px) {
+  .dropdown {
+    position: fixed;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    min-width: auto;
+    top: auto;
+    bottom: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .dropdown-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e8e8e8;
-  font-size: 0.85rem;
-  color: #7f8c8d;
+  padding: 10px var(--spacing-sm);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .manage-btn {
   padding: 4px 10px;
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
   cursor: pointer;
   transition: background 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .manage-btn:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 .dropdown-list {
@@ -173,13 +195,20 @@ defineExpose({
   overflow-y: auto;
 }
 
+@media (max-width: 575.98px) {
+  .dropdown-list {
+    max-height: 50vh;
+  }
+}
+
 .library-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-sm);
   cursor: pointer;
   transition: background 0.2s;
+  min-height: var(--touch-target-min);
 }
 
 .library-item:hover {
@@ -198,12 +227,12 @@ defineExpose({
 
 .library-item .library-name {
   flex: 1;
-  font-size: 0.9rem;
-  color: #2c3e50;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
 }
 
 .check-icon {
-  color: #3498db;
-  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
 }
 </style>
