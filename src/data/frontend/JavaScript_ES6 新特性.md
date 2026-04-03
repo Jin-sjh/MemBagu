@@ -37,3 +37,95 @@
 15. **全局对象标准化** - `globalThis`
 
 16. 手写代码题
+
+## 【问题】
+CommonJS 与 ESModule 的核心差异是什么？
+
+## 【回答】
+
+| 内容 | CommonJS | ESModule |
+|------|----------|----------|
+| 导入语法 | require | import |
+| 导出语法 | module.exports / exports | export |
+| 加载方式 | 运行时同步加载 | 编译时静态分析 |
+| 导出值 | 值拷贝 | 实时绑定 |
+| 顶层作用域 | 无法在顶层分析 | import/export 提升 |
+| 循环依赖 | 可能未初始化 | 始终绑定 (更安全) |
+| 浏览器支持 | 需工具处理 | 原生支持 |
+| Tree Shaking | 不支持 | 可实现 (依赖静态分析) |
+
+ESM 更适合现代工程优化 (如摇树优化、代码分割、预加载)。
+
+## 【问题】
+从 CommonJS 转向 ESM 的迁移策略是什么？
+
+## 【回答】
+
+迁移顺序可参考：
+
+1. **保留旧代码，用 .cjs 标记** - 保持原有 CommonJS 代码可用
+
+2. **新代码使用 ESM** - 新增代码直接采用 ES Module 规范
+
+3. **配置 "type": "module"** - 在 package.json 中声明模块类型
+
+4. **将 require 改为 import** - 替换所有模块导入语句
+
+5. **将 module.exports 改为 export/export default** - 替换所有模块导出语句
+
+6. **使用打包工具或 babel 处理不兼容情况** - 解决兼容性问题
+
+最终实现项目全面 ESM 化。
+
+## 【问题】
+箭头函数与普通函数的区别？
+
+## 【回答】
+1. 语法更加简洁、清晰。
+
+2. 箭头函数的 this 默认指向定义它时，所处的上下文的对象的 this 指向，并且即使是 call、apply、bind 等方法也不能改变箭头函数 this 指向。
+
+3. 如果箭头函数是全局函数（外层没有函数包裹）
+   a. 在没有使用严格模式的情况下，它的 this 指向的是 window。
+   b. 如果开启了严格模式，它的 this 指向 undefined。
+
+4. 箭头函数是没有显示原型 prototype 的，所以不能作为构造函数，也不能使用 new 来创建对象。
+   a. 因为在 new 的过程当中，构造函数的 prototype 属性需要赋值给 new 出来的实例对象的 _proto_ 属性，但是箭头函数没有 prototype 属性，所以没有办法作为构造函数。
+
+5. 箭头函数没有自己的 arguments，如果存在函数嵌套，箭头函数会沿着作用域链向上获取外层函数的 arguments 的值。
+
+## 【问题】
+?? 和 || 的区别是什么？
+
+## 【回答】
+**?? (空值合并运算符):** 只有左值等于 `undefined` 和 `null` 才会返回右值
+
+**|| (逻辑或运算符):** 只有左值为 `false` 时才会返回右值（包括 `false`、`0`、`''`、`null`、`undefined`、`NaN`）
+
+**示例:**
+```javascript
+0 ?? 'default'  // 0 (0 不是 null/undefined)
+0 || 'default'  // 'default' (0 是 falsy)
+
+'' ?? 'default' // '' (空字符串不是 null/undefined)
+'' || 'default' // 'default' (空字符串是 falsy)
+
+null ?? 'default' // 'default'
+null || 'default' // 'default'
+```
+
+## 【问题】
+打包器对 CommonJS 和 ESM 的处理方式有何不同？（Webpack、Vite、Rollup）
+
+## 【回答】
+
+### Webpack
+- 同时支持 CJS/ESM
+- 对 ESM 优化更充分（Tree Shaking）
+
+### Vite / Rollup
+- 原生依赖 ESModule
+- 优化能力更强
+- 对 CJS 会进行转译
+
+现代生态明显偏好 ESM。
