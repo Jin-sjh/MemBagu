@@ -17,6 +17,32 @@ if (!existsSync(tempDir)) {
 const app = express()
 app.use(express.json())
 
+// 根路由 - 服务状态页
+app.get('/', (req, res) => {
+  res.json({
+    service: 'Ebbinghaus Audio Server',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      audioCategories: '/api/audio/categories',
+      audioGenerate: '/api/audio/generate',
+      audioCollection: '/api/audio/collection',
+      audioList: '/api/audio/list',
+      audioDownload: '/api/audio/download/:filename',
+      audioPreview: '/api/audio/preview',
+      libraryCreate: '/api/libraries/create',
+      libraryExists: '/api/libraries/:id/exists',
+      libraryDelete: '/api/libraries/:id/folder'
+    }
+  })
+})
+
+// 健康检查端点 - 用于防止 Render 免费版休眠
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
 // CORS 支持
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
