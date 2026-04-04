@@ -109,14 +109,17 @@ onMounted(async () => {
     return
   }
   
+  // 先处理回调（邮箱验证等）
   const callbackResult = await handleAuthCallback()
   if (callbackResult.success) {
     user.value = callbackResult.user
     emit('login', callbackResult.user)
+  } else {
+    // 没有回调时，获取当前用户
+    const currentUser = await getCurrentUser()
+    user.value = currentUser
   }
   
-  const currentUser = await getCurrentUser()
-  user.value = currentUser
   loading.value = false
   
   onAuthStateChange((event, session) => {

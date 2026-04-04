@@ -10,7 +10,16 @@ export const supabase = supabaseUrl && supabaseAnonKey
 export async function handleAuthCallback() {
   if (!supabase) return { success: false }
   
-  const hashParams = new URLSearchParams(window.location.hash.substring(1))
+  // 支持 hash 和 query 两种参数格式
+  let hashParams
+  if (window.location.hash && window.location.hash.length > 1) {
+    hashParams = new URLSearchParams(window.location.hash.substring(1))
+  } else if (window.location.search) {
+    hashParams = new URLSearchParams(window.location.search)
+  } else {
+    return { success: false }
+  }
+  
   const accessToken = hashParams.get('access_token')
   const refreshToken = hashParams.get('refresh_token')
   const type = hashParams.get('type')
