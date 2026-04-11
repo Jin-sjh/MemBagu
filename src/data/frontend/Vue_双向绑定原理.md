@@ -13,3 +13,17 @@
 
 **Vue3:**
 使用了代理（Proxy）来替代 Vue2 中的 `Object.defineProperty` 实现数据的响应式。具体来说，当数据被初始化时，Vue3 会利用 ES6 的 Proxy 对象来代理数据对象的所有操作。通过 Proxy 可以拦截数据的读取和修改操作，并且自动追踪依赖和触发更新。Vue3 引入了 reactive 和 ref API 来创建响应式对象和响应式引用。使用 effect 函数来追踪副作用（例如视图的更新），当依赖的数据变化时，effect 会自动重新执行。
+
+## 2. Vue3 响应式原理
+
+【问题】
+解释 Vue3 响应式原理
+
+【回答】
+Vue3 响应式使用了 Proxy：
+
+i. 代理数据：通过 Proxy 对象代理数据对象的 getter 和 setter 方法。
+
+ii. 依赖收集：当访问某个数据时，会触发 getter，收集依赖。
+
+iii. 视图更新：当数据变化时，触发 setter，通知视图更新。

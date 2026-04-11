@@ -116,3 +116,59 @@ function quickSort(arr, left = 0, right = arr.length - 1) {
 3. **基准归位**：当 `i === j` 时，将 pivot 放到正确位置
 4. **递归排序**：分别对左半区和右半区递归调用 quickSort
 5. **原地排序**：空间复杂度 O(log n)，仅递归栈开销，无需额外数组
+
+## 【问题】
+手写 bind
+
+## 【回答】
+```javascript
+Function.prototype.myBind = function(context, ...args1) {
+  const fn = this
+
+  return function(...args2) {
+    return fn.apply(context, [...args1, ...args2])
+  }
+}
+```
+
+**关键点：**
+
+1. **原型方法**：在 `Function.prototype` 上添加 `myBind` 方法
+2. **保存当前函数**：使用 `const fn = this` 保存原函数引用
+3. **参数分组**：
+   - `args1`：bind 时传入的预设参数
+   - `args2`：调用返回函数时传入的参数
+4. **this 绑定**：通过 `fn.apply(context, ...)` 将 this 绑定到指定上下文
+5. **参数合并**：使用扩展运算符合并预设参数和调用参数 `[...args1, ...args2]`
+6. **返回新函数**：返回一个闭包，保持对原函数和上下文的引用
+
+## 【问题】
+手写 call
+
+**原理：** 把函数临时挂到对象上执行
+
+## 【回答】
+```javascript
+Function.prototype.myCall = function(context, ...args) {
+  context = context || window
+
+  const key = Symbol()
+
+  context[key] = this
+
+  const result = context[key](...args)
+
+  delete context[key]
+
+  return result
+}
+```
+
+**关键点：**
+
+1. **默认 context**：如果 context 为 null 或 undefined，则默认为 window
+2. **Symbol 唯一键**：使用 Symbol 创建唯一键名，避免与对象原有属性冲突
+3. **临时绑定**：将当前函数（this）赋值给 context 的 Symbol 属性
+4. **执行函数**：通过 context[key] 调用函数，传入参数，此时 this 指向 context
+5. **清理现场**：执行完成后删除临时属性，避免污染对象
+6. **返回结果**：返回函数执行的结果

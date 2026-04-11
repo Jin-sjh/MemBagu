@@ -41,3 +41,12 @@ Composition API 用"显式的组合函数"替代了 Mixins 的隐式合并，从
 ### 超精简版（30 秒回答）
 
 Composition API 通过自定义组合函数实现逻辑复用，相比 Mixins：显式导入不冲突、来源清晰、代码聚合、TS 友好；相比 React Hooks：无规则限制、无闭包陷阱、响应式更稳定。
+
+## 【问题】
+Vue 3 组合式 API 与 Tree-shaking 的关系？
+
+## 【回答】
+Vue 3 的组合式 API（setup）是 ESM 友好的，能被 Tree-shaking 优化：
+
+- **选项式 API（Options API）**：`this` 是动态对象，无法被静态分析，无法 Tree-shaking；
+- **组合式 API（Composition API）**：`import { ref, computed } from 'vue'` 是静态导入，未使用的 API 会被 Tree-shaking 移除，打包体积更小。

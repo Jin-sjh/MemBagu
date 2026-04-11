@@ -1,21 +1,52 @@
 # CSRF 攻击
 
+## 6.2 CSRF 攻击与防御
+
+### 6.2.1 攻击原理
+
 ## 【问题】CSRF 攻击是什么？
 
 ## 【回答】
-CSRF（跨站请求伪造）是一种攻击手段，攻击者通过诱导用户执行恶意操作，从而获取用户数据或执行恶意代码。CSRF 攻击通常通过伪造一个合法的 HTTP 请求来实现，这个请求看起来是合法的，但实际上是为了执行一个攻击者控制的操作。
+**定义**：跨站请求伪造（Cross-Site Request Forgery），利用用户已认证的身份执行非预期操作
+
+**攻击流程**：
+a. 用户登录 A 网站，获取 Cookie
+b. 在未登出 A 网站的情况下，访问恶意网站 B
+c. B 网站向 A 网站发送请求，利用用户的 Cookie 身份
+
+### 6.2.2 防御措施
 
 ## 【问题】解决 CSRF 攻击的方法有哪些？
 
 ## 【回答】
-解决 CSRF 攻击的方法主要有以下几种：
 
-1. **验证用户会话**：在服务器端对用户会话进行验证，确保请求的会话标识符与当前会话标识符匹配。这样可以防止攻击者伪造会话标识符。
+**1. Token 验证：**
 
-2. **使用双重验证**：除了会话验证，还可以使用其他验证方式，例如验证码、签名验证等。这些验证方式可以增加攻击的难度。
+```javascript
+// 前端请求携带 token
+fetch('/api/action', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+  },
+  body: JSON.stringify(data)
+});
+```
 
-3. **防止跨站请求**：通过设置 CSP（内容安全策略）来防止跨站请求，限制网页中可执行的脚本源，减少攻击者诱导用户执行恶意操作的可能性。
+**2. SameSite Cookie：**
 
-4. **避免使用自动提交表单**：禁用默认的自动提交功能，要求用户在提交表单前确认操作，防止攻击者诱导用户在未经授权的情况下提交表单。
+```
+Set-Cookie: sessionid=abc123; SameSite=Strict; Secure; HttpOnly
+```
 
-5. **强制 Referer 头部**：在服务器端检查请求的 Referer 头部，确保请求来自可信来源。
+**3. Referer 验证：**
+
+```javascript
+// 服务器端验证
+if (req.headers.referer && req.headers.referer.startsWith('https://example.com')) {
+  // 处理请求
+} else {
+  // 拒绝请求
+}
+```
