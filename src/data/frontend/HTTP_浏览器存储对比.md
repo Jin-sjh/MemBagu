@@ -32,3 +32,9 @@ localStorage 和 Cookie 的区别主要体现在以下四个方面：
 
 ## 【回答】
 Cookie 适合用于在客户端和服务器之间传递数据、跨域访问和设置过期时间，而 LocalStorage 适合用于在同一域名下的不同页面之间共享数据、存储大量数据和永久存储数据。
+
+## 【问题】
+浏览器多个标签之间如何通信？
+
+## 【回答】
+浏览器多个标签页之间通信主要有以下几种方式：可以使用 localStorage 或 sessionStorage，通过监听 storage 事件实现跨标签页同步；利用 BroadcastChannel 专门用于同源标签页之间广播消息；还可以通过 SharedWorker 共享线程实现数据互通；另外也能借助 Cookie 配合定时器轮询、打开新窗口时使用 window.postMessage 传递消息，或使用 IndexedDB 间接实现数据共享，其中同源限制是大部分方式的前提条件。
