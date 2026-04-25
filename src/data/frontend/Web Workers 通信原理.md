@@ -1,4 +1,24 @@
 【问题】
+请你说一下 Web Worker 和 WebSocket 的作用。
+
+【回答】
+**Web Worker 的作用如下：**
+
+（1）通过 `worker = new Worker(url)` 加载一个 JavaScript 文件，创建一个 Worker，同时返回一个 Worker 实例。
+
+（2）用 `worker.postMessage(data)` 向 Worker 发送数据。
+
+（3）绑定 `worker.onmessage` 接收 Worker 发送过来的数据。
+
+（4）可以使用 `worker.terminate()` 终止一个 Worker 的执行。
+
+**WebSocket 的作用如下：**
+
+它是 Web 应用程序的传输协议，提供了双向的、按序到达的数据流。它是 HTML5 新增的协议，WebSocket 的连接是持久的，它在客户端和服务器之间保持双工连接，服务器的更新可以及时推送到客户端，而不需要客户端以一定的时间间隔去轮询。
+
+---
+
+【问题】
 Web Workers 通信原理
 
 【回答】

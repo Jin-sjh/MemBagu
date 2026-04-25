@@ -1,6 +1,14 @@
 # 浏览器存储对比
 
 ## 【问题】
+请描述一下 sessionStorage 和 localStorage 的区别。
+
+## 【回答】
+sessionStorage 用于在本地存储一个会话中的数据，这些数据只有同一个会话中的页面才能访问，当会话结束后，数据也随之销毁。因此 sessionStorage 不是一种持久化的本地存储，仅仅是会话级别的存储。
+
+而 localStorage 用于持久化本地存储，除非主动删除数据，否则数据是永远不会过期的。
+
+## 【问题】
 如果我把数据存储到 localStorage，和 Cookie 有什么区别？
 
 ## 【回答】

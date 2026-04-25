@@ -32,31 +32,33 @@ HTTP 状态码有哪些类别，分别代表什么意思
 ### 【回答】
 
 **1xx 信息类**
-- 100 Continue：可以继续发送
+- **100 Continue**：表示继续，一般在发送 POST 请求时，已发送了 HTTP header 之后，服务器端将返回此信息，表示确认，之后发送具体参数信息。
 
 **2xx 成功**
-- 200 OK：请求成功
-- 201 Created：创建成功（POST/PUT）
-- 204 No Content：成功但无返回体
+- **200 OK**：表示正常返回信息，请求成功。
+- **201 Created**：表示请求成功并且服务器创建了新的资源。
+- **202 Accepted**：表示服务器已接受请求，但尚未处理。
+- **204 No Content**：成功但无返回体。
 
 **3xx 重定向**
-- 301 永久重定向
-- 302 临时重定向
-- 304 Not Modified：使用缓存（协商缓存）
+- **301 Moved Permanently**：表示请求的网页已永久移动到新位置，永久重定向。
+- **302 Found**：表示临时性重定向。
+- **303 See Other**：表示临时性重定向，且总是使用 GET 请求新的 URI。
+- **304 Not Modified**：表示自从上次请求后，请求的网页未修改过，使用缓存（协商缓存）。
 
 **4xx 客户端错误**
-- 400 Bad Request：参数错误
-- 401 Unauthorized：未登录 / 认证失败
-- 403 Forbidden：权限不足
-- 404 Not Found：资源不存在
-- 405 Method Not Allowed：请求方法不对
-- 429 Too Many Requests：请求太频繁
+- **400 Bad Request**：表示服务器无法理解请求的格式，客户端不应当尝试再次使用相同的内容发起请求。
+- **401 Unauthorized**：表示请求未授权，未登录 / 认证失败。
+- **403 Forbidden**：表示禁止访问，权限不足。
+- **404 Not Found**：表示找不到如何与 URI 相匹配的资源，资源不存在。
+- **405 Method Not Allowed**：请求方法不对。
+- **429 Too Many Requests**：请求太频繁。
 
 **5xx 服务器错误**
-- 500 Internal Server Error：服务器报错
-- 502 Bad Gateway：网关错误
-- 503 Service Unavailable：服务不可用 / 过载
-- 504 Gateway Timeout：网关超时
+- **500 Internal Server Error**：表示最常见的服务器端错误，服务器报错。
+- **502 Bad Gateway**：网关错误。
+- **503 Service Unavailable**：表示服务器端暂时无法处理请求（可能是过载或维护），服务不可用。
+- **504 Gateway Timeout**：网关超时。
 
 ---
 
