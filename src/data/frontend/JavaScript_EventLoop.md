@@ -1,6 +1,24 @@
 # 事件循环
 
 ## 【问题】
+宏任务/微任务是什么？
+
+## 【回答】
+JS 是单线程非阻塞的语言，为了处理异步任务，设计了事件循环（Event Loop）机制。异步任务分为宏任务和微任务，微任务优先级更高。
+
+**微任务（优先级更高）：**
+- Promise.then/Promise.catch/Promise.finally
+- async/await
+
+**宏任务：**
+- setTimeout/setInterval
+- I/O 操作（文件读取、网络请求）
+- UI 渲染（浏览器）
+- requestAnimationFrame（浏览器，特殊的宏任务）
+
+---
+
+## 【问题】
 解释 JavaScript 的事件循环机制
 
 ## 【回答】
@@ -21,6 +39,54 @@ setTimeout(1000) 一定是 1000ms 吗？为什么？和 RAF 的对比
 
 ## 【回答】
 setTimeout(1000) 并不保证一定在 1000ms 时执行，它表示至少等待 1000ms 后才会进入任务队列，真正执行还要等当前 JavaScript 执行栈清空并轮到事件循环调度，如果主线程被阻塞（如大量计算、同步代码），回调就会延迟执行；此外浏览器还有最小时间间隔限制（clamp），嵌套定时器可能被强制延长到 4ms 以上。相比之下，requestAnimationFrame 会在浏览器下一次重绘前执行，通常与屏幕刷新率（如 60Hz ≈ 16.7ms）同步，因此更适合动画场景，可以避免掉帧并减少不必要的计算。
+
+## 【问题】
+requestAnimationFrame 和 setTimeout 的区别是什么？
+
+## 【回答】
+`requestAnimationFrame`（RAF）和 `setTimeout` 都可以用于实现动画或延迟执行，但它们在执行时机、性能优化等方面有本质区别：
+
+| 特性 | requestAnimationFrame | setTimeout |
+|------|----------------------|------------|
+| **执行时机** | 浏览器下一次重绘前 | 按指定延迟执行（实际有偏差） |
+| **帧率** | 跟随屏幕刷新率（通常 60fps），动画更流畅 | 固定间隔，可能掉帧、卡顿 |
+| **后台优化** | 页面隐藏/最小化时会暂停，节省资源 | 后台仍会执行，消耗性能 |
+| **精度** | 时间精度高，误差小 | 受主线程阻塞影响，误差大 |
+
+**使用场景建议：**
+- **RAF 适合**：需要流畅动画效果、与浏览器渲染同步的场景（如游戏动画、滚动动画、Canvas 动画）
+- **setTimeout 适合**：简单的延迟执行、不需要与渲染同步的定时任务
+
+**代码示例对比：**
+```javascript
+// RAF 实现平滑动画
+function animateWithRAF() {
+  let start = null;
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    const progress = timestamp - start;
+    // 执行动画逻辑
+    element.style.transform = `translateX(${Math.min(progress / 10, 200)}px)`;
+    if (progress < 2000) {
+      requestAnimationFrame(step);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// setTimeout 实现（可能不够流畅）
+function animateWithTimeout() {
+  let position = 0;
+  function step() {
+    position += 2;
+    element.style.transform = `translateX(${position}px)`;
+    if (position < 200) {
+      setTimeout(step, 16); // 约 60fps，但不精确
+    }
+  }
+  setTimeout(step, 16);
+}
+```
 
 ## 【问题】
 定时器不准确的原因是什么？

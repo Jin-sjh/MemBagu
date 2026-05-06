@@ -35,3 +35,31 @@ XSS攻击与CSRF攻击有什么区别？
 
 【回答】
 XSS攻击用于获取信息，不需要提前知道其他用户页面的代码和数据包。CSRF攻击用于代替用户完成指定的动作，需要知道其他用户页面的代码和数据包。
+
+【问题】
+CSP 是什么？
+
+【回答】
+CSP（Content Security Policy，内容安全策略）是一种浏览器安全机制，通过白名单的方式限制页面可加载和执行的资源，主要用于防范 XSS 和数据注入攻击。
+
+**工作原理**：
+服务器通过 HTTP 响应头 `Content-Security-Policy` 告诉浏览器：
+- 可加载脚本、样式、图片的域名
+- 禁止执行内联脚本、禁止使用 eval() 执行字符串代码
+- 禁止发送敏感数据到不受信任域名
+
+**配置示例**：
+```
+Content-Security-Policy:
+  default-src 'self';                          # 默认只允许加载同源资源
+  script-src 'self' https://cdn.example.com;   # 只允许同源和指定域名的脚本
+  style-src 'self' 'unsafe-inline';            # 允许同源样式和内联样式（部分框架需要）
+  img-src 'self' data:;                        # 允许同源图片和 base64 图片
+  object-src 'none';                           # 禁止加载插件（如 Flash）
+  report-uri /csp-report;                      # 违规请求上报地址
+```
+
+**主要作用**：
+- 防范 XSS 攻击
+- 防范数据泄漏
+- 减少攻击面（禁用 eval()、内联脚本）

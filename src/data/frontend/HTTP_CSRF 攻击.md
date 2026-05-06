@@ -21,11 +21,26 @@ CSRF：跨站点请求伪造，其原理是攻击者构造网站后台某个功�
 
 ### 6.2.2 防御措施
 
+## 【问题】CSRF 的攻击原理是什么？
+
+## 【回答】
+CSRF（跨站请求伪造）的攻击原理：
+
+- **诱导用户**：诱导用户在已登录的网站上访问恶意网站
+- **利用登录状态**：利用用户已登录的状态（浏览器自动携带 Cookie）
+- **发送伪造请求**：向目标网站发送伪造请求（如转账、改密码等敏感操作）
+
+**核心机制**：利用浏览器自动携带 Cookie 的特性，冒充用户身份发起请求。
+
+---
+
 ## 【问题】解决 CSRF 攻击的方法有哪些？
 
 ## 【回答】
 
-**1. Token 验证：**
+### 1. CSRF Token（最常用）
+- 服务器生成一个随机 Token，存在用户 session 中，同时下发给前端（如表单隐藏字段、请求头）
+- 每次请求敏感操作时，前端必须携带该 Token，服务器校验 Token 是否与 session 中的一致，不一致则拒绝请求
 
 ```javascript
 // 前端请求携带 token
@@ -39,13 +54,17 @@ fetch('/api/action', {
 });
 ```
 
-**2. SameSite Cookie：**
+### 2. SameSite Cookie 属性
+- 设置 `SameSite=Strict` 或 `SameSite=Lax`，限制 Cookie 跨站发送，让恶意网站无法携带用户 Cookie 发起请求
+- 现代浏览器都支持，是 CSRF 防御的重要手段
 
 ```
 Set-Cookie: sessionid=abc123; SameSite=Strict; Secure; HttpOnly
 ```
 
-**3. Referer 验证：**
+### 3. Referer/Origin 校验
+- 服务器校验请求头的 `Referer` 或 `Origin` 是否为受信任的域名
+- **缺点**：部分浏览器可伪造 Referer，或用户隐私设置会导致 Referer 为空，有一定局限性
 
 ```javascript
 // 服务器端验证
@@ -55,6 +74,10 @@ if (req.headers.referer && req.headers.referer.startsWith('https://example.com')
   // 拒绝请求
 }
 ```
+
+### 4. 敏感操作增加二次验证
+- 比如转账、改密码时，要求用户输入验证码、短信验证
+- 即使请求被伪造，也无法通过二次验证
 
 ## 【问题】如何防范 CSRF 攻击？
 

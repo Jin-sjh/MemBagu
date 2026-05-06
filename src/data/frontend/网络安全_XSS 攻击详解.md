@@ -107,3 +107,101 @@ AI 生成的 Markdown 内容（如代码块、列表、表格等）可能包含�
    ```
    Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
    ```
+
+---
+
+## 六、XSS 攻击原理简明总结
+
+### 【问题】
+XSS 攻击的基本原理是什么？攻击流程是怎样的？
+
+### 【回答】
+XSS（跨站脚本攻击）的核心原理和攻击流程：
+
+1. **页面注入恶意 JS 代码**
+   - 攻击者找到网站的输入点（如评论区、搜索框、URL 参数等）
+   - 将恶意 JavaScript 代码注入到页面中
+
+2. **用户访问页面**
+   - 普通用户在不知情的情况下访问了包含恶意代码的页面
+
+3. **代码在浏览器中执行**
+   - 恶意脚本在用户的浏览器环境中运行，拥有与用户相同的权限
+
+4. **造成的危害**
+   - **偷取 Cookie**：获取用户的登录凭证，伪造用户身份
+   - **篡改页面**：修改页面内容，显示虚假信息或钓鱼界面
+   - **劫持用户操作**：记录用户键盘输入、点击行为，或代替用户执行操作
+
+---
+
+## 七、XSS 防御手段详解
+
+### 【问题】
+XSS 攻击的具体防御手段有哪些？如何实施？
+
+### 【回答】
+
+#### 1. 输入过滤 / 输出编码
+- **输入过滤**：对用户输入的特殊字符（`<`、`>`、`&`、`"`、`'`）进行转义，比如 `<` 转成 `&lt;`
+- **输出编码**：后端输出到页面时，也要做编码处理，避免 HTML/JS 注入
+- **核心原则**：永远不要信任用户输入，任何用户输入都要经过处理才能展示
+
+#### 2. 设置 Cookie 安全属性
+通过设置 Cookie 的安全属性，降低 XSS 攻击造成的危害：
+
+- **HttpOnly**：禁止 JS 读取 Cookie，防止被偷取
+  ```
+  Set-Cookie: sessionId=xxx; HttpOnly
+  ```
+
+- **Secure**：只在 HTTPS 环境下传输 Cookie，防止中间人攻击
+  ```
+  Set-Cookie: sessionId=xxx; Secure
+  ```
+
+- **SameSite**：限制 Cookie 跨站发送，防范 CSRF 同时也能降低 XSS 危害
+  ```
+  Set-Cookie: sessionId=xxx; SameSite=Strict
+  ```
+
+#### 3. CSP（内容安全策略）
+
+##### 【问题】
+什么是 CSP？它的全称、本质和作用是什么？
+
+##### 【回答】
+- **全称**：Content Security Policy（内容安全策略）
+- **本质**：浏览器安全机制
+- **核心机制**：以白名单的方式限制页面可加载和执行的资源
+- **主要作用**：
+  - 防范 XSS 攻击
+  - 防范数据泄漏
+  - 减少攻击面（禁用 eval()、内联脚本）
+
+##### 【问题】
+CSP 的工作原理是什么？服务器如何配置 CSP？
+
+##### 【回答】
+服务器通过 HTTP 响应头 `Content-Security-Policy` 告诉浏览器：
+- 可加载脚本、样式、图片的域名
+- 禁止执行内联脚本、禁止使用 eval() 执行字符串代码
+- 禁止发送敏感数据到不受信任域名
+
+**配置示例：**
+```
+Content-Security-Policy:
+  default-src 'self';                    # 默认只允许加载同源资源
+  script-src 'self' https://cdn.example.com;   # 只允许同源和指定域名的脚本
+  style-src 'self' 'unsafe-inline';      # 允许同源样式和内联样式（部分框架需要）
+  img-src 'self' data:;                  # 允许同源图片和 base64 图片
+  object-src 'none';                     # 禁止加载插件（如 Flash）
+  report-uri /csp-report;                # 违规请求上报地址
+```
+
+#### 4. 使用安全的 API
+- **避免危险 API**：不要直接使用 `innerHTML`、`document.write` 插入用户输入，这些 API 会解析 HTML 并执行脚本
+- **使用安全替代方案**：
+  - 使用 `textContent` 代替 `innerHTML`，它不会解析 HTML 标签
+  - 使用框架自带的防注入机制（如 React/Vue 默认的插值语法 `{{ }}` 会自动转义）
+- **现代框架的优势**：React、Vue 等现代前端框架默认对插值表达式进行 HTML 转义，能有效防止 XSS
