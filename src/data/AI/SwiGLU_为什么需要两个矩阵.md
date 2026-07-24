@@ -1,3 +1,11 @@
+---
+category: SwiGLU
+topic: 为什么需要两个矩阵
+type: bagu
+tags: [SwiGLU]
+difficulty: easy
+created: 2026-07-24
+---
 ## 为什么 SwiGLU 不能使用同一个矩阵？
 
 ### 【问题】

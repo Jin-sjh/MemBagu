@@ -1,3 +1,11 @@
+---
+category: Web
+topic: Server 与 WebWork 的区别
+type: bagu
+tags: [Web]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】
 Web Server 与 WebWork 的区别是什么？
 

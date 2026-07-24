@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 变量声明与作用域
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 变量声明与作用域
 
 ## 【问题】

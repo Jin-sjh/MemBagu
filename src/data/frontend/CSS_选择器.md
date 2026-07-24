@@ -1,3 +1,11 @@
+---
+category: CSS
+topic: 选择器
+type: bagu
+tags: [CSS]
+difficulty: hard
+created: 2026-07-24
+---
 # CSS 选择器
 
 ## 问题 1：请你讲一下 CSS 选择器

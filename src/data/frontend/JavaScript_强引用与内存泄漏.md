@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 强引用与内存泄漏
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 问题 1：哪些操作会造成强引用，如何避免？
 
 【问题】哪些操作会造成强引用，如何避免？

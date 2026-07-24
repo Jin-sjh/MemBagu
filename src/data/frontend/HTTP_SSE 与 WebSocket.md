@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: SSE 与 WebSocket
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # SSE 与 WebSocket
 
 ## 【问题】

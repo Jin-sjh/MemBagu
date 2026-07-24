@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 异步加载技术详解
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # 异步加载技术详解
 
 ## 【问题】

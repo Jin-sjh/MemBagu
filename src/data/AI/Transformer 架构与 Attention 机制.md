@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Transformer 架构与 Attention 机制
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # Transformer 架构与 Attention 机制
 
 ## 问题 1：Attention 和 Self-Attention 的区别

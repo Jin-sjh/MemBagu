@@ -1,3 +1,11 @@
+---
+category: DNS
+topic: 解析过程
+type: bagu
+tags: [DNS]
+difficulty: easy
+created: 2026-07-24
+---
 # DNS 解析的过程
 
 ## 【问题】

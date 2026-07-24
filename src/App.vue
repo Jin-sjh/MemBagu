@@ -1,59 +1,59 @@
 <template>
   <div class="app">
-    <header class="header">
-      <div class="header-content">
-        <div class="title-section">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
           <h1>八股记忆</h1>
-          <p class="subtitle">艾宾浩斯记忆辅助系统</p>
         </div>
-        <div class="header-right">
-          <Auth ref="authRef" @login="handleLogin" @logout="handleLogout" />
-          <div class="save-status" :class="saveStatus">
-            <span v-if="saveStatus === 'saving'" class="status-icon saving">●</span>
-            <span v-else-if="saveStatus === 'saved'" class="status-icon saved">✓</span>
-            <span v-else-if="saveStatus === 'error'" class="status-icon error">!</span>
+
+        <nav class="main-nav">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            :class="['nav-item', { active: currentTab === tab.id }]"
+            @click="currentTab = tab.id"
+          >
+            {{ tab.name }}
+            <span v-if="tab.id === 'review' && filteredDueCount > 0" class="nav-badge">{{ filteredDueCount }}</span>
+          </button>
+        </nav>
+
+        <div class="topbar-right">
+          <div class="save-status" :class="saveStatus" :title="getSaveStatusText()">
+            <span class="status-dot"></span>
             <span class="status-text">{{ getSaveStatusText() }}</span>
           </div>
-          <LibrarySelector 
+          <LibrarySelector
             :libraries="libraries"
             :activeLibraryId="activeLibraryId"
             :activeLibrary="activeLibrary"
             @select="handleLibrarySwitch"
             @manage="openLibraryManager"
           />
+          <Auth ref="authRef" @login="handleLogin" @logout="handleLogout" />
         </div>
       </div>
     </header>
 
-    <div class="search-section">
-      <SearchBox 
-        :questions="allQuestions"
-        @select="handleSearchSelect"
-        @search="handleSearch"
-      />
-    </div>
+    <div class="page-body">
+      <div class="toolbar">
+        <div class="toolbar-search">
+          <SearchBox
+            :questions="allQuestions"
+            @select="handleSearchSelect"
+            @search="handleSearch"
+          />
+        </div>
+        <div class="toolbar-filter" v-show="currentTab !== 'audio' && currentTab !== 'libraries'">
+          <CategoryFilter
+            :categories="categories"
+            :selected="selectedCategory"
+            @select="handleCategorySelect"
+          />
+        </div>
+      </div>
 
-    <nav class="tabs">
-      <button 
-        v-for="tab in tabs" 
-        :key="tab.id"
-        :class="['tab', { active: currentTab === tab.id }]"
-        @click="currentTab = tab.id"
-      >
-        {{ tab.name }}
-        <span v-if="tab.id === 'review' && filteredDueCount > 0" class="badge">{{ filteredDueCount }}</span>
-      </button>
-    </nav>
-
-    <div class="global-filter" v-show="currentTab !== 'audio' && currentTab !== 'libraries'">
-      <CategoryFilter 
-        :categories="categories"
-        :selected="selectedCategory"
-        @select="handleCategorySelect"
-      />
-    </div>
-
-    <main class="main">
+      <main class="main">
       <div v-if="isSearchMode && searchResults.length > 0" class="search-results-view">
         <div class="search-results-header">
           搜索结果 ({{ searchResults.length }} 题)
@@ -82,7 +82,10 @@
         :questions="filteredDueQuestions"
         :progress="progressMap"
         :selectedCategory="selectedCategory"
+        :poolStats="poolStats"
+        :examReviewMode="examReviewMode"
         @review="handleReview"
+        @exitExam="handleExitExam"
       />
       
       <div v-else-if="currentTab === 'learn'" class="learn-view">
@@ -100,6 +103,7 @@
         :questions="filteredQuestions"
         :progress="progressMap"
         :selectedCategory="selectedCategory"
+        @startExam="handleStartExam"
       />
       
       <AudioGenerator 
@@ -116,7 +120,8 @@
         @delete="handleDeleteLibrary"
         @switch="handleLibrarySwitch"
       />
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -162,7 +167,7 @@ const isSearchMode = ref(false)
 const searchResults = ref([])
 
 const { allQuestions, categories, loadQuestions } = useQuestions()
-const { progressMap, loadProgress, saveProgress, getDueQuestions, updateProgress, clearLibraryProgress, getLearnedCount } = useProgress()
+const { progressMap, loadProgress, saveProgress, getSprintQueue, getPoolStats, updateProgress, clearLibraryProgress, getLearnedCount, startExamReview, stopExamReview, examReviewMode } = useProgress()
 const { 
   libraries, 
   activeLibraryId, 
@@ -240,7 +245,7 @@ watch([currentTab, selectedCategory, currentIndex, categoryIndexMap], () => {
 }, { deep: true })
 
 const dueQuestions = computed(() => {
-  return getDueQuestions(allQuestions.value)
+  return getSprintQueue(filteredQuestions.value)
 })
 
 const filteredDueQuestions = computed(() => {
@@ -251,6 +256,11 @@ const filteredDueQuestions = computed(() => {
 })
 
 const filteredDueCount = computed(() => filteredDueQuestions.value.length)
+
+const poolStats = computed(() => {
+  const base = filteredQuestions.value
+  return getPoolStats(base)
+})
 
 const filteredQuestions = computed(() => {
   if (selectedCategory.value === 'all') {
@@ -320,14 +330,23 @@ const currentProgress = computed(() => {
   return progressMap.value[currentQuestion.value.id] || null
 })
 
-function handleReview({ questionId, remembered }) {
-  updateProgress(questionId, remembered)
+function handleReview({ questionId, grade }) {
+  updateProgress(questionId, grade)
   saveProgress()
 }
 
-function handleAnswer({ questionId, remembered }) {
-  updateProgress(questionId, remembered)
+function handleAnswer({ questionId, grade }) {
+  updateProgress(questionId, grade)
   saveProgress()
+}
+
+function handleStartExam() {
+  startExamReview()
+  currentTab.value = 'review'
+}
+
+function handleExitExam() {
+  stopExamReview()
 }
 
 function nextQuestion() {
@@ -454,226 +473,212 @@ async function syncFromCloud(libraryId) {
 
 <style scoped>
 .app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
   min-height: 100vh;
 }
 
-@media (max-width: 575.98px) {
-  .app {
-    padding: var(--spacing-md);
-  }
+/* ========== 顶部导航栏 ========== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
-@media (min-width: 1200px) {
-  .app {
-    max-width: 1000px;
-    padding: var(--spacing-xl);
-  }
-}
-
-@media (min-width: 1400px) {
-  .app {
-    max-width: 1200px;
-  }
-}
-
-.header {
-  margin-bottom: var(--spacing-lg);
-}
-
-@media (max-width: 575.98px) {
-  .header {
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-.header-content {
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--spacing-lg);
-  flex-wrap: wrap;
+  min-height: 56px;
 }
 
-.title-section {
-  flex: 1;
-  min-width: 200px;
-}
-
-.header h1 {
-  font-size: clamp(1.5rem, 5vw, 2rem);
+.brand h1 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
   color: var(--color-text);
-  margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
-.subtitle {
-  color: var(--color-text-secondary);
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.main-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 36px;
+  min-width: 0;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
-.header-right {
+.nav-item:hover {
+  color: var(--color-text);
+  background: var(--color-surface-sunken);
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-weight: 600;
+}
+
+.nav-badge {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-dark);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  line-height: 1.5;
+}
+
+.topbar-right {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  flex-wrap: wrap;
-}
-
-@media (max-width: 575.98px) {
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-    gap: var(--spacing-sm);
-  }
+  flex-shrink: 0;
 }
 
 .save-status {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
   font-size: var(--font-size-xs);
-  background: #f0f0f0;
-  color: var(--color-text-secondary);
-  transition: all 0.3s;
+  color: var(--color-text-light);
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
 }
 
 .save-status.saving {
-  background: #e8f4fd;
   color: var(--color-primary);
 }
 
-.save-status.saved {
-  background: #e8f8f0;
-  color: var(--color-success);
-}
-
-.save-status.error {
-  background: #fde8e8;
-  color: var(--color-danger);
-}
-
-.status-icon {
-  font-weight: bold;
-}
-
-.status-icon.saving {
+.save-status.saving .status-dot {
+  background: var(--color-primary);
   animation: pulse 1s infinite;
 }
 
-.status-icon.saved {
+.save-status.saved {
   color: var(--color-success);
 }
 
-.status-icon.error {
+.save-status.saved .status-dot {
+  background: var(--color-success);
+}
+
+.save-status.error {
   color: var(--color-danger);
+}
+
+.save-status.error .status-dot {
+  background: var(--color-danger);
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.35; }
 }
 
-.status-text {
-  white-space: nowrap;
-}
-
-.tabs {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 575.98px) {
-  .tabs {
-    justify-content: flex-start;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+@media (max-width: 767.98px) {
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md) 0;
   }
-  
-  .tabs::-webkit-scrollbar {
+
+  .main-nav {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    gap: var(--spacing-sm);
+  }
+
+  .save-status .status-text {
     display: none;
   }
 }
 
-.tab {
-  padding: 10px 24px;
-  border: none;
-  background: #f5f5f5;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  transition: all 0.2s;
-  position: relative;
-  white-space: nowrap;
+/* ========== 页面主体 ========== */
+.page-body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+@media (max-width: 575.98px) {
+  .page-body {
+    padding: var(--spacing-md);
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.toolbar-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.toolbar-filter {
   flex-shrink: 0;
 }
 
-@media (max-width: 575.98px) {
-  .tab {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-sm);
+@media (max-width: 767.98px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: var(--spacing-md);
   }
-}
 
-.tab:hover {
-  background: #e8e8e8;
-}
-
-.tab.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.global-filter {
-  margin-bottom: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--color-bg);
-  border-radius: var(--radius-md);
-}
-
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: var(--color-danger);
-  color: white;
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 18px;
-  text-align: center;
+  .toolbar-filter {
+    width: 100%;
+  }
 }
 
 .main {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  padding: var(--spacing-lg);
   min-height: 400px;
-}
-
-@media (max-width: 575.98px) {
-  .main {
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    min-height: 300px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .main {
-    padding: var(--spacing-xl);
-  }
 }
 
 .learn-view {
@@ -682,27 +687,12 @@ async function syncFromCloud(libraryId) {
   gap: var(--spacing-lg);
 }
 
-.search-section {
-  margin-bottom: var(--spacing-lg);
-}
-
-@media (max-width: 575.98px) {
-  .search-section {
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-.search-results-view {
-  padding: 0;
-}
-
+/* ========== 搜索结果 ========== */
 .search-results-header {
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--color-primary);
 }
 
 .search-results-list {
@@ -712,18 +702,18 @@ async function syncFromCloud(libraryId) {
 }
 
 .search-result-card {
-  background: var(--color-bg);
-  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   cursor: pointer;
-  transition: all 0.2s;
   border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .search-result-card:hover {
-  background: #fff;
-  border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .result-meta {
@@ -734,19 +724,19 @@ async function syncFromCloud(libraryId) {
 }
 
 .result-category {
-  background: var(--color-primary);
-  color: white;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
   padding: 2px 10px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: var(--font-size-xs);
   font-weight: 500;
 }
 
 .result-topic {
-  background: var(--color-border);
-  color: #555;
+  background: var(--color-surface-sunken);
+  color: var(--color-text-secondary);
   padding: 2px 10px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: var(--font-size-xs);
 }
 
@@ -763,6 +753,6 @@ async function syncFromCloud(libraryId) {
   margin-top: var(--spacing-sm);
   line-height: 1.5;
   padding-top: var(--spacing-sm);
-  border-top: 1px dashed #ddd;
+  border-top: 1px dashed var(--color-border);
 }
 </style>

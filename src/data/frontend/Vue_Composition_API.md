@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: Composition_API
+type: bagu
+tags: [Vue]
+difficulty: medium
+created: 2026-07-24
+---
 # Vue Composition API
 
 ## 【问题】

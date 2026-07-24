@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 死锁的面试题
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 6. 死锁的面试题（前端能遇到什么类型？）（必会）
 
 【问题】

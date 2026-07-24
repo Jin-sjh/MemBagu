@@ -1,3 +1,11 @@
+---
+category: frontend
+topic: npm 与 pnpm 区别
+type: bagu
+tags: [frontend]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】npm 与 pnpm 区别（面试精简版）
 
 【回答】

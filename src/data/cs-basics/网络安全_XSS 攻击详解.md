@@ -1,3 +1,11 @@
+---
+category: 网络安全
+topic: XSS 攻击详解
+type: bagu
+tags: [网络安全]
+difficulty: hard
+created: 2026-07-24
+---
 # 网络安全_XSS 攻击详解
 
 ## 一、核心定义：什么是 XSS？

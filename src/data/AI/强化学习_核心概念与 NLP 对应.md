@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: 核心概念与 NLP 对应
+type: bagu
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # 强化学习核心概念与 NLP 对应
 
 ## 问题：强化学习中的重要概念及其在 NLP 中的对应

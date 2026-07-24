@@ -1,3 +1,11 @@
+---
+category: frontend
+topic: Web Workers 通信原理
+type: bagu
+tags: [frontend]
+difficulty: medium
+created: 2026-07-24
+---
 【问题】
 请你说一下 Web Worker 和 WebSocket 的作用。
 

@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 核心区别
+type: bagu
+tags: [Vue]
+difficulty: hard
+created: 2026-07-24
+---
 # Vue 核心区别
 
 ## 【问题】

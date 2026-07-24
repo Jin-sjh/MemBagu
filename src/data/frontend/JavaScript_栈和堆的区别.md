@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 栈和堆的区别
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 栈和堆的区别
 
 ## 【问题】

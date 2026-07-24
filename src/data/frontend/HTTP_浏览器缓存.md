@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 浏览器缓存
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # 浏览器缓存
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 路径总和 III
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 路径总和 III
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: Skill
+topic: 设计高质量Skill的核心要素
+type: bagu
+tags: [Skill]
+difficulty: hard
+created: 2026-07-24
+---
 # Skill 设计高质量 Skill 的核心要素
 
 ## 问题1：设计高质量 Skill 时，Skill 描述（Description）的精准性需要考虑哪些方面？

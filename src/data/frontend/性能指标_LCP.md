@@ -1,3 +1,11 @@
+---
+category: 性能指标
+topic: LCP
+type: bagu
+tags: [性能指标]
+difficulty: medium
+created: 2026-07-24
+---
 【问题】什么是 LCP（Largest Contentful Paint）？
 
 【回答】

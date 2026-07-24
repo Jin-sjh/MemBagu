@@ -1,3 +1,11 @@
+---
+category: Vite
+topic: vite-env.d.ts 的作用
+type: bagu
+tags: [Vite]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】Vite 项目中 vite-env.d.ts 是什么？有什么用？
 
 【回答】

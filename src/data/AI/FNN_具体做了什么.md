@@ -1,3 +1,11 @@
+---
+category: FNN
+topic: 具体做了什么
+type: bagu
+tags: [FNN]
+difficulty: easy
+created: 2026-07-24
+---
 # 5. FNN 具体做了什么事情？
 
 ## 【问题】

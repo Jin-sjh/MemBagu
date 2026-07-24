@@ -1,3 +1,11 @@
+---
+category: CSS
+topic: 层叠与优先级
+type: bagu
+tags: [CSS]
+difficulty: medium
+created: 2026-07-24
+---
 # CSS 层叠与优先级
 
 ---

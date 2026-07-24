@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: ES6_空值合并运算符
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # ES6 中的 ?? 空值合并运算符
 
 ## 【问题】

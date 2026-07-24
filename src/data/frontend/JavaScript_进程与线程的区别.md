@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 进程与线程的区别
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 进程与线程的区别（面试标准回答版）
 
 【问题】

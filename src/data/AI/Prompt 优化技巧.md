@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Prompt 优化技巧
+type: bagu
+tags: [AI]
+difficulty: medium
+created: 2026-07-24
+---
 # 问题 7:如果模型回答过于冗长，如何通过 Prompt 优化？
 
 ## 【问题】

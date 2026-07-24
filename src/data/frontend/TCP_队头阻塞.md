@@ -1,3 +1,11 @@
+---
+category: TCP
+topic: 队头阻塞
+type: bagu
+tags: [TCP]
+difficulty: easy
+created: 2026-07-24
+---
 # TCP 队头阻塞
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: Agent 与 Skills
+topic: MCP_OpenClaw 定位对比
+type: bagu
+tags: [Agent 与 Skills]
+difficulty: medium
+created: 2026-07-24
+---
 # 4.1 定位对比
 
 | 维度 | Agent | Skills | MCP | OpenClaw |

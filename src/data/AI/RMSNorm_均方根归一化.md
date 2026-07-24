@@ -1,3 +1,12 @@
+---
+category: 模型架构
+topic: RMSNorm 均方根归一化
+type: explain
+tags: [归一化, LayerNorm]
+difficulty: medium
+created: 2026-07-24
+---
+
 # RMSNorm 均方根归一化
 
 ## 1. 计算效率更高（去除了均值计算）

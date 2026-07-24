@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: LRU 缓存
+type: leetcode
+tags: [leetcode]
+difficulty: hard
+created: 2026-07-24
+---
 # LRU 缓存
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: computed 实现原理
+type: bagu
+tags: [Vue]
+difficulty: medium
+created: 2026-07-24
+---
 # Vue computed 实现原理
 
 ## 1. computed 是实时响应的吗？

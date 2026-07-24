@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 完整的HTTP事务流程
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # 完整的 HTTP 事务流程
 
 ## 问题

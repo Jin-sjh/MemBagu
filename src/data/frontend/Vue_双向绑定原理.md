@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 双向绑定原理
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue 双向绑定原理
 
 ## 1. Vue 双向绑定原理

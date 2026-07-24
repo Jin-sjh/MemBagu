@@ -1,3 +1,11 @@
+---
+category: TCP
+topic: 为什么可靠传输
+type: bagu
+tags: [TCP]
+difficulty: easy
+created: 2026-07-24
+---
 # TCP 为什么可靠传输
 
 ## 【问题】

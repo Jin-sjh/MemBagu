@@ -1,3 +1,11 @@
+---
+category: AI
+topic: ELMo 动态词向量技术
+type: bagu
+tags: [AI]
+difficulty: easy
+created: 2026-07-24
+---
 # ELMo 动态词向量技术
 
 ## 问题 0：ELMo 的本质思想是什么？

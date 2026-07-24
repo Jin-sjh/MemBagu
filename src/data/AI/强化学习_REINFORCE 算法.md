@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: REINFORCE 算法
+type: bagu
+tags: [强化学习]
+difficulty: easy
+created: 2026-07-24
+---
 # 强化学习 - REINFORCE 算法
 
 ## 【问题】

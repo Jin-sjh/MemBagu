@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 单线程模型与多线程协作
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 2. JS 的单线程模型与操作系统的多线程如何协作？
 
 【问题】

@@ -1,3 +1,11 @@
+---
+category: Nginx
+topic: 负载均衡算法
+type: bagu
+tags: [Nginx]
+difficulty: easy
+created: 2026-07-24
+---
 # Nginx 负载均衡算法
 
 ## 【问题】

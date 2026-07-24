@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 打家劫舍 III
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 打家劫舍 III
 
 ## 【问题】

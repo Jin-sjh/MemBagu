@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: Reflect对象方法
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # Reflect 对象常见方法
 
 ## 【问题】

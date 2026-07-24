@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: Cookie 和 Session 的区别
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # Cookie 和 Session 的区别
 
 ## 【问题】

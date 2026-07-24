@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 内存泄漏风险与优化
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 内存泄漏风险与优化
 
 ## 【问题】

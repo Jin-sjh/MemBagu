@@ -1,3 +1,11 @@
+---
+category: TCP
+topic: 三次握手与四次挥手
+type: bagu
+tags: [TCP]
+difficulty: medium
+created: 2026-07-24
+---
 # TCP 三次握手与四次挥手
 
 ## 三次握手（建立连接）

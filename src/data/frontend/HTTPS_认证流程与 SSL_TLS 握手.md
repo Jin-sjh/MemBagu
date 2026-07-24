@@ -1,3 +1,11 @@
+---
+category: HTTPS
+topic: 认证流程与 SSL_TLS 握手
+type: bagu
+tags: [HTTPS]
+difficulty: hard
+created: 2026-07-24
+---
 # HTTPS 原理
 
 ## 1. 为什么需要 HTTPS

@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 回调函数
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 回调函数
 
 ## 【问题】

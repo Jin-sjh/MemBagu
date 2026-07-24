@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 为什么设计成单线程
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 4. JS 为什么设计成单线程？
 
 【问题】

@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: TRPO 策略更新问题
+type: explain
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # 强化学习_TRPO 策略更新问题
 
 ## 问题

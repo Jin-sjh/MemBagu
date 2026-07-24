@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: split与join的区别
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # split() 与 join() 的区别
 
 ## 【问题】

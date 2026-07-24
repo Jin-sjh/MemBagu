@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 删除链表的倒数第 N 个结点
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 删除链表的倒数第 N 个结点
 
 ## 【问题】

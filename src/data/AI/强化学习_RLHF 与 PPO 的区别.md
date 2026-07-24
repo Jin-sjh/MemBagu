@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: RLHF 与 PPO 的区别
+type: bagu
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # 强化学习 RLHF 与 PPO 的区别
 
 ## 【问题】

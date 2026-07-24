@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 无状态特性
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # HTTP 无状态特性
 
 ## 什么是 HTTP

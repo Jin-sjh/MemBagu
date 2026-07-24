@@ -1,3 +1,12 @@
+---
+category: JavaScript
+topic: 闭包
+type: bagu
+tags: [作用域, 内存管理, 函数式]
+difficulty: medium
+created: 2026-07-24
+---
+
 # 闭包
 
 ## 【问题】

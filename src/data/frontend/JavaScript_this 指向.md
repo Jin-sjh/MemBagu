@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: this 指向
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # JavaScript this 指向
 
 ## 【问题】

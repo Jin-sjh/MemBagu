@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Skills 相比单体 Agent 的优势
+type: bagu
+tags: [AI]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】
 Skills 相比单体 Agent 的优势：
 

@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: SOCKET 和 TCP 的区别
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # HTTP、SOCKET 和 TCP 的区别
 
 【问题】

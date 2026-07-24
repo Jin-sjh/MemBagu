@@ -1,3 +1,11 @@
+---
+category: RoPE
+topic: 旋转位置编码
+type: bagu
+tags: [RoPE]
+difficulty: hard
+created: 2026-07-24
+---
 # RoPE 旋转位置编码
 
 ## 【问题】为什么 RoPE 旋转的角度会重复，但是位置信息没有重复？

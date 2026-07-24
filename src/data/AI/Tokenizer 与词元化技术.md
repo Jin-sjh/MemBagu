@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Tokenizer 与词元化技术
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # Tokenizer 与词元化技术
 
 ## 问题 1：为什么要出现 Special Token？

@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: async_相对于_Generator_的优点
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # async 相对于 Generator 的优点是什么？
 
 【问题】

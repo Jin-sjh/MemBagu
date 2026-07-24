@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 数组方法
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 数组方法
 
 ## 【问题】

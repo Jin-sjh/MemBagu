@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: EventLoop
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 事件循环
 
 ## 【问题】

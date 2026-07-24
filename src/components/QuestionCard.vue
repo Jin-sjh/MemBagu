@@ -3,8 +3,11 @@
     <div class="question-header">
       <span class="category">{{ question.category }}</span>
       <span class="topic">{{ question.topic }}</span>
-      <span class="progress-badge" v-if="progress">
-        复习 {{ progress.reviewCount }} 次
+      <span class="keypoints-badge" v-if="!showAnswer && keyPointsCount > 0">
+        共 {{ keyPointsCount }} 个要点
+      </span>
+      <span class="progress-badge" v-if="progress && progress.streak !== undefined">
+        连续答对 {{ progress.streak }} 次
       </span>
     </div>
     
@@ -27,11 +30,14 @@
         </button>
       </template>
       <template v-else>
-        <button class="btn btn-danger" @click="handleAnswer(false)">
-          没记住
+        <button class="btn btn-danger" @click="handleAnswer(0)">
+          不会
         </button>
-        <button class="btn btn-success" @click="handleAnswer(true)">
-          记住了
+        <button class="btn btn-warning" @click="handleAnswer(1)">
+          模糊
+        </button>
+        <button class="btn btn-success" @click="handleAnswer(2)">
+          会
         </button>
       </template>
     </div>
@@ -53,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { renderMarkdown } from '../utils/markdown'
 
 const props = defineProps({
@@ -95,10 +101,12 @@ const emit = defineEmits(['answer', 'next', 'prev'])
 
 const showAnswer = ref(false)
 
-function handleAnswer(remembered) {
+const keyPointsCount = computed(() => props.question?.keyPointsCount || 0)
+
+function handleAnswer(grade) {
   emit('answer', {
     questionId: props.question.id,
-    remembered
+    grade
   })
   showAnswer.value = false
 }
@@ -106,15 +114,17 @@ function handleAnswer(remembered) {
 
 <style scoped>
 .question-card {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 575.98px) {
   .question-card {
     padding: var(--spacing-md);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
   }
 }
 
@@ -127,6 +137,9 @@ function handleAnswer(remembered) {
   margin: 0 auto;
   width: 100%;
   overflow-y: auto;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 @media (max-width: 767.98px) {
@@ -167,27 +180,39 @@ function handleAnswer(remembered) {
 }
 
 .category {
-  background: var(--color-primary);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: var(--font-size-sm);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 
 .topic {
-  background: var(--color-border);
-  color: #555;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: var(--font-size-sm);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-secondary);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 
 .progress-badge {
-  background: #9b59b6;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: var(--font-size-sm);
+  background: var(--color-purple-soft);
+  color: var(--color-purple);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.keypoints-badge {
+  background: var(--color-warning-soft);
+  color: var(--color-warning-dark);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 
 .content-wrapper {
@@ -211,20 +236,22 @@ function handleAnswer(remembered) {
 
 .question-title,
 .answer-title {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
   margin-bottom: var(--spacing-sm);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .fullscreen-mode .question-title,
 .fullscreen-mode .answer-title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-md);
 }
 
 .question-text {
-  font-size: clamp(1rem, 3vw, 1.1rem);
+  font-size: clamp(1.05rem, 3vw, 1.15rem);
+  font-weight: 500;
   line-height: 1.8;
   color: var(--color-text);
 }
@@ -235,17 +262,15 @@ function handleAnswer(remembered) {
 }
 
 .answer-section {
-  background: var(--color-bg);
-  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
-  border-left: 4px solid var(--color-primary);
 }
 
 .fullscreen-mode .answer-section {
   padding: var(--spacing-xl) var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
-  border-radius: var(--radius-lg);
 }
 
 @media (max-width: 575.98px) {
@@ -253,7 +278,7 @@ function handleAnswer(remembered) {
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
   }
-  
+
   .fullscreen-mode .answer-section {
     padding: var(--spacing-md);
   }
@@ -262,7 +287,7 @@ function handleAnswer(remembered) {
 .answer-text {
   font-size: clamp(0.9rem, 2.5vw, 1rem);
   line-height: 1.8;
-  color: #34495e;
+  color: var(--color-text);
 }
 
 .fullscreen-mode .answer-text {
@@ -279,7 +304,7 @@ function handleAnswer(remembered) {
 }
 
 .fullscreen-mode .actions {
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   margin-top: auto;
   padding-top: var(--spacing-lg);
 }
@@ -289,21 +314,26 @@ function handleAnswer(remembered) {
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
   }
-  
+
   .fullscreen-mode .actions {
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     padding-top: var(--spacing-md);
   }
 }
 
 .btn {
   padding: 12px 32px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: var(--font-size-base);
-  transition: all 0.2s;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
   min-height: var(--touch-target-min);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 @media (max-width: 575.98px) {
@@ -326,31 +356,47 @@ function handleAnswer(remembered) {
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .btn-primary {
   background: var(--color-primary);
   color: white;
+  padding-left: 48px;
+  padding-right: 48px;
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
 }
 
-.btn-success {
-  background: var(--color-success);
+.btn-success,
+.btn-warning,
+.btn-danger {
+  flex: 1;
+  max-width: 150px;
   color: white;
 }
 
-.btn-success:hover:not(:disabled) {
+.btn-success {
   background: var(--color-success-dark);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: var(--color-success-darker);
+}
+
+.btn-warning {
+  background: var(--color-warning-dark);
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: var(--color-warning-darker);
 }
 
 .btn-danger {
   background: var(--color-danger);
-  color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
@@ -358,12 +404,14 @@ function handleAnswer(remembered) {
 }
 
 .btn-secondary {
-  background: #95a5a6;
-  color: white;
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #7f8c8d;
+  border-color: var(--color-text-light);
+  color: var(--color-text);
 }
 
 .navigation {
@@ -371,7 +419,7 @@ function handleAnswer(remembered) {
   justify-content: space-between;
   align-items: center;
   padding-top: var(--spacing-lg);
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--color-border);
   gap: var(--spacing-md);
 }
 
@@ -382,9 +430,16 @@ function handleAnswer(remembered) {
   }
 }
 
-.page-info {
-  color: var(--color-text-secondary);
+.navigation .btn {
+  min-height: 40px;
+  padding: 8px 20px;
   font-size: var(--font-size-sm);
+}
+
+.page-info {
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .empty-state {

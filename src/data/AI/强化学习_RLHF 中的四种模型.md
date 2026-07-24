@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: RLHF 中的四种模型
+type: bagu
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # 强化学习 RLHF 中的四种模型
 
 ## 【问题】

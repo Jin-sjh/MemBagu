@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 并发执行为什么要加锁
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 为什么并发执行线程要加锁？
 
 ## 【问题】

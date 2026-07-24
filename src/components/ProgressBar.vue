@@ -57,42 +57,42 @@ const colorClass = computed(() => {
 
 .bar-bg {
   flex: 1;
-  height: 8px;
-  background: #e8e8e8;
-  border-radius: 4px;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .bar-fill.low {
-  background: #e74c3c;
+  background: var(--color-danger);
 }
 
 .bar-fill.average {
-  background: #f39c12;
+  background: var(--color-warning);
 }
 
 .bar-fill.good {
-  background: #3498db;
+  background: var(--color-primary);
 }
 
 .bar-fill.excellent {
-  background: #27ae60;
+  background: var(--color-success);
 }
 
 .bar-label {
   font-size: 0.9rem;
-  color: #7f8c8d;
+  color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
 .current {
-  color: #2c3e50;
+  color: var(--color-text);
   font-weight: 600;
 }
 

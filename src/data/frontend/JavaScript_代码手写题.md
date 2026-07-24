@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 代码手写题
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 代码手写题
 
 ## 【问题】

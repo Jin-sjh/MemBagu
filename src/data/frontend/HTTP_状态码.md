@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 状态码
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # HTTP 状态码
 
 ## 5. HTTP 状态码

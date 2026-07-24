@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 什么是 Vue.js
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue 什么是 Vue.js
 
 ## 【问题】

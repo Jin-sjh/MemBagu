@@ -1,3 +1,11 @@
+---
+category: AI
+topic: P-Tuning 与 Prefix-Tuning 对比
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # P-Tuning 与 Prefix-Tuning 对比
 
 ## 问题 1：P-Tuning（P-tuning v1）的主要特点

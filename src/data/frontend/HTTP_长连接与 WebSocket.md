@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 长连接与 WebSocket
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # HTTP 长连接与 WebSocket 有什么区别？
 
 ## 【问题】

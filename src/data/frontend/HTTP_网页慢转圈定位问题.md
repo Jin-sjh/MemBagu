@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 网页慢转圈定位问题
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # 网页非常慢转圈圈的时候，要定位问题需要从哪些角度？
 
 ## 【问题】

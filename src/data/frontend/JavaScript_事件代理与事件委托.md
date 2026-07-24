@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 事件代理与事件委托
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 事件代理（事件委托）
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 和为 K 的子数组
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 和为 K 的子数组
 
 ## 【问题】

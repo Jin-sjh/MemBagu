@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: URL 输入流程
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # 输入 URL 会发生什么
 
 ## 8. 输入 URL 会发生什么

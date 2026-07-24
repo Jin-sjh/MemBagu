@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 实现 Trie (前缀树)
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 实现 Trie (前缀树)
 
 ## 【问题】

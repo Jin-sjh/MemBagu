@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: ESM_为什么是静态结构
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # ESM 静态结构
 
 ## 2. 为什么 ESM 是静态结构？

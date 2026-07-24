@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Dense Model 稠密模型
+type: bagu
+tags: [AI]
+difficulty: easy
+created: 2026-07-24
+---
 # Dense Model 稠密模型
 
 ## 【问题】

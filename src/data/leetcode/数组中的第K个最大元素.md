@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 数组中的第K个最大元素
+type: leetcode
+tags: [leetcode]
+difficulty: hard
+created: 2026-07-24
+---
 # 数组中的第K个最大元素
 
 ## 【问题】

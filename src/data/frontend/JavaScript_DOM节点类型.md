@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: DOM节点类型
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # DOM 节点类型
 
 ## DOM 节点类型

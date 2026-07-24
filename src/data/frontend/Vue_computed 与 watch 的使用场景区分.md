@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: computed 与 watch 的使用场景区分
+type: bagu
+tags: [Vue]
+difficulty: medium
+created: 2026-07-24
+---
 # Vue 中 computed 与 watch 的使用场景区分
 
 ## 【问题】

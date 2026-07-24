@@ -1,3 +1,11 @@
+---
+category: AI
+topic: KV Cache 缓存机制
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # KV Cache 缓存机制
 
 ## 问题 1：KV Cache 缓存的是什么？

@@ -83,17 +83,17 @@ const shouldCollapse = computed(() => props.categories.length > COLLAPSE_THRESHO
 }
 
 .filter-btn {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 6px var(--spacing-md);
   border: 1px solid var(--color-border);
-  background: white;
-  border-radius: 20px;
+  background: var(--color-surface);
+  border-radius: 999px;
   cursor: pointer;
   font-size: var(--font-size-sm);
-  transition: all 0.2s;
-  color: #555;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   flex-shrink: 0;
-  min-height: var(--touch-target-min);
+  min-height: 36px;
 }
 
 @media (max-width: 575.98px) {
@@ -104,26 +104,27 @@ const shouldCollapse = computed(() => props.categories.length > COLLAPSE_THRESHO
 }
 
 .filter-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
 }
 
 .filter-btn.active {
-  background: var(--color-primary);
+  background: var(--color-primary-soft);
   border-color: var(--color-primary);
-  color: white;
+  color: var(--color-primary);
+  font-weight: 500;
 }
 
 .toggle-btn {
   padding: 6px var(--spacing-sm);
   border: 1px solid var(--color-border);
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: 999px;
   cursor: pointer;
   font-size: var(--font-size-xs);
-  color: #666;
+  color: var(--color-text-secondary);
   align-self: flex-start;
-  transition: all 0.2s;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
   min-height: var(--touch-target-min);
 }
 

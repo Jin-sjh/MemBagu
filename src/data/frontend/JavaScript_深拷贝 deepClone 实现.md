@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 深拷贝 deepClone 实现
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 4.2.2 深拷贝实现
 
 ## 【问题】

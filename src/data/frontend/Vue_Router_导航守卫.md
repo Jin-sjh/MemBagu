@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: Router_导航守卫
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue Router 导航守卫
 
 ## 1. 问：vue-router 有哪些导航守卫？分别属于哪一类？

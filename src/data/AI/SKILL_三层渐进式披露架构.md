@@ -1,3 +1,11 @@
+---
+category: SKILL
+topic: 三层渐进式披露架构
+type: bagu
+tags: [SKILL]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】
 SKILL.md 的三层渐进式披露（Progressive Disclosure）是什么？
 

@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 协议演进
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # HTTP 协议演进
 
 ## 1. HTTP 各版本差异

@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Padding Masked 填充掩码
+type: explain
+tags: [AI]
+difficulty: easy
+created: 2026-07-24
+---
 # Padding Masked（填充掩码）是什么？
 
 **Padding Masked** 是深度学习（尤其是 Transformer、大语言模型）中处理**变长序列**的关键技术，全称是 **Padding Mask（填充掩码）**，"Masked"表示"被掩码的"状态。

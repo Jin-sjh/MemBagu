@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: Router_route 与 router 的区别
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue Router 中 route 与 router 的区别
 
 ## 1. 本质不同

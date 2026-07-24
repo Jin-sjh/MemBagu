@@ -1,3 +1,11 @@
+---
+category: frontend
+topic: AI辅助编程实践
+type: bagu
+tags: [frontend]
+difficulty: medium
+created: 2026-07-24
+---
 # AI辅助编程实践
 
 ## 【问题】平常怎么用AI编程？

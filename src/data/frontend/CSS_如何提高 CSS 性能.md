@@ -1,3 +1,11 @@
+---
+category: CSS
+topic: 如何提高 CSS 性能
+type: bagu
+tags: [CSS]
+difficulty: medium
+created: 2026-07-24
+---
 # 面试回答：如何提高 CSS 性能
 
 这是前端面试高频题，回答要条理清晰、分点明确、结合实战，我帮你整理了面试官最爱听的标准答案，直接背就能用！

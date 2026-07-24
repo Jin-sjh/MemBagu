@@ -1,3 +1,11 @@
+---
+category: MoE
+topic: 为什么不每层都用
+type: bagu
+tags: [MoE]
+difficulty: easy
+created: 2026-07-24
+---
 # MoE 为什么不每层都用
 
 ## 【问题】

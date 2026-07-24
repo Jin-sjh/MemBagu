@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: Cookie 属性
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # Cookie 的属性和含义
 
 ## 【问题】

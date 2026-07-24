@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: CSRF 攻击
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # CSRF 攻击
 
 ## 6.2 CSRF 攻击与防御

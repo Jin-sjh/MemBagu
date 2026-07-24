@@ -1,3 +1,11 @@
+---
+category: HTTP3
+topic: 核心优势与工作原理
+type: bagu
+tags: [HTTP3]
+difficulty: hard
+created: 2026-07-24
+---
 # HTTP/3 核心优势与工作原理
 
 ## 1. HTTP/3 基于 UDP 相比 TCP 有哪些核心优势？

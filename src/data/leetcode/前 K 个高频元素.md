@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 前 K 个高频元素
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 前 K 个高频元素
 
 ## 【问题】

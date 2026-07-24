@@ -1,3 +1,11 @@
+---
+category: AI
+topic: SimHash与MinHash去重算法
+type: bagu
+tags: [AI]
+difficulty: medium
+created: 2026-07-24
+---
 # SimHash 与 MinHash 去重算法
 
 ## 问题 0：什么是 SimHash 去重算法？

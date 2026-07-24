@@ -1,3 +1,11 @@
+---
+category: SQL
+topic: SQL 注入问题
+type: bagu
+tags: [SQL]
+difficulty: medium
+created: 2026-07-24
+---
 # SQL 注入问题
 
 ## 【问题】

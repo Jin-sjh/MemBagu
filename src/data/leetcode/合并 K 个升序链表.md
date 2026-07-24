@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 合并 K 个升序链表
+type: leetcode
+tags: [leetcode]
+difficulty: hard
+created: 2026-07-24
+---
 # 合并 K 个升序链表
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 事件修饰符
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue 事件修饰符
 
 ## 【问题】

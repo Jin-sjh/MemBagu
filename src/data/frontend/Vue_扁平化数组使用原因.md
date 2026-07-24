@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 扁平化数组使用原因
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue 扁平化数组使用原因
 
 ## 1. 扁平化数组使用原因

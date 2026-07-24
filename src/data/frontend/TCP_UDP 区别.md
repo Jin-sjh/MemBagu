@@ -1,3 +1,11 @@
+---
+category: TCP
+topic: UDP 区别
+type: bagu
+tags: [TCP]
+difficulty: medium
+created: 2026-07-24
+---
 # TCP 和 UDP 区别是什么？
 
 ## 【问题】

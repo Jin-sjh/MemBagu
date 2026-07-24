@@ -222,47 +222,54 @@ function handleSwitch(id) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .manager-header h2 {
-  font-size: 1.3rem;
-  color: #2c3e50;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text);
   margin: 0;
 }
 
 .create-btn {
   padding: 8px 16px;
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .create-btn:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
+}
+
+.create-btn:active {
+  transform: scale(0.98);
 }
 
 .library-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 .library-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #e8e8e8;
-  transition: all 0.2s;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .library-card:hover {
-  border-color: #3498db;
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .card-header {
@@ -273,29 +280,30 @@ function handleSwitch(id) {
 }
 
 .library-color {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 4px;
 }
 
 .library-name {
-  font-size: 1.1rem;
-  color: #2c3e50;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
   margin: 0;
   flex: 1;
 }
 
 .library-id {
-  font-size: 0.8rem;
-  color: #7f8c8d;
-  background: #e8e8e8;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-sunken);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .library-desc {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
   margin: 0 0 16px 0;
 }
 
@@ -312,14 +320,15 @@ function handleSwitch(id) {
 }
 
 .stat-value {
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
-  font-size: 0.8rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
 }
 
 .card-actions {
@@ -330,40 +339,54 @@ function handleSwitch(id) {
 
 .action-btn {
   padding: 6px 14px;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .switch-btn {
-  background: #3498db;
-  color: white;
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .switch-btn:hover {
-  background: #2980b9;
+  background: var(--color-primary-soft);
 }
 
 .delete-btn {
-  background: #e74c3c;
-  color: white;
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
 }
 
 .delete-btn:hover {
-  background: #c0392b;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
 }
 
 .action-btn:disabled {
-  background: #ccc;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
+.action-btn:disabled:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+}
+
 .current-label {
-  font-size: 0.85rem;
-  color: #27ae60;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  color: var(--color-success-darker);
+  font-weight: 600;
+  background: var(--color-success-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .create-form-overlay,
@@ -373,26 +396,30 @@ function handleSwitch(id) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: var(--spacing-md);
 }
 
 .create-form,
 .confirm-dialog {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  width: 90%;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  width: 100%;
   max-width: 400px;
+  box-shadow: var(--shadow-lg);
 }
 
 .create-form h3,
 .confirm-dialog h3 {
   margin: 0 0 20px 0;
-  color: #2c3e50;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .form-group {
@@ -401,8 +428,9 @@ function handleSwitch(id) {
 
 .form-group label {
   display: block;
-  font-size: 0.9rem;
-  color: #2c3e50;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
   margin-bottom: 6px;
 }
 
@@ -410,21 +438,24 @@ function handleSwitch(id) {
 .form-group textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
   box-sizing: border-box;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .form-hint {
-  font-size: 0.8rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
   margin: 6px 0 0 0;
 }
 
@@ -437,19 +468,19 @@ function handleSwitch(id) {
 .color-option {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.2s;
+  transition: transform var(--transition-fast);
 }
 
 .color-option:hover {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .color-option.active {
-  border-color: #2c3e50;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #2c3e50;
+  border-color: var(--color-surface);
+  box-shadow: 0 0 0 2px var(--color-text);
 }
 
 .form-actions,
@@ -462,48 +493,65 @@ function handleSwitch(id) {
 
 .cancel-btn {
   padding: 10px 20px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .cancel-btn:hover {
-  background: #e8e8e8;
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
 }
 
 .submit-btn {
   padding: 10px 20px;
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background-color var(--transition-fast);
 }
 
 .submit-btn:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 .submit-btn:disabled {
-  background: #ccc;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .confirm-dialog p {
   margin: 0 0 8px 0;
-  color: #2c3e50;
+  color: var(--color-text);
 }
 
 .confirm-dialog .warning {
-  color: #e74c3c;
-  font-size: 0.9rem;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
 }
 
 .confirm-dialog .delete-btn {
   padding: 10px 20px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
+  background: var(--color-danger);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color var(--transition-fast);
+}
+
+.confirm-dialog .delete-btn:hover {
+  background: var(--color-danger-dark);
 }
 </style>

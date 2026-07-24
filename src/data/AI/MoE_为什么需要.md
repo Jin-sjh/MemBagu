@@ -1,3 +1,11 @@
+---
+category: MoE
+topic: 为什么需要
+type: bagu
+tags: [MoE]
+difficulty: medium
+created: 2026-07-24
+---
 # MoE 为什么需要
 
 ## 【问题】

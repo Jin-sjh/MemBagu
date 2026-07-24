@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Reward Model 架构与训练
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # Reward Model 架构与训练
 
 ## 问题 1：Reward Model 的架构是什么？（Decoder only && Generate reward）

@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 环形链表 II
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 环形链表 II
 
 ## 【问题】

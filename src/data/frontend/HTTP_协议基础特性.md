@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 协议基础特性
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 【问题】与 HTTPS 相比，HTTP 有什么缺点？
 
 【回答】

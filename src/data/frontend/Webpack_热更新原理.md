@@ -1,3 +1,11 @@
+---
+category: Webpack
+topic: 热更新原理
+type: bagu
+tags: [Webpack]
+difficulty: easy
+created: 2026-07-24
+---
 # Webpack 热更新原理
 
 ## 【问题】

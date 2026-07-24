@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 前端死锁问题详解
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 前端死锁问题详解
 
 【问题】

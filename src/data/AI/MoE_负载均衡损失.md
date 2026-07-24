@@ -1,3 +1,11 @@
+---
+category: MoE
+topic: 负载均衡损失
+type: bagu
+tags: [MoE]
+difficulty: medium
+created: 2026-07-24
+---
 # MoE 负载均衡损失
 
 ## 【问题】

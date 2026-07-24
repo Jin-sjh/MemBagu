@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 多线程与单线程对比
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # 多线程相关问题
 
 ## 【问题】

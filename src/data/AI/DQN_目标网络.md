@@ -1,3 +1,11 @@
+---
+category: DQN
+topic: 目标网络
+type: bagu
+tags: [DQN]
+difficulty: easy
+created: 2026-07-24
+---
 # DQN 的目标网络
 
 【问题】DQN 的目标网络的核心思想是什么？它是如何通过两个神经网络实现的？

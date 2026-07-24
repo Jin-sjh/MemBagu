@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: Actor-Critic 算法
+type: bagu
+tags: [强化学习]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】
 Actor-Critic 算法的核心演进点是什么？
 

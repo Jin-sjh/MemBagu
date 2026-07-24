@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 数据类型
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # 数据类型
 
 ## 【问题】

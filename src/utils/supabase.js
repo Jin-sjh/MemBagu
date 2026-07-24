@@ -66,13 +66,21 @@ export async function signOut() {
 
 export async function getCurrentUser() {
   if (!supabase) return null
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  } catch {
+    return null
+  }
 }
 
 export function onAuthStateChange(callback) {
   if (!supabase) return { data: { subscription: { unsubscribe: () => {} } } }
-  return supabase.auth.onAuthStateChange(callback)
+  try {
+    return supabase.auth.onAuthStateChange(callback)
+  } catch {
+    return { data: { subscription: { unsubscribe: () => {} } } }
+  }
 }
 
 export function isSupabaseConfigured() {

@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: PPO_epoch 的作用
+type: bagu
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # 为什么 Actor Model 的更新需要引入 PPO-epoch？
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: ES6 新特性
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # ES6+ 新特性
 
 【问题】列举 10 个 ES6+ 的重要新特性

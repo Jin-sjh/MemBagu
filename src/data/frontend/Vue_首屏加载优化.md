@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 首屏加载优化
+type: bagu
+tags: [Vue]
+difficulty: medium
+created: 2026-07-24
+---
 # Vue 首屏加载优化
 
 ## 【问题】

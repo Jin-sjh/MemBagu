@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: 虚拟 DOM 原理
+type: bagu
+tags: [Vue]
+difficulty: hard
+created: 2026-07-24
+---
 # 虚拟 DOM 原理
 
 ## 【问题】说说虚拟 DOM 的实现原理。

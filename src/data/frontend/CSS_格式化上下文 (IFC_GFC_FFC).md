@@ -1,3 +1,11 @@
+---
+category: CSS
+topic: 格式化上下文 (IFC_GFC_FFC)
+type: bagu
+tags: [CSS]
+difficulty: easy
+created: 2026-07-24
+---
 # CSS 格式化上下文 (IFC/GFC/FFC)
 
 ## 问题

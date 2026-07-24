@@ -1,3 +1,11 @@
+---
+category: JWT
+topic: 前端存储方式
+type: bagu
+tags: [JWT]
+difficulty: medium
+created: 2026-07-24
+---
 # JWT 前端存储方式
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: DNS
+topic: 的底层使用 TCP 还是 UDP
+type: bagu
+tags: [DNS]
+difficulty: easy
+created: 2026-07-24
+---
 # DNS 的底层使用 TCP 还是 UDP？
 
 【问题】

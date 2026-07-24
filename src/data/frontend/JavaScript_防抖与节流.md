@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 防抖与节流
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 ## 搜索输入框应该用防抖还是节流？
 
 【问题】面试提问：你给搜索输入框绑定事件，应该用 防抖 还是 节流？一段话回答

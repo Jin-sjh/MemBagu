@@ -1,3 +1,11 @@
+---
+category: MoE
+topic: 架构特点
+type: bagu
+tags: [MoE]
+difficulty: easy
+created: 2026-07-24
+---
 # MoE 架构特点
 
 ## 【问题】

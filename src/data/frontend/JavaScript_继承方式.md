@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 继承方式
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # JavaScript 继承方式
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: CSS
+topic: 单行文本溢出省略
+type: bagu
+tags: [CSS]
+difficulty: medium
+created: 2026-07-24
+---
 # CSS 单行文本溢出省略
 
 ## 问题

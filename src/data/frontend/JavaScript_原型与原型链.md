@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 原型与原型链
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 原型与原型链
 
 ## 【问题】

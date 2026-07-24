@@ -1,3 +1,11 @@
+---
+category: AI
+topic: Soft Prompt 和 Hard Prompt
+type: bagu
+tags: [AI]
+difficulty: medium
+created: 2026-07-24
+---
 # Soft Prompt 和 Hard Prompt
 
 ## 【问题】

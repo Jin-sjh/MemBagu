@@ -1,3 +1,11 @@
+---
+category: Vue
+topic: keep-alive组件
+type: bagu
+tags: [Vue]
+difficulty: easy
+created: 2026-07-24
+---
 # Vue keep-alive 组件
 
 ## 【问题】

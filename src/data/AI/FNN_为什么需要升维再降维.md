@@ -1,3 +1,11 @@
+---
+category: FNN
+topic: 为什么需要升维再降维
+type: bagu
+tags: [FNN]
+difficulty: easy
+created: 2026-07-24
+---
 # 5.1 为什么需要"先升维再降维"？
 
 ## 【问题】

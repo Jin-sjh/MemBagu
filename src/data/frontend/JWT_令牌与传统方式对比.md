@@ -1,3 +1,11 @@
+---
+category: JWT
+topic: 令牌与传统方式对比
+type: bagu
+tags: [JWT]
+difficulty: medium
+created: 2026-07-24
+---
 # JWT 令牌和传统方式有什么区别？
 
 ## 【问题】

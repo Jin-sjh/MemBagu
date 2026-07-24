@@ -1,3 +1,11 @@
+---
+category: AI
+topic: BERT 预训练任务与数据打分原理
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # BERT 预训练任务与数据打分原理
 
 ## 问题 1：为什么 BERT 可以对数据打分？

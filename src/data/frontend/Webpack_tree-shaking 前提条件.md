@@ -1,3 +1,11 @@
+---
+category: Webpack
+topic: tree-shaking 前提条件
+type: bagu
+tags: [Webpack]
+difficulty: medium
+created: 2026-07-24
+---
 # 3. tree-shaking 的前提条件是什么？
 
 ## 【问题】

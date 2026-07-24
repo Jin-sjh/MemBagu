@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: Reward Model 的作用
+type: bagu
+tags: [强化学习]
+difficulty: easy
+created: 2026-07-24
+---
 # Reward Model 的作用
 
 ## 【问题】

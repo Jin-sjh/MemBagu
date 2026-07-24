@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: RPC 对比
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # HTTP 与 RPC 对比
 
 ## 为什么有 HTTP 协议了？还要用 RPC？

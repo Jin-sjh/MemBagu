@@ -1,3 +1,11 @@
+---
+category: leetcode
+topic: 搜索二维矩阵 II
+type: leetcode
+tags: [leetcode]
+difficulty: medium
+created: 2026-07-24
+---
 # 搜索二维矩阵 II
 
 ## 【问题】

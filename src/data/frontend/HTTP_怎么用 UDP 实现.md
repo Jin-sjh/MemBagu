@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 怎么用 UDP 实现
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # 怎么用 UDP 实现 HTTP?
 
 ## 【问题】

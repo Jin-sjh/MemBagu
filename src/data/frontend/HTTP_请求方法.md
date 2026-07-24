@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 请求方法
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # HTTP 请求方法
 
 ## 6. 常见的 HTTP 请求方法

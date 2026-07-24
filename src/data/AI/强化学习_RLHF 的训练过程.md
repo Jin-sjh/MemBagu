@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: RLHF 的训练过程
+type: bagu
+tags: [强化学习]
+difficulty: easy
+created: 2026-07-24
+---
 # 强化学习 RLHF 的训练过程
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: TCP
+topic: 粘包问题
+type: bagu
+tags: [TCP]
+difficulty: medium
+created: 2026-07-24
+---
 # TCP 粘包怎么解决？
 
 粘包的问题出现是因为不知道一个用户消息的边界在哪，如果知道了边界在哪，接收方就可以通过边界来划分出有效的用户消息。

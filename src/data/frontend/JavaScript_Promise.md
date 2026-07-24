@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: Promise
+type: bagu
+tags: [JavaScript]
+difficulty: hard
+created: 2026-07-24
+---
 # Promise
 
 ## 【问题】

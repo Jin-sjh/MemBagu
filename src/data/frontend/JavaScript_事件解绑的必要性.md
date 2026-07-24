@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 事件解绑的必要性
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 事件解绑的必要性
 
 ## 【问题】

@@ -1,3 +1,11 @@
+---
+category: CSS3
+topic: 新特性
+type: bagu
+tags: [CSS3]
+difficulty: hard
+created: 2026-07-24
+---
 # CSS3 新特性
 
 ## 问题 1：CSS3 中有哪些新特性

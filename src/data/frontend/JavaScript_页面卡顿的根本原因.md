@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: 页面卡顿的根本原因
+type: bagu
+tags: [JavaScript]
+difficulty: medium
+created: 2026-07-24
+---
 # 5. 页面卡顿的根本原因（高频解释题）
 
 【问题】

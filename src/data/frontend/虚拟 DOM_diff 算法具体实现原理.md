@@ -1,3 +1,11 @@
+---
+category: 虚拟 DOM
+topic: diff 算法具体实现原理
+type: bagu
+tags: [虚拟 DOM]
+difficulty: easy
+created: 2026-07-24
+---
 # 虚拟 DOM diff 算法具体实现原理
 
 ## 【问题】

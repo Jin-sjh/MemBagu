@@ -1,9 +1,9 @@
 <template>
   <div class="library-selector">
     <div class="current-library" @click="toggleDropdown">
-      <span 
-        class="library-color" 
-        :style="{ backgroundColor: activeLibrary?.color || '#3498db' }"
+      <span
+        class="library-color"
+        :style="{ backgroundColor: activeLibrary?.color || '#3D63DD' }"
       ></span>
       <span class="library-name">{{ activeLibrary?.name || '选择题库' }}</span>
       <span class="dropdown-icon" :class="{ open: isOpen }">▼</span>
@@ -90,11 +90,11 @@ defineExpose({
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-sm);
-  background: var(--color-bg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
   min-width: 140px;
   min-height: var(--touch-target-min);
 }
@@ -107,8 +107,8 @@ defineExpose({
 }
 
 .current-library:hover {
-  background: #fff;
-  border-color: var(--color-primary);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-sunken);
 }
 
 .library-color {
@@ -142,10 +142,10 @@ defineExpose({
   top: calc(100% + 4px);
   left: 0;
   min-width: 200px;
-  background: white;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   z-index: 100;
   overflow: hidden;
 }
@@ -158,8 +158,8 @@ defineExpose({
     min-width: auto;
     top: auto;
     bottom: var(--spacing-md);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 -8px 32px rgba(16, 24, 40, 0.16);
   }
 }
 
@@ -168,26 +168,27 @@ defineExpose({
   justify-content: space-between;
   align-items: center;
   padding: 10px var(--spacing-sm);
-  background: var(--color-bg);
+  background: var(--color-surface-sunken);
   border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 
 .manage-btn {
   padding: 4px 10px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-xs);
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color var(--transition-fast);
   min-height: var(--touch-target-min);
 }
 
 .manage-btn:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-soft);
 }
 
 .dropdown-list {
@@ -207,16 +208,16 @@ defineExpose({
   gap: var(--spacing-sm);
   padding: 10px var(--spacing-sm);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color var(--transition-fast);
   min-height: var(--touch-target-min);
 }
 
 .library-item:hover {
-  background: #f5f5f5;
+  background: var(--color-surface-sunken);
 }
 
 .library-item.active {
-  background: #e8f4fc;
+  background: var(--color-primary-soft);
 }
 
 .library-item .library-color {

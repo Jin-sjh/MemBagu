@@ -31,7 +31,6 @@
           {{ submitting ? '登录中...' : '登录' }}
         </button>
         <p class="form-switch" @click="isLogin = false">没有账号？注册</p>
-        <p v-if="error" class="form-error">{{ error }}</p>
       </div>
       <div v-else class="form-container">
         <h3 class="form-title">注册账号</h3>
@@ -57,7 +56,7 @@
           {{ submitting ? '注册中...' : '注册' }}
         </button>
         <p class="form-switch" @click="isLogin = true">已有账号？登录</p>
-        <p v-if="error" class="form-error">{{ error }}</p>
+        <p v-if="error" class="form-error" :class="{ 'is-success': errorType === 'success' }">{{ error }}</p>
       </div>
     </div>
     <div v-else class="auth-user">
@@ -90,9 +89,31 @@ const isLogin = ref(true)
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const errorType = ref('error') // 'error' | 'success'
 const syncStatus = ref('idle')
 
 const isConfigured = computed(() => isSupabaseConfigured())
+
+function formatAuthError(err, action) {
+  errorType.value = 'error'
+  const msg = err?.message || ''
+  if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+    return `${action}失败：无法连接云服务。请检查网络后重试（项目可能因长期未活动被暂停）`
+  }
+  if (/invalid login/i.test(msg)) {
+    return '邮箱或密码错误'
+  }
+  if (/already registered|already been registered/i.test(msg)) {
+    return '该邮箱已注册，请直接登录'
+  }
+  if (/email not confirmed/i.test(msg)) {
+    return '请先查收验证邮件并完成验证'
+  }
+  if (/rate limit|too many requests/i.test(msg)) {
+    return '操作过于频繁，请稍后再试'
+  }
+  return `${action}失败：${msg || '请稍后重试'}`
+}
 
 const syncStatusText = computed(() => {
   switch (syncStatus.value) {
@@ -142,11 +163,11 @@ async function handleLogin() {
   error.value = ''
   
   const { data, error: err } = await signIn(email.value, password.value)
-  
+
   submitting.value = false
-  
+
   if (err) {
-    error.value = err.message || '登录失败'
+    error.value = formatAuthError(err, '登录')
     return
   }
   
@@ -161,32 +182,33 @@ async function handleRegister() {
     error.value = '请填写邮箱和密码'
     return
   }
-  
+
   if (password.value.length < 6) {
     error.value = '密码至少6位'
     return
   }
-  
+
   submitting.value = true
   error.value = ''
-  
+
   const { data, error: err } = await signUp(email.value, password.value)
-  
+
   submitting.value = false
-  
+
   if (err) {
-    error.value = err.message || '注册失败'
+    error.value = formatAuthError(err, '注册')
     return
   }
-  
+
   if (data.user && !data.session) {
     error.value = '注册成功，请查收验证邮件'
+    errorType.value = 'success'
     isLogin.value = true
   } else {
     user.value = data.user
     emit('login', data.user)
   }
-  
+
   email.value = ''
   password.value = ''
 }
@@ -219,16 +241,16 @@ defineExpose({
 
 .auth-disabled {
   padding: 6px var(--spacing-sm);
-  background: #f0f0f0;
-  border-radius: 20px;
+  background: var(--color-surface-sunken);
+  border-radius: 999px;
   font-size: var(--font-size-xs);
-  color: #999;
+  color: var(--color-text-light);
 }
 
 .auth-loading {
   padding: 6px var(--spacing-sm);
   font-size: var(--font-size-xs);
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .auth-form {
@@ -241,9 +263,10 @@ defineExpose({
   right: 0;
   margin-top: var(--spacing-sm);
   padding: var(--spacing-lg);
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   z-index: 100;
   min-width: 280px;
 }
@@ -257,8 +280,9 @@ defineExpose({
     right: 0;
     margin-top: 0;
     min-width: auto;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border: none;
+    box-shadow: 0 -8px 32px rgba(16, 24, 40, 0.16);
     padding: var(--spacing-xl) var(--spacing-lg);
     padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
   }
@@ -267,6 +291,7 @@ defineExpose({
 .form-title {
   margin: 0 0 var(--spacing-md) 0;
   font-size: var(--font-size-lg);
+  font-weight: 600;
   color: var(--color-text);
   text-align: center;
 }
@@ -278,17 +303,19 @@ defineExpose({
 .form-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   font-size: 16px;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   min-height: var(--touch-target-min);
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .btn {
@@ -297,7 +324,8 @@ defineExpose({
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: var(--font-size-sm);
-  transition: all 0.2s;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
   min-height: var(--touch-target-min);
 }
 
@@ -312,19 +340,21 @@ defineExpose({
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .btn-logout {
   padding: 6px var(--spacing-sm);
-  background: #f0f0f0;
-  color: #666;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
 }
 
 .btn-logout:hover {
-  background: #e0e0e0;
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
 }
 
 .form-switch {
@@ -341,9 +371,18 @@ defineExpose({
 
 .form-error {
   margin: var(--spacing-sm) 0 0 0;
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
+  padding: 8px 12px;
+  background: var(--color-danger-soft);
+  color: var(--color-danger-dark);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
   text-align: center;
+  border-radius: var(--radius-md);
+}
+
+.form-error.is-success {
+  background: var(--color-success-soft);
+  color: var(--color-success-darker);
 }
 
 .auth-user {
@@ -355,7 +394,7 @@ defineExpose({
 
 .user-email {
   font-size: var(--font-size-sm);
-  color: var(--color-text);
+  color: var(--color-text-secondary);
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -370,9 +409,10 @@ defineExpose({
 }
 
 .sync-status {
-  padding: 4px 10px;
-  border-radius: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
   font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 
 .sync-status.idle {
@@ -380,17 +420,17 @@ defineExpose({
 }
 
 .sync-status.syncing {
-  background: #e8f4fd;
+  background: var(--color-primary-soft);
   color: var(--color-primary);
 }
 
 .sync-status.synced {
-  background: #e8f8f0;
-  color: var(--color-success);
+  background: var(--color-success-soft);
+  color: var(--color-success-darker);
 }
 
 .sync-status.error {
-  background: #fde8e8;
+  background: var(--color-danger-soft);
   color: var(--color-danger);
 }
 </style>

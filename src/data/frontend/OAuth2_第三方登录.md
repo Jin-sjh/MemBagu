@@ -1,3 +1,11 @@
+---
+category: OAuth2
+topic: 第三方登录
+type: bagu
+tags: [OAuth2]
+difficulty: easy
+created: 2026-07-24
+---
 # OAuth2 / 第三方登录
 
 ## 【问题】

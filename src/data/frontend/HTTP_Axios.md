@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: Axios
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # Axios 详解
 
 ## 1. Axios 是什么？解决了什么问题？

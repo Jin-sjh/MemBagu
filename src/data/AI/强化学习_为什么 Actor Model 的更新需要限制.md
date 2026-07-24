@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: 为什么 Actor Model 的更新需要限制
+type: bagu
+tags: [强化学习]
+difficulty: easy
+created: 2026-07-24
+---
 # 为什么 Actor Model 的更新需要限制？
 
 【问题】

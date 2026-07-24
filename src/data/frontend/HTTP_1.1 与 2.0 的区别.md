@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 1.1 与 2.0 的区别
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # HTTP 协议中 1.0 版本规范与 1.1 版本规范的区别是什么？
 
 【问题】HTTP 协议中 1.0 版本规范与 1.1 版本规范的区别是什么？

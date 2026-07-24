@@ -1,3 +1,11 @@
+---
+category: 架构模式
+topic: MVC与MVVM
+type: bagu
+tags: [架构模式]
+difficulty: easy
+created: 2026-07-24
+---
 # MVC 架构和 MVVM 架构
 
 ## 【问题】

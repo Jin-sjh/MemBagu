@@ -1,3 +1,11 @@
+---
+category: 移动端选型
+topic: vw 与 rem 方案对比
+type: bagu
+tags: [移动端选型]
+difficulty: easy
+created: 2026-07-24
+---
 ## 二、移动端选型与原因
 
 ### 最终选型：vw 方案（优先）/rem 方案（兼容老项目）

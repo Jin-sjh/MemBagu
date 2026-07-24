@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: Ping 不通但 HTTP 能访问
+type: bagu
+tags: [HTTP]
+difficulty: easy
+created: 2026-07-24
+---
 # 服务器 ping 不通但是 http 能请求成功
 
 ## 【问题】

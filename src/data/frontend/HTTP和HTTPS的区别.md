@@ -1,3 +1,11 @@
+---
+category: frontend
+topic: HTTP和HTTPS的区别
+type: bagu
+tags: [frontend]
+difficulty: easy
+created: 2026-07-24
+---
 【问题】HTTP和HTTPS 的区别？
 
 【回答】

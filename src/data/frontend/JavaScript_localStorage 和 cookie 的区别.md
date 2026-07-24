@@ -1,3 +1,11 @@
+---
+category: JavaScript
+topic: localStorage 和 cookie 的区别
+type: bagu
+tags: [JavaScript]
+difficulty: easy
+created: 2026-07-24
+---
 # localStorage 和 cookie 的区别
 
 ## 问题

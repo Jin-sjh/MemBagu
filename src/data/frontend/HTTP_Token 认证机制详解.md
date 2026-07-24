@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: Token 认证机制详解
+type: bagu
+tags: [HTTP]
+difficulty: medium
+created: 2026-07-24
+---
 # HTTP_Token 认证机制详解
 
 ## 1. Token 的作用

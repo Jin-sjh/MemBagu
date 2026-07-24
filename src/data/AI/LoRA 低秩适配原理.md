@@ -1,3 +1,11 @@
+---
+category: AI
+topic: LoRA 低秩适配原理
+type: bagu
+tags: [AI]
+difficulty: hard
+created: 2026-07-24
+---
 # LoRA 低秩适配原理
 
 ## 【问题】什么是LoRA？它的核心思想是什么？

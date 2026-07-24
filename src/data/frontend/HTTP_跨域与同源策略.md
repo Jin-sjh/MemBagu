@@ -1,3 +1,11 @@
+---
+category: HTTP
+topic: 跨域与同源策略
+type: bagu
+tags: [HTTP]
+difficulty: hard
+created: 2026-07-24
+---
 # 9. 跨域与同源策略
 
 ## 【问题】同源是什么？

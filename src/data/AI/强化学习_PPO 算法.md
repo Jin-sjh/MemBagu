@@ -1,3 +1,11 @@
+---
+category: 强化学习
+topic: PPO 算法
+type: bagu
+tags: [强化学习]
+difficulty: medium
+created: 2026-07-24
+---
 # PPO
 
 【问题】PPO 的演进核心是什么？
