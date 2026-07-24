@@ -659,12 +659,13 @@ async function syncFromCloud(libraryId) {
 }
 
 .toolbar-search {
-  flex: 1;
+  flex: 0 1 360px;
   min-width: 0;
 }
 
 .toolbar-filter {
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 767.98px) {

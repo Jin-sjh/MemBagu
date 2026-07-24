@@ -1,6 +1,6 @@
 <template>
   <div class="category-filter">
-    <div class="filter-buttons" :class="{ collapsed: isCollapsed && shouldCollapse }">
+    <div class="filter-buttons" ref="buttonsRef" :class="{ collapsed: isCollapsed && shouldCollapse }">
       <button 
         v-for="cat in categories" 
         :key="cat"
@@ -11,7 +11,7 @@
       </button>
     </div>
     <button 
-      v-if="shouldCollapse" 
+      v-if="shouldCollapse && hasOverflow" 
       class="toggle-btn"
       @click="isCollapsed = !isCollapsed"
     >
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
 const props = defineProps({
   categories: {
@@ -38,8 +38,40 @@ defineEmits(['select'])
 
 const isCollapsed = ref(true)
 const COLLAPSE_THRESHOLD = 5
+const COLLAPSED_HEIGHT = 48
 
 const shouldCollapse = computed(() => props.categories.length > COLLAPSE_THRESHOLD)
+
+const buttonsRef = ref(null)
+const hasOverflow = ref(false)
+let resizeObserver = null
+
+function checkOverflow() {
+  const el = buttonsRef.value
+  if (!el || !shouldCollapse.value) {
+    hasOverflow.value = false
+    return
+  }
+  hasOverflow.value = el.scrollHeight > COLLAPSED_HEIGHT + 1
+}
+
+onMounted(() => {
+  nextTick(checkOverflow)
+  if (typeof ResizeObserver !== 'undefined' && buttonsRef.value) {
+    resizeObserver = new ResizeObserver(checkOverflow)
+    resizeObserver.observe(buttonsRef.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+  }
+})
+
+watch(() => props.categories, () => {
+  nextTick(checkOverflow)
+})
 </script>
 
 <style scoped>
@@ -54,7 +86,8 @@ const shouldCollapse = computed(() => props.categories.length > COLLAPSE_THRESHO
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   overflow: hidden;
-  transition: all 0.3s ease;
+  max-height: 480px;
+  transition: max-height 0.3s ease;
 }
 
 @media (max-width: 575.98px) {
