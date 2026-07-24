@@ -234,9 +234,17 @@ export function hasOldData() {
          localStorage.getItem(UI_STATE_KEY) !== null
 }
 
-import { supabase, getCurrentUser, isSupabaseConfigured } from './supabase.js'
+// Supabase 相关函数延迟加载，避免未登录用户承担包体积成本
+let _supabaseModule = null
+async function getSupabaseModule() {
+  if (!_supabaseModule) {
+    _supabaseModule = await import('./supabase.js')
+  }
+  return _supabaseModule
+}
 
 export async function syncProgressToCloud(libraryId, progress) {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false, error: 'Supabase not configured' }
   
   const user = await getCurrentUser()
@@ -268,6 +276,7 @@ export async function syncProgressToCloud(libraryId, progress) {
 }
 
 export async function loadProgressFromCloud(libraryId) {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false, data: {} }
   
   const user = await getCurrentUser()
@@ -301,6 +310,7 @@ export async function loadProgressFromCloud(libraryId) {
 }
 
 export async function syncUIStateToCloud(libraryId, state) {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false }
   
   const user = await getCurrentUser()
@@ -319,6 +329,7 @@ export async function syncUIStateToCloud(libraryId, state) {
 }
 
 export async function loadUIStateFromCloud(libraryId) {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false, data: null }
   
   const user = await getCurrentUser()
@@ -339,6 +350,7 @@ export async function loadUIStateFromCloud(libraryId) {
 }
 
 export async function syncLibrariesToCloud(libraries) {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false }
   
   const user = await getCurrentUser()
@@ -361,6 +373,7 @@ export async function syncLibrariesToCloud(libraries) {
 }
 
 export async function loadLibrariesFromCloud() {
+  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
   if (!isSupabaseConfigured()) return { success: false, data: [] }
   
   const user = await getCurrentUser()

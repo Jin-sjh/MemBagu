@@ -145,65 +145,74 @@ const allMdFiles = import.meta.glob(['../data/**/*.md', '!**/README.md'], {
   import: 'default'
 })
 
-export async function parseAllFiles(libraryId = 'frontend') {
-  const results = []
-  const categories = new Set()
+// 解析单个文件的统一入口
+function parseSingleFile(path, raw, libraryId) {
+  const { frontmatter, body } = parseFrontmatter(raw)
+  const parsed = parseMarkdown(body, path)
+  const category = extractCategory(path, frontmatter)
+  const topic = extractTopic(path, frontmatter)
 
-  for (const [path, loader] of Object.entries(allMdFiles)) {
-    if (isReadme(path)) continue
+  let questions = parsed.questions
 
-    const fileLibraryId = extractLibraryId(path)
-
-    if (fileLibraryId !== libraryId) {
-      continue
+  // explain 型无问答块时，将整篇正文作为一条讲解记录
+  if (frontmatter && frontmatter.type === 'explain' && questions.length === 0) {
+    const bodyLines = body.split('\n')
+    let answerBody = body
+    if (bodyLines[0] && bodyLines[0].startsWith('# ')) {
+      answerBody = bodyLines.slice(1).join('\n').trim()
     }
-
-    try {
-      const raw = await loader()
-      const { frontmatter, body } = parseFrontmatter(raw)
-      const parsed = parseMarkdown(body, path)
-      const category = extractCategory(path, frontmatter)
-      const topic = extractTopic(path, frontmatter)
-
-      categories.add(category)
-
-      let questions = parsed.questions
-
-      // explain 型无问答块时，将整篇正文作为一条讲解记录
-      if (frontmatter && frontmatter.type === 'explain' && questions.length === 0) {
-        const bodyLines = body.split('\n')
-        let answerBody = body
-        if (bodyLines[0] && bodyLines[0].startsWith('# ')) {
-          answerBody = bodyLines.slice(1).join('\n').trim()
-        }
-        questions = [{
-          question: parsed.title || topic,
-          answer: answerBody
-        }]
-      }
-
-      questions.forEach((q, idx) => {
-        results.push({
-          id: generateId(category, topic, idx),
-          category,
-          topic,
-          question: q.question,
-          answer: q.answer,
-          keyPointsCount: countBoldTerms(q.answer),
-          source: path.split('/').pop(),
-          libraryId,
-          type: frontmatter ? (frontmatter.type || 'bagu') : 'bagu',
-          tags: frontmatter ? (frontmatter.tags || []) : [],
-          difficulty: frontmatter ? (frontmatter.difficulty || '') : ''
-        })
-      })
-    } catch (e) {
-      console.error(`Failed to parse ${path}:`, e)
-    }
+    questions = [{
+      question: parsed.title || topic,
+      answer: answerBody
+    }]
   }
 
   return {
-    questions: results,
+    category,
+    items: questions.map((q, idx) => ({
+      id: generateId(category, topic, idx),
+      category,
+      topic,
+      question: q.question,
+      answer: q.answer,
+      keyPointsCount: countBoldTerms(q.answer),
+      source: path.split('/').pop(),
+      libraryId,
+      type: frontmatter ? (frontmatter.type || 'bagu') : 'bagu',
+      tags: frontmatter ? (frontmatter.tags || []) : [],
+      difficulty: frontmatter ? (frontmatter.difficulty || '') : ''
+    }))
+  }
+}
+
+export async function parseAllFiles(libraryId = 'frontend') {
+  const categories = new Set()
+
+  // 筛选并并发加载所有目标文件
+  const loadTasks = Object.entries(allMdFiles)
+    .filter(([path]) => !isReadme(path) && extractLibraryId(path) === libraryId)
+    .map(async ([path, loader]) => {
+      try {
+        const raw = await loader()
+        return parseSingleFile(path, raw, libraryId)
+      } catch (e) {
+        console.error(`Failed to parse ${path}:`, e)
+        return null
+      }
+    })
+
+  const parsedResults = await Promise.all(loadTasks)
+
+  // 合并结果，保持原有顺序（按 category 再按 topic 排序，避免页面随机跳动）
+  const allItems = []
+  for (const result of parsedResults) {
+    if (!result) continue
+    categories.add(result.category)
+    allItems.push(...result.items)
+  }
+
+  return {
+    questions: allItems,
     categories: Array.from(categories).sort()
   }
 }

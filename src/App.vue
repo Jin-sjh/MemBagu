@@ -126,15 +126,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, defineAsyncComponent } from 'vue'
 import ReviewList from './components/ReviewList.vue'
 import QuestionCard from './components/QuestionCard.vue'
-import Statistics from './components/Statistics.vue'
 import CategoryFilter from './components/CategoryFilter.vue'
 import SearchBox from './components/SearchBox.vue'
-import AudioGenerator from './components/AudioGenerator.vue'
 import LibrarySelector from './components/LibrarySelector.vue'
-import LibraryManager from './components/LibraryManager.vue'
 import Auth from './components/Auth.vue'
 import { useQuestions } from './composables/useQuestions'
 import { useProgress } from './composables/useProgress'
@@ -143,13 +140,13 @@ import { useAutoSave } from './composables/useAutoSave'
 import { 
   saveUIStateByLibrary, 
   loadUIStateByLibrary,
-  syncProgressToCloud,
-  loadProgressFromCloud,
-  syncUIStateToCloud,
-  loadUIStateFromCloud,
-  syncLibrariesToCloud,
-  loadLibrariesFromCloud
+  saveLibraries
 } from './utils/storage'
+
+// 非首屏组件懒加载，减少主包体积
+const Statistics = defineAsyncComponent(() => import('./components/Statistics.vue'))
+const AudioGenerator = defineAsyncComponent(() => import('./components/AudioGenerator.vue'))
+const LibraryManager = defineAsyncComponent(() => import('./components/LibraryManager.vue'))
 
 const tabs = [
   { id: 'review', name: '待复习' },
@@ -398,7 +395,8 @@ async function handleDeleteLibrary(id) {
 async function handleLogin(user) {
   isLoggedIn.value = true
   
-  const cloudLibraries = await loadLibrariesFromCloud()
+  // 动态导入云同步函数
+  const { loadLibrariesFromCloud } = await import('./utils/storage')
   if (cloudLibraries.success && cloudLibraries.data.length > 0) {
     libraries.value = cloudLibraries.data
     saveLibraries(libraries.value)
@@ -419,6 +417,9 @@ async function syncToCloud() {
   if (authRef.value) {
     authRef.value.setSyncStatus('syncing')
   }
+  
+  // 动态导入云同步函数，Supabase 包仅在登录用户实际同步时加载
+  const { syncProgressToCloud, syncUIStateToCloud, syncLibrariesToCloud } = await import('./utils/storage')
   
   await syncProgressToCloud(activeLibraryId.value, progressMap.value)
   await syncUIStateToCloud(activeLibraryId.value, {
@@ -446,7 +447,8 @@ async function syncFromCloud(libraryId) {
     authRef.value.setSyncStatus('syncing')
   }
   
-  const progressResult = await loadProgressFromCloud(libraryId)
+  // 动态导入云同步函数
+  const { loadProgressFromCloud, loadUIStateFromCloud } = await import('./utils/storage')
   if (progressResult.success && Object.keys(progressResult.data).length > 0) {
     progressMap.value = progressResult.data
     saveProgress()
