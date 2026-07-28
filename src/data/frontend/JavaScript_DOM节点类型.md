@@ -10,10 +10,10 @@ created: 2026-07-24
 
 ## DOM 节点类型
 
-【问题】
+## 【问题】
 列举几种类型的 DOM 节点？
 
-【回答】
+## 【回答】
 有以下几类 DOM 节点：
 
 - 整个文档是一个文档（Document）节点。
@@ -25,10 +25,10 @@ created: 2026-07-24
 
 ## script 标签 defer 和 async 属性的区别
 
-【问题】
+## 【问题】
 谈谈 script 标签中 defer 和 async 属性的区别。
 
-【回答】
+## 【回答】
 defer 和 async 都是用于控制脚本加载和执行的属性，它们的区别如下：
 
 ### 相同点
@@ -66,30 +66,30 @@ HTML 解析（同时下载）→ 下载完成立即执行 → 继续解析
 
 ## attribute 和 property 的区别
 
-【问题】
+## 【问题】
 对于元素，attribute 和 property 的区别是什么？
 
-【回答】
+## 【回答】
 attribute 是 DOM 元素在文档中作为 HTML 标签拥有的属性；property 就是 DOM 元素在 JavaScript 中作为对象拥有的属性。
 
 ---
 
 ## 清除定时器的方法
 
-【问题】
+## 【问题】
 如何清除一个定时器？
 
-【回答】
+## 【回答】
 清除定时器使用的方法是：`window.clearInterval()`。清除循环定时器使用的方法是 `window.clearTimeout()`。
 
 ---
 
 ## 在 body 中添加 DOM 对象
 
-【问题】
+## 【问题】
 如何在 body 中添加一个 DOM 对象？innerHTML 和 innerText 有什么区别？
 
-【回答】
+## 【回答】
 在 body 中添加 DOM 的方法是使用 `body.appendChild(DOM 元素)`。
 
 **innerHTML** 是指从对象的起始位置到终止位置的全部内容，包括 HTML 标签。
@@ -100,10 +100,10 @@ attribute 是 DOM 元素在文档中作为 HTML 标签拥有的属性；property
 
 ## DOM 对象的 3 种查询方式
 
-【问题】
+## 【问题】
 说明 DOM 对象的 3 种查询方式。
 
-【回答】
+## 【回答】
 3 种查询方法如下：
 
 - 使用 `getElementById()`，根据元素 id 进行查找。

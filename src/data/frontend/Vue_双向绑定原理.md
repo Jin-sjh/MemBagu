@@ -10,10 +10,10 @@ created: 2026-07-24
 
 ## 1. Vue 双向绑定原理
 
-【问题】
+## 【问题】
 请简述 Vue 的双向绑定原理，包括 Vue2 和 Vue3 的实现方式及其区别。
 
-【回答】
+## 【回答】
 **Vue2:**
 当创建 Vue 实例时，vue 会遍历 data 选项的属性，利用 `Object.defineProperty` 为属性添加 getter 和 setter 对数据的读取进行劫持（getter 用来依赖收集，setter 用来派发更新），并且在内部追踪依赖，在属性被访问和修改时通知变化。每个组件实例会有相应的 watcher 实例，会在组件渲染的过程中记录依赖的所有数据属性（进行依赖收集，还有 computed watcher, user watcher 实例），之后依赖项被改动时，setter 方法会通知依赖与此 data 的 watcher 实例重新计算（派发更新），从而使它关联的组件重新渲染。
 
@@ -24,10 +24,10 @@ created: 2026-07-24
 
 ## 2. Vue3 响应式原理
 
-【问题】
+## 【问题】
 解释 Vue3 响应式原理
 
-【回答】
+## 【回答】
 Vue3 响应式使用了 Proxy：
 
 i. 代理数据：通过 Proxy 对象代理数据对象的 getter 和 setter 方法。

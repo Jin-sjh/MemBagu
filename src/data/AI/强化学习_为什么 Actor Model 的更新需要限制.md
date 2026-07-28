@@ -8,10 +8,10 @@ created: 2026-07-24
 ---
 # 为什么 Actor Model 的更新需要限制？
 
-【问题】
+## 【问题】
 为什么 Actor Model 的更新需要限制？
 
-【回答】
+## 【回答】
 Actor Model 的更新有两项需要限制：
 
 1. **PPO 自身的约束**：限制 P(A_t|S_t)（新 Actor 模型）和 P_{old}(A_t|S_t)（旧 Actor 模型）之间的更新步伐。

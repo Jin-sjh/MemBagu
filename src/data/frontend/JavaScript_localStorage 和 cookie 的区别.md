@@ -8,11 +8,11 @@ created: 2026-07-24
 ---
 # localStorage 和 cookie 的区别
 
-## 问题
+## 【问题】
 
 localStorage 和 cookie 的区别是什么？
 
-## 回答
+## 【回答】
 
 localStorage 的概念和 cookie 相似，区别是 localStorage 是为了更大容量的存储设计的。cookie 的大小是受限的，并且每次请求一个新页面时，cookie 都会被发送过去，这样无形中浪费了带宽。另外，cookie 还需要指定作用域，不可以跨域调用。
 

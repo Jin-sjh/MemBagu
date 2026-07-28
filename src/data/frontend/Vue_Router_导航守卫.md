@@ -8,9 +8,11 @@ created: 2026-07-24
 ---
 # Vue Router 导航守卫
 
-## 1. 问：vue-router 有哪些导航守卫？分别属于哪一类？
+## 【问题】
 
-### 答：
+vue-router 有哪些导航守卫？分别属于哪一类？
+
+## 【回答】
 
 导航守卫分为三类：
 
@@ -20,9 +22,11 @@ created: 2026-07-24
 
 - **组件内守卫**：`beforeRouteEnter`、`beforeRouteUpdate`、`beforeRouteLeave`
 
-## 2. 问：完整的路由跳转时，守卫的执行顺序是？
+## 【问题】
 
-### 答：
+完整的路由跳转时，守卫的执行顺序是？
+
+## 【回答】
 
 1. 触发路由跳转
 2. 全局 `beforeEach`

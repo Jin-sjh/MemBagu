@@ -6,10 +6,10 @@ tags: [强化学习]
 difficulty: easy
 created: 2026-07-24
 ---
-【问题】
+## 【问题】
 Actor-Critic 算法的核心演进点是什么？
 
-【回答】
+## 【回答】
 REINFORCE 的高方差问题是其主要瓶颈。Actor-Critic 算法的演进，核心在于重新引入了价值函数（Critic）来提供一个更稳定、方差更低的基线，以估计优势函数。
 
 核心演进点：

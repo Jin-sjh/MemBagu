@@ -1,0 +1,30 @@
+---
+category: frontend
+topic: HTTP和HTTPS的区别
+type: bagu
+tags: [frontend]
+difficulty: easy
+created: 2026-07-24
+---
+## 【问题】HTTP和HTTPS 的区别？
+
+## 【回答】
+区别主要有以下四点：
+
+- HTTP 是超文本传输协议，信息是明文传输，存在安全风险的问题。HTTPS 则解决 HTTP 不安全的缺陷，在 TCP 和 HTTP 网络层之间加入了 SSL/TLS 安全协议，使得报文能够加密传输。
+
+- HTTP 连接建立相对简单，TCP 三次握手之后便可进行 HTTP 的报文传输。而 HTTPS 在 TCP 三次握手之后，还需进行 SSL/TLS 的握手过程，才可进入加密报文传输。
+
+- 两者的默认端口不一样，HTTP 默认端口号是 80，HTTPS 默认端口号是 443。
+
+- HTTPS 协议需要向 CA（证书权威机构）申请数字证书，来保证服务器的身份是可信的。
+
+## 【问题】HTTP 与 HTTPS 有什么联系？它们的端口号是多少？
+
+## 【回答】
+HTTP 通常承载于 TCP 之上，在 HTTP 和 TCP 之间添加一个安全协议层（SSL 或 TSL），这个时候，就成了我们常说的 HTTPS。HTTP 默认的端口号为 80，HTTPS 默认的端口号为 443。
+
+## 【问题】为什么 HTTPS 更安全？
+
+## 【回答】
+在网络请求中，需要有很多服务器、路由器的转发。其中的节点都可能篡改信息，而如果使用 HTTPS，密钥在终点站才有。HTTPS 之所以比 HTTP 安全，是因为它利用 ssl/tls 协议传输。它包含证书、卸载、流量转发、负载均衡、页面适配、浏览器适配、refer 传递等技术，保障了传输过程的安全性。

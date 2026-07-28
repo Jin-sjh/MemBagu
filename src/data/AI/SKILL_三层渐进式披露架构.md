@@ -6,10 +6,10 @@ tags: [SKILL]
 difficulty: easy
 created: 2026-07-24
 ---
-【问题】
+## 【问题】
 SKILL.md 的三层渐进式披露（Progressive Disclosure）是什么？
 
-【回答】
+## 【回答】
 SKILL.md 的三层渐进式披露架构包含以下三个层级：
 
 | 层级 | 内容 | 何时加载 |
