@@ -397,6 +397,7 @@ async function handleLogin(user) {
   
   // 动态导入云同步函数
   const { loadLibrariesFromCloud } = await import('./utils/storage')
+  const cloudLibraries = await loadLibrariesFromCloud()
   if (cloudLibraries.success && cloudLibraries.data.length > 0) {
     libraries.value = cloudLibraries.data
     saveLibraries(libraries.value)
@@ -449,6 +450,7 @@ async function syncFromCloud(libraryId) {
   
   // 动态导入云同步函数
   const { loadProgressFromCloud, loadUIStateFromCloud } = await import('./utils/storage')
+  const progressResult = await loadProgressFromCloud(libraryId)
   if (progressResult.success && Object.keys(progressResult.data).length > 0) {
     progressMap.value = progressResult.data
     saveProgress()
