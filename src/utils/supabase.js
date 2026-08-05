@@ -3,8 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
+// 微信 webview / 部分移动浏览器中 Navigator LockManager 会超时或异常，
+// 导致服务端已登录成功、但客户端在锁内保存会话时报错（表象：登录框不关闭但已登录）。
+// 用无操作锁绕过（官方对 React Native 等环境的推荐做法）。
+const noOpLock = async (name, acquireTimeout, fn) => await fn()
+
 export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { lock: noOpLock }
+    })
   : null
 
 export async function handleAuthCallback() {

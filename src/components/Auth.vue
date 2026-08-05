@@ -30,7 +30,8 @@
         <button @click="handleLogin" class="btn btn-primary" :disabled="submitting">
           {{ submitting ? '登录中...' : '登录' }}
         </button>
-        <p class="form-switch" @click="isLogin = false">没有账号？注册</p>
+        <p v-if="error" class="form-error" :class="{ 'is-success': errorType === 'success' }">{{ error }}</p>
+        <p class="form-switch" @click="switchToRegister">没有账号？注册</p>
       </div>
       <div v-else class="form-container">
         <h3 class="form-title">注册账号</h3>
@@ -55,7 +56,7 @@
         <button @click="handleRegister" class="btn btn-primary" :disabled="submitting">
           {{ submitting ? '注册中...' : '注册' }}
         </button>
-        <p class="form-switch" @click="isLogin = true">已有账号？登录</p>
+        <p class="form-switch" @click="switchToLogin">已有账号？登录</p>
         <p v-if="error" class="form-error" :class="{ 'is-success': errorType === 'success' }">{{ error }}</p>
       </div>
     </div>
@@ -153,6 +154,18 @@ onMounted(async () => {
   })
 })
 
+function switchToLogin() {
+  isLogin.value = true
+  error.value = ''
+  errorType.value = 'error'
+}
+
+function switchToRegister() {
+  isLogin.value = false
+  error.value = ''
+  errorType.value = 'error'
+}
+
 async function handleLogin() {
   if (!email.value || !password.value) {
     error.value = '请填写邮箱和密码'
@@ -167,6 +180,15 @@ async function handleLogin() {
   submitting.value = false
 
   if (err) {
+    // 兜底：锁异常等场景下服务端可能已成功登录，会话已持久化，按成功处理
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (sessionData?.session?.user) {
+      user.value = sessionData.session.user
+      emit('login', sessionData.session.user)
+      email.value = ''
+      password.value = ''
+      return
+    }
     error.value = formatAuthError(err, '登录')
     return
   }
