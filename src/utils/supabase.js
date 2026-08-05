@@ -8,9 +8,21 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 // 用无操作锁绕过（官方对 React Native 等环境的推荐做法）。
 const noOpLock = async (name, acquireTimeout, fn) => await fn()
 
+// 网络抖动（大陆访问 supabase.co 偶发连接重置）时自动重试，最多 3 次，指数退避
+async function fetchWithRetry(url, options, retries = 2, delayMs = 1000) {
+  try {
+    return await fetch(url, options)
+  } catch (err) {
+    if (retries <= 0) throw err
+    await new Promise(resolve => setTimeout(resolve, delayMs))
+    return fetchWithRetry(url, options, retries - 1, delayMs * 2)
+  }
+}
+
 export const supabase = supabaseUrl && supabaseAnonKey 
   ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { lock: noOpLock }
+      auth: { lock: noOpLock },
+      global: { fetch: fetchWithRetry }
     })
   : null
 

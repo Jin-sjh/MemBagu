@@ -137,17 +137,26 @@ onMounted(async () => {
     user.value = callbackResult.user
     emit('login', callbackResult.user)
   } else {
-    // 没有回调时，获取当前用户
-    const currentUser = await getCurrentUser()
-    user.value = currentUser
+    // 没有回调时，优先读本地会话（无网络请求），弱网/云服务暂不可达时也能保持登录态
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      if (sessionData?.session?.user) {
+        user.value = sessionData.session.user
+      } else {
+        user.value = await getCurrentUser()
+      }
+    } catch {
+      user.value = await getCurrentUser()
+    }
   }
   
   loading.value = false
   
   onAuthStateChange((event, session) => {
     user.value = session?.user || null
-    if (event === 'SIGNED_IN') {
-      emit('login', session?.user)
+    // INITIAL_SESSION：刷新页面后恢复已有会话，继续云同步
+    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+      emit('login', session.user)
     } else if (event === 'SIGNED_OUT') {
       emit('logout')
     }
