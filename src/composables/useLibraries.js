@@ -16,13 +16,15 @@ const API_BASE_URL = 'http://localhost:3002'
 const libraryNameMap = {
   'frontend': '前端八股库',
   'leetcode': 'LeetCode题库',
-  'AI': 'AI八股库'
+  'AI': 'AI八股库',
+  '面经': '面经库'
 }
 
 const libraryColorMap = {
   'frontend': '#3498db',
   'leetcode': '#e74c3c',
-  'AI': '#9b59b6'
+  'AI': '#9b59b6',
+  '面经': '#2ecc71'
 }
 
 const defaultLibrary = {

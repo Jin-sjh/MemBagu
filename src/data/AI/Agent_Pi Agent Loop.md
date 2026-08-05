@@ -230,6 +230,27 @@ for await (const event of response) {
 
 **目的是为了 UI 能实时展示**：如果等全部响应完成才 push，用户在 LLM 思考的几秒里盯着空白屏幕。通过「先放空壳、逐 token 替换」，UI 通过 `message_update` 事件拿到最新部分消息，能逐字渲染。
 
+## 【问题】
+工具执行完、turn_end 发出、steering 二次检查完成后，「回到循环顶部」时判断什么？while 条件里的两个信号分别来自哪里？
+
+## 【回答】
+内层循环的收尾衔接点（第3章 §4.8「回到循环顶部」）：每圈结束都**回到 while 条件判断处**重新决定「转不转」，判断代码只有一行：
+
+```typescript
+while (hasMoreToolCalls || pendingMessages.length > 0)
+```
+
+两个信号，一内一外：
+
+| 信号 | 驱动来源 | 判定规则 | 性质 |
+|---|---|---|---|
+| `hasMoreToolCalls` | 模型输出内容（内核） | 输出中含 toolCall 块，且工具结果未全部 `terminate: true` | **内核**（所有 Agent 通用） |
+| `pendingMessages.length > 0` | steering 队列（叠加1） | 是否有新的紧急消息积攒 | **叠加**（coding-agent 特性） |
+
+**两个条件之间是 OR 关系：只有同时为 false 时内层循环才退出**，随后进入外层循环检查 followUp 队列（§4.9）——「回到循环顶部」的本质是：内核信号决定通用循环是否继续，叠加信号决定是否处理插队消息，两者用一条简单表达式组合。
+
+设计哲学：**「是否继续」不靠复杂的代码判断，只靠一条简单规则——模型输出中有没有工具调用**。这是把决策权外包给模型的输出模式，代码只做最简单的信号判断；且实际驱动循环的不是 `stopReason === "toolUse"` 本身，而是 `toolCalls 数组长度 > 0 && !terminate`（例如 `stopReason === "length"` 但 content 里仍有 toolCall 块时，循环照样继续执行工具）。
+
 ## 【衍生问题】
 - prompt cache 与循环：Pi 在 Anthropic 的三个位置打 `cache_control: { type: "ephemeral" }` 标记——system prompt 末尾、**最后一个 tool**、**最后一条 user message**（rolling cache，cache breakpoint 跟着最新消息走，旧前缀继续命中、新追加内容被写入）；tools 是独立顶层字段（在 messages 之前）而非塞进消息末尾，prefix 越长越省。OpenAI 体系走 `prompt_cache_key: sessionId` 按 session 匹配前缀。（待补充完整问答）
 - 工具执行的五步管道（prepareArguments → Schema 验证 → beforeToolCall → execute → afterToolCall）具体如何工作？（第5章内容，待补充）
