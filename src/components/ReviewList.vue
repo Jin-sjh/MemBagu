@@ -93,6 +93,14 @@ const props = defineProps({
     type: String,
     default: 'all'
   },
+  selectedCompany: {
+    type: String,
+    default: ''
+  },
+  selectedPosition: {
+    type: String,
+    default: ''
+  },
   poolStats: {
     type: Object,
     default: () => ({ hotWrong: 0, pending: 0, coldWrong: 0, new: 0, mastered: 0 })
@@ -111,7 +119,10 @@ const currentIndex = ref(0)
 const headerTitle = computed(() => {
   if (props.examReviewMode) return '考前总复习'
   if (props.selectedCategory === 'all') return '今日复习'
-  return `${props.selectedCategory} 复习`
+  const crumbs = [props.selectedCategory]
+  if (props.selectedCompany) crumbs.push(props.selectedCompany)
+  if (props.selectedPosition) crumbs.push(props.selectedPosition)
+  return `${crumbs.join(' · ')} 复习`
 })
 
 const poolBars = computed(() => [

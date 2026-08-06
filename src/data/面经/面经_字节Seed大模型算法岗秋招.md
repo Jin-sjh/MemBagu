@@ -1,6 +1,8 @@
 ---
 category: 面经
 topic: 字节Seed大模型算法岗秋招
+company: 字节
+position: Seed 大模型算法岗
 type: bagu
 tags: [面经, 大模型, 强化学习, 多模态, 字节, 算法岗]
 difficulty: hard

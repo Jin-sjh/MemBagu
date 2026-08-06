@@ -17,9 +17,68 @@ const rootDir = join(__dirname, '..')
 const dataDir = join(rootDir, 'src', 'data')
 const outputDir = join(rootDir, 'audio')
 
-function parseMarkdownFile(filePath) {
+// 解析 YAML frontmatter（与前端 src/utils/parser.js 保持一致的轻量实现）
+function parseFrontmatter(content) {
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
+  if (!fmMatch) return { frontmatter: null, body: content }
+
+  const yamlBlock = fmMatch[1]
+  const body = content.slice(fmMatch[0].length)
+  const frontmatter = {}
+
+  for (const line of yamlBlock.split('\n')) {
+    if (!line.trim() || line.trim().startsWith('#')) continue
+    const idx = line.indexOf(':')
+    if (idx === -1) continue
+    const key = line.slice(0, idx).trim()
+    const value = line.slice(idx + 1).trim()
+
+    if (value.startsWith('[') && value.endsWith(']')) {
+      const inner = value.slice(1, -1).trim()
+      frontmatter[key] = inner
+        ? inner.split(',').map(s => s.trim().replace(/^["']|["']$/g, ''))
+        : []
+    } else {
+      frontmatter[key] = value.replace(/^["']|["']$/g, '')
+    }
+  }
+
+  return { frontmatter, body }
+}
+
+// 是否为 README 文件（任意层级），与前端 parser.js 的排除逻辑一致
+function isReadme(filepath) {
+  return filepath.split('/').pop().toLowerCase() === 'readme.md'
+}
+
+// 读取 md 文件并解析 frontmatter，返回正文（不含 frontmatter）
+function readMarkdownFile(filePath) {
   const content = readFileSync(filePath, 'utf-8')
-  const lines = content.split('\n')
+  const { frontmatter, body } = parseFrontmatter(content)
+  return { frontmatter, body }
+}
+
+// 递归收集 src/data 下所有 md 文件（排除任意层级 README.md），
+// 与前端 parser.js 的 import.meta.glob('../data/**/*.md') 行为对齐
+function getAllMarkdownFiles(dir = dataDir) {
+  const results = []
+  const entries = readdirSync(dir, { withFileTypes: true })
+
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name)
+    if (entry.isDirectory()) {
+      results.push(...getAllMarkdownFiles(fullPath))
+    } else if (entry.isFile() && entry.name.endsWith('.md') && !isReadme(fullPath)) {
+      results.push(fullPath)
+    }
+  }
+
+  return results
+}
+
+function parseMarkdownFile(filePath, content) {
+  const text = content !== undefined ? content : readFileSync(filePath, 'utf-8')
+  const lines = text.split('\n')
   const questions = []
   
   let currentQuestion = null
@@ -72,16 +131,18 @@ function parseMarkdownFile(filePath) {
   return { title, questions }
 }
 
-function extractCategory(filename) {
-  const basename = filename.replace('.md', '')
-  const parts = basename.split('_')
+function extractCategory(filePath, frontmatter) {
+  if (frontmatter && frontmatter.category) return frontmatter.category
+  const filename = filePath.split('/').pop().replace('.md', '')
+  const parts = filename.split('_')
   return parts[0] || 'Other'
 }
 
-function extractTopic(filename) {
-  const basename = filename.replace('.md', '')
-  const parts = basename.split('_')
-  return parts[1] || basename
+function extractTopic(filePath, frontmatter) {
+  if (frontmatter && frontmatter.topic) return frontmatter.topic
+  const filename = filePath.split('/').pop().replace('.md', '')
+  const parts = filename.split('_')
+  return parts[1] || filename
 }
 
 function ensureDir(dir) {
@@ -124,28 +185,28 @@ export async function generateSeparateFiles(options = {}, onProgress = () => {})
   
   ensureDir(outputDir)
   
-  const files = readdirSync(dataDir).filter(f => f.endsWith('.md'))
+  const files = getAllMarkdownFiles()
   const results = []
   let processed = 0
   let total = files.length
   
-  for (const file of files) {
-    const category = extractCategory(file)
+  for (const filePath of files) {
+    const { frontmatter, body } = readMarkdownFile(filePath)
+    const category = extractCategory(filePath, frontmatter)
     
     if (categories && !categories.includes(category)) {
       processed++
       continue
     }
     
-    const topic = extractTopic(file)
-    const filePath = join(dataDir, file)
-    const { title, questions } = parseMarkdownFile(filePath)
+    const topic = extractTopic(filePath, frontmatter)
+    const { questions } = parseMarkdownFile(filePath, body)
     
     if (questions.length === 0) {
       processed++
       onProgress({
         progress: Math.round((processed / total) * 100),
-        file,
+        file: basename(filePath),
         status: 'skipped',
         reason: 'No questions found'
       })
@@ -166,7 +227,7 @@ export async function generateSeparateFiles(options = {}, onProgress = () => {})
       
       onProgress({
         progress: Math.round((processed / total) * 100),
-        file,
+        file: basename(filePath),
         question: i + 1,
         totalQuestions: questions.length,
         status: 'generating'
@@ -176,7 +237,7 @@ export async function generateSeparateFiles(options = {}, onProgress = () => {})
       
       if (result.success) {
         results.push({
-          file,
+          file: basename(filePath),
           category,
           topic,
           questionIndex: i + 1,
@@ -189,7 +250,7 @@ export async function generateSeparateFiles(options = {}, onProgress = () => {})
     processed++
     onProgress({
       progress: Math.round((processed / total) * 100),
-      file,
+      file: basename(filePath),
       status: 'completed'
     })
   }
@@ -210,19 +271,19 @@ export async function generateCollection(options = {}, onProgress = () => {}) {
   
   ensureDir(outputDir)
   
-  const files = readdirSync(dataDir).filter(f => f.endsWith('.md'))
+  const files = getAllMarkdownFiles()
   const categoryData = {}
   
-  for (const file of files) {
-    const category = extractCategory(file)
+  for (const filePath of files) {
+    const { frontmatter, body } = readMarkdownFile(filePath)
+    const category = extractCategory(filePath, frontmatter)
     
     if (categories && !categories.includes(category)) {
       continue
     }
     
-    const topic = extractTopic(file)
-    const filePath = join(dataDir, file)
-    const { questions } = parseMarkdownFile(filePath)
+    const topic = extractTopic(filePath, frontmatter)
+    const { questions } = parseMarkdownFile(filePath, body)
     
     if (!categoryData[category]) {
       categoryData[category] = []
@@ -330,29 +391,30 @@ export async function generateCollection(options = {}, onProgress = () => {}) {
 }
 
 export function getAvailableCategories() {
-  const files = readdirSync(dataDir).filter(f => f.endsWith('.md'))
+  const files = getAllMarkdownFiles()
   const categories = new Set()
   
-  for (const file of files) {
-    categories.add(extractCategory(file))
+  for (const filePath of files) {
+    const { frontmatter } = readMarkdownFile(filePath)
+    categories.add(extractCategory(filePath, frontmatter))
   }
   
   return Array.from(categories).sort()
 }
 
 export function getQuestionCount(categories = null) {
-  const files = readdirSync(dataDir).filter(f => f.endsWith('.md'))
+  const files = getAllMarkdownFiles()
   const counts = {}
   
-  for (const file of files) {
-    const category = extractCategory(file)
+  for (const filePath of files) {
+    const { frontmatter, body } = readMarkdownFile(filePath)
+    const category = extractCategory(filePath, frontmatter)
     
     if (categories && !categories.includes(category)) {
       continue
     }
     
-    const filePath = join(dataDir, file)
-    const { questions } = parseMarkdownFile(filePath)
+    const { questions } = parseMarkdownFile(filePath, body)
     
     if (!counts[category]) {
       counts[category] = 0

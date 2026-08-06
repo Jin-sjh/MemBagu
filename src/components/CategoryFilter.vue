@@ -1,22 +1,49 @@
 <template>
   <div class="category-filter">
-    <div class="filter-buttons" ref="buttonsRef" :class="{ collapsed: isCollapsed && shouldCollapse }">
+    <!-- 一级分类行（面经库下整体隐藏） -->
+    <template v-if="!hidePrimary">
+      <div class="filter-buttons" ref="buttonsRef" :class="{ collapsed: isCollapsed && shouldCollapse }">
+        <button 
+          v-for="cat in categories" 
+          :key="cat"
+          :class="['filter-btn', { active: selected === cat }]"
+          @click="$emit('select', cat)"
+        >
+          {{ cat === 'all' ? '全部' : cat }}
+        </button>
+      </div>
       <button 
-        v-for="cat in categories" 
-        :key="cat"
-        :class="['filter-btn', { active: selected === cat }]"
-        @click="$emit('select', cat)"
+        v-if="shouldCollapse && hasOverflow" 
+        class="toggle-btn"
+        @click="isCollapsed = !isCollapsed"
       >
-        {{ cat === 'all' ? '全部' : cat }}
+        {{ isCollapsed ? '展开' : '收起' }}
+      </button>
+    </template>
+
+    <!-- 二级：公司 chip（仅面经库启用） -->
+    <div class="filter-buttons sub-row" v-if="companies.length > 0">
+      <button
+        v-for="company in companies"
+        :key="company"
+        :class="['filter-btn', { active: selectedCompany === company }]"
+        @click="$emit('selectCompany', company)"
+      >
+        {{ company }}
       </button>
     </div>
-    <button 
-      v-if="shouldCollapse && hasOverflow" 
-      class="toggle-btn"
-      @click="isCollapsed = !isCollapsed"
-    >
-      {{ isCollapsed ? '展开' : '收起' }}
-    </button>
+
+    <!-- 三级：岗位 chip（选中公司后出现） -->
+    <div class="filter-buttons sub-row" v-if="positions.length > 0">
+      <button
+        v-for="position in positions"
+        :key="position"
+        :class="['filter-btn', { active: selectedPosition === position }]"
+        @click="$emit('selectPosition', position)"
+      >
+        {{ position }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -31,10 +58,30 @@ const props = defineProps({
   selected: {
     type: String,
     default: 'all'
+  },
+  hidePrimary: {
+    type: Boolean,
+    default: false
+  },
+  companies: {
+    type: Array,
+    default: () => []
+  },
+  selectedCompany: {
+    type: String,
+    default: ''
+  },
+  positions: {
+    type: Array,
+    default: () => []
+  },
+  selectedPosition: {
+    type: String,
+    default: ''
   }
 })
 
-defineEmits(['select'])
+defineEmits(['select', 'selectCompany', 'selectPosition'])
 
 const isCollapsed = ref(true)
 const COLLAPSE_THRESHOLD = 5
@@ -79,6 +126,10 @@ watch(() => props.categories, () => {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+}
+
+.sub-row {
+  padding-top: var(--spacing-xs);
 }
 
 .filter-buttons {

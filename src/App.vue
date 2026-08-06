@@ -48,7 +48,14 @@
           <CategoryFilter
             :categories="categories"
             :selected="selectedCategory"
+            :hidePrimary="isSecondaryEnabled"
+            :companies="companies"
+            :selectedCompany="selectedCompany"
+            :positions="positions"
+            :selectedPosition="selectedPosition"
             @select="handleCategorySelect"
+            @selectCompany="handleCompanySelect"
+            @selectPosition="handlePositionSelect"
           />
         </div>
       </div>
@@ -82,6 +89,8 @@
         :questions="filteredDueQuestions"
         :progress="progressMap"
         :selectedCategory="selectedCategory"
+        :selectedCompany="selectedCompany"
+        :selectedPosition="selectedPosition"
         :poolStats="poolStats"
         :examReviewMode="examReviewMode"
         @review="handleReview"
@@ -158,10 +167,37 @@ const tabs = [
 
 const currentTab = ref('review')
 const selectedCategory = ref('all')
+const selectedCompany = ref('')
+const selectedPosition = ref('')
 const currentIndex = ref(0)
 const categoryIndexMap = ref({})
 const isSearchMode = ref(false)
 const searchResults = ref([])
+
+// 二级分类（公司/岗位）仅对面经库启用
+const SECONDARY_LIBRARY = '面经'
+
+const isSecondaryEnabled = computed(() => activeLibraryId.value === SECONDARY_LIBRARY)
+
+const companies = computed(() => {
+  if (!isSecondaryEnabled.value) return []
+  const list = []
+  for (const q of allQuestions.value) {
+    if (q.company && !list.includes(q.company)) list.push(q.company)
+  }
+  return list
+})
+
+const positions = computed(() => {
+  if (!isSecondaryEnabled.value || !selectedCompany.value) return []
+  const list = []
+  for (const q of allQuestions.value) {
+    if (q.company === selectedCompany.value && q.position && !list.includes(q.position)) {
+      list.push(q.position)
+    }
+  }
+  return list
+})
 
 const { allQuestions, categories, loadQuestions } = useQuestions()
 const { progressMap, loadProgress, saveProgress, getSprintQueue, getPoolStats, updateProgress, clearLibraryProgress, getLearnedCount, startExamReview, stopExamReview, examReviewMode } = useProgress()
@@ -196,6 +232,8 @@ onMounted(async () => {
     saveUIStateByLibrary(activeLibraryId.value, {
       currentTab: currentTab.value,
       selectedCategory: selectedCategory.value,
+      selectedCompany: selectedCompany.value,
+      selectedPosition: selectedPosition.value,
       currentIndex: currentIndex.value,
       categoryIndexMap: categoryIndexMap.value
     })
@@ -213,13 +251,23 @@ async function loadLibraryData(libraryId) {
   if (savedUIState) {
     currentTab.value = savedUIState.currentTab || 'review'
     selectedCategory.value = savedUIState.selectedCategory || 'all'
+    selectedCompany.value = savedUIState.selectedCompany || ''
+    selectedPosition.value = savedUIState.selectedPosition || ''
     currentIndex.value = savedUIState.currentIndex || 0
     categoryIndexMap.value = savedUIState.categoryIndexMap || {}
   } else {
     currentTab.value = 'review'
     selectedCategory.value = 'all'
+    selectedCompany.value = ''
+    selectedPosition.value = ''
     currentIndex.value = 0
     categoryIndexMap.value = {}
+  }
+
+  // 二级分类仅对面经库生效，其他库强制清空
+  if (!isSecondaryEnabled.value) {
+    selectedCompany.value = ''
+    selectedPosition.value = ''
   }
   
   updateLibraryStats(libraryId)
@@ -230,11 +278,13 @@ function updateLibraryStats(libraryId) {
   learnedCounts.value[libraryId] = getLearnedCount()
 }
 
-watch([currentTab, selectedCategory, currentIndex, categoryIndexMap], () => {
+watch([currentTab, selectedCategory, selectedCompany, selectedPosition, currentIndex, categoryIndexMap], () => {
   if (activeLibraryId.value) {
     saveUIStateByLibrary(activeLibraryId.value, {
       currentTab: currentTab.value,
       selectedCategory: selectedCategory.value,
+      selectedCompany: selectedCompany.value,
+      selectedPosition: selectedPosition.value,
       currentIndex: currentIndex.value,
       categoryIndexMap: categoryIndexMap.value
     })
@@ -260,16 +310,38 @@ const poolStats = computed(() => {
 })
 
 const filteredQuestions = computed(() => {
-  if (selectedCategory.value === 'all') {
-    return allQuestions.value
+  let list = allQuestions.value
+  if (selectedCategory.value !== 'all') {
+    list = list.filter(q => q.category === selectedCategory.value)
   }
-  return allQuestions.value.filter(q => q.category === selectedCategory.value)
+  if (selectedCompany.value) {
+    list = list.filter(q => q.company === selectedCompany.value)
+  }
+  if (selectedPosition.value) {
+    list = list.filter(q => q.position === selectedPosition.value)
+  }
+  return list
 })
 
 function handleCategorySelect(category) {
   categoryIndexMap.value[selectedCategory.value] = currentIndex.value
   selectedCategory.value = category
+  selectedCompany.value = ''
+  selectedPosition.value = ''
   currentIndex.value = categoryIndexMap.value[category] || 0
+  isSearchMode.value = false
+}
+
+function handleCompanySelect(company) {
+  selectedCompany.value = company
+  selectedPosition.value = ''
+  currentIndex.value = 0
+  isSearchMode.value = false
+}
+
+function handlePositionSelect(position) {
+  selectedPosition.value = position
+  currentIndex.value = 0
   isSearchMode.value = false
 }
 
@@ -426,6 +498,8 @@ async function syncToCloud() {
   await syncUIStateToCloud(activeLibraryId.value, {
     currentTab: currentTab.value,
     selectedCategory: selectedCategory.value,
+    selectedCompany: selectedCompany.value,
+    selectedPosition: selectedPosition.value,
     currentIndex: currentIndex.value,
     categoryIndexMap: categoryIndexMap.value
   })
@@ -460,8 +534,15 @@ async function syncFromCloud(libraryId) {
   if (uiResult.success && uiResult.data) {
     currentTab.value = uiResult.data.currentTab || 'review'
     selectedCategory.value = uiResult.data.selectedCategory || 'all'
+    selectedCompany.value = uiResult.data.selectedCompany || ''
+    selectedPosition.value = uiResult.data.selectedPosition || ''
     currentIndex.value = uiResult.data.currentIndex || 0
     categoryIndexMap.value = uiResult.data.categoryIndexMap || {}
+  }
+  // 二级分类仅对面经库生效，其他库强制清空
+  if (!isSecondaryEnabled.value) {
+    selectedCompany.value = ''
+    selectedPosition.value = ''
   }
   
   if (authRef.value) {
@@ -655,30 +736,25 @@ async function syncFromCloud(libraryId) {
 
 .toolbar {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
 }
 
 .toolbar-search {
-  flex: 0 1 360px;
-  min-width: 0;
+  width: 100%;
+  max-width: 480px;
 }
 
 .toolbar-filter {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
 }
 
 @media (max-width: 767.98px) {
   .toolbar {
-    flex-direction: column;
     align-items: stretch;
     margin-bottom: var(--spacing-md);
-  }
-
-  .toolbar-filter {
-    width: 100%;
   }
 }
 

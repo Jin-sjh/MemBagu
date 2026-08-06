@@ -173,6 +173,8 @@ function parseSingleFile(path, raw, libraryId) {
       id: generateId(category, topic, idx),
       category,
       topic,
+      company: frontmatter ? (frontmatter.company || '') : '',
+      position: frontmatter ? (frontmatter.position || '') : '',
       question: q.question,
       answer: q.answer,
       keyPointsCount: countBoldTerms(q.answer),
