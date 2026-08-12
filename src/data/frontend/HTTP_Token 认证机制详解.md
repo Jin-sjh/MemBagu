@@ -47,3 +47,22 @@ Token 主要解决什么安全问题？
 核心解决**CSRF 跨站请求伪造**。因为 CSRF 是利用浏览器自动带 Cookie 的特性伪造请求，而 Token 不会被自动携带，必须前端主动带上，非法网站拿不到 Token，就无法伪造请求，从而防御 CSRF。
 
 ---
+
+## 真实业务 / 面试场景（案例补充）
+
+### 场景 1：token 存 localStorage 被 XSS 偷走
+**背景**：页面有 XSS 漏洞，攻击者脚本 `localStorage.getItem('token')` 直接拿走。
+**解决**：敏感 token 放 `HttpOnly + Secure + SameSite` Cookie（JS 读不到），或存内存 + 短时效 refresh token。
+
+### 场景 2：用户退出登录，JWT 却还能用
+**为什么**：JWT 无状态、服务端不存，过期前一直有效，无法主动吊销。
+**解决**：引入 refresh token + 服务端黑名单（Redis），或改用 Session+Cookie 以便随时吊销。
+
+### 场景 3：分布式系统用 Session 怎么共享
+**为什么**：多台应用服务器各存各的 session，负载均衡一换机器就掉登录。
+**解决**：session 集中存 Redis，或干脆用无状态 JWT（但需接受"无法即时吊销"的代价）。
+
+### 场景 4：Token 为什么能防 CSRF
+**要点**：CSRF 借的是浏览器"自动带 Cookie"；而 Token 靠前端主动放进请求头，跨站请求拿不到也带不上，自然防住伪造。
+
+---

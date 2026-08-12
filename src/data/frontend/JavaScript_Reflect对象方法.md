@@ -44,3 +44,18 @@ created: 2026-07-24
 1. 统一了对象操作 API，所有方法都是静态函数式调用
 2. 返回值更规范（成功返回 true，失败返回 false 而非抛出错误）
 3. 与 Proxy 完美配合，Proxy 的拦截器与 Reflect 方法一一对应
+
+---
+
+## 真实业务 / 面试场景（案例补充）
+
+### 场景 1：用 Proxy + Reflect 给对象加"访问默认值"
+**背景**：读取 `obj.x` 时若没定义，想自动返回默认值而不是 undefined。
+**解决**：`new Proxy(target, { get(t, k) { return Reflect.get(t, k) ?? '默认值' } })`，在 get 拦截里用 `Reflect.get` 取原值再兜底，保持语义一致。
+
+### 场景 2：赋值失败时不再抛错
+**背景**：`obj.x = 1` 在属性只读（如 freeze 后）时会静默失败或报错。
+**解决**：用 `Reflect.set(obj, 'x', 1)` 返回布尔值，成功 true、失败 false，便于用 `if` 判断处理，而不必 try/catch 包裹。
+
+### 场景 3：面试——为什么 Proxy 拦截里要用 Reflect
+**要点**：Reflect 与 Proxy 的 13 个陷阱方法一一对应，调用 `Reflect.get/set` 能让"默认行为"被正确触发（包括原型链、getter 的 this 绑定等），避免手写 `target[key]` 丢语义。

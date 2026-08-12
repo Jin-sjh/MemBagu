@@ -83,3 +83,19 @@ Cookie 适合用于在客户端和服务器之间传递数据、跨域访问和�
 
 ## 【回答】
 浏览器多个标签页之间通信主要有以下几种方式：可以使用 localStorage 或 sessionStorage，通过监听 storage 事件实现跨标签页同步；利用 BroadcastChannel 专门用于同源标签页之间广播消息；还可以通过 SharedWorker 共享线程实现数据互通；另外也能借助 Cookie 配合定时器轮询、打开新窗口时使用 window.postMessage 传递消息，或使用 IndexedDB 间接实现数据共享，其中同源限制是大部分方式的前提条件。
+
+---
+
+## 真实业务 / 面试场景（案例补充）
+
+### 场景 1：登录 token 存 localStorage 被 XSS 偷走
+**背景**：页面有 XSS 漏洞，攻击者 `localStorage.getItem('token')` 直接拿走，且 localStorage 关浏览器也不消失。
+**解决**：敏感 token 放 `HttpOnly + Secure + SameSite` Cookie（JS 读不到），或只存内存 + 短时效 refresh token。
+
+### 场景 2：多标签页同步表单草稿
+**背景**：用户在 A 标签页填了一半，切到 B 标签页想接着看。
+**解决**：用 `localStorage` + `storage` 事件，一个标签页写入、其他同源标签页监听到变化实时同步；sessionStorage 因标签页隔离做不到。
+
+### 场景 3：cookie 太大拖慢请求
+**为什么**：cookie 每次 HTTP 请求都自动带上，体积过大（如塞了多余字段）会白白增加每个请求的头部开销。
+**解决**：只把必要的身份标识放 cookie，大体积数据放 localStorage 或不随请求发送的存储。

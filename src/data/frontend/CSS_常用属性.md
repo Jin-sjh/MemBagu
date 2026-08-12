@@ -111,3 +111,20 @@ z-index 是相对父级层叠上下文比较大小，不能突破父容器层级
 数值相同则后来居上（DOM 靠后的元素覆盖前面的）。
 
 ---
+
+## 真实业务 / 面试场景（案例补充）
+
+### 场景 1：z-index 设了很大却盖不过兄弟元素
+**背景**：弹窗 `z-index: 9999` 还是被旁边卡片压住。
+**为什么**：z-index 只在"定位元素"上生效，且只能在同一个"父级层叠上下文"内比较；若父容器本身 z-index 较低或新建了层叠上下文，子元素再大也出不去。
+**解决**：检查父级是否 `position: static`（需设 relative 等），或调整父级层叠上下文的层级。
+
+### 场景 2：动画用 margin 位移导致页面卡顿
+**背景**：列表项用 `margin-left` 做滑动动画，低端机掉帧。
+**为什么**：改 margin 触发 reflow（重排），浏览器要重算布局。
+**解决**：改用 `transform: translateX()`，只触发 composite，可走 GPU 硬件加速，不重排不重绘，流畅很多。
+
+### 场景 3：面试——哪些属性触发 reflow，哪些只触发 repaint
+**要点**：改 width/height/margin/position/font-size 等会触发 reflow（重排，最贵）；改 color/background/visibility/border-style 等只触发 repaint（重绘）；能用 transform/opacity 就尽量绕开 reflow，是性能优化关键点。
+
+---
