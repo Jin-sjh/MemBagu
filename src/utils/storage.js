@@ -254,11 +254,12 @@ export async function syncProgressToCloud(libraryId, progress) {
     user_id: user.id,
     library_id: libraryId,
     question_id: questionId,
-    status: data.status || 'new',
-    next_review: data.nextReview || null,
-    review_count: data.reviewCount || 0,
-    ease_factor: data.easeFactor || 2.5,
-    interval: data.interval || 0
+    streak: data.streak || 0,
+    mastered: data.mastered || false,
+    pending_confirm: data.pendingConfirm || false,
+    last_wrong_time: data.lastWrongTime || null,
+    next_review_time: data.nextReviewTime || null,
+    history: data.history || []
   }))
   
   if (records.length === 0) return { success: true }
@@ -297,11 +298,12 @@ export async function loadProgressFromCloud(libraryId) {
   if (data) {
     data.forEach(record => {
       progress[record.question_id] = {
-        status: record.status,
-        nextReview: record.next_review,
-        reviewCount: record.review_count,
-        easeFactor: record.ease_factor,
-        interval: record.interval
+        streak: record.streak || 0,
+        mastered: record.mastered || false,
+        pendingConfirm: record.pending_confirm || false,
+        lastWrongTime: record.last_wrong_time || null,
+        nextReviewTime: record.next_review_time || null,
+        history: record.history || []
       }
     })
   }
