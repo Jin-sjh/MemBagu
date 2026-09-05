@@ -117,3 +117,15 @@ description: >
   explore, transform, or visualize the data, even if they don't
   explicitly mention "CSV" or "analysis."
 ```
+
+---
+
+## 【问题】
+写 description 时要特别注意模型的什么心理？为什么「技能写好了却没被触发」很常见？
+
+## 【回答】
+要特别注意大模型的「**偷懒心理**」：它天生偏向「少用甚至不用技能」，专业叫法是「**工具调用惰性**」。
+
+因此写 description 的核心原则为「**精简、精准，不冗余**」，并且可以使用**反向触发词避免技能「抢活儿」**（误触发到别人的场景）。
+
+更关键的是：**技能写得再好，智能体没在正确时机选中它，一切白搭**，所以 **description 要反复测试**——触发不准是技能本身的固有局限之一，只能靠持续测 description 来收敛。（来源：《图解Skill：AI提效实战指南》宝玉，2.4 节）
