@@ -2,7 +2,7 @@
 category: Vue
 topic: Composition_API
 type: bagu
-tags: [Vue]
+tags: [Vue, Composition API, 组合式API, 选项式API, Mixin, Composables]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -58,3 +58,11 @@ Vue 3 的组合式 API（setup）是 ESM 友好的，能被 Tree-shaking 优化�
 
 - **选项式 API（Options API）**：`this` 是动态对象，无法被静态分析，无法 Tree-shaking；
 - **组合式 API（Composition API）**：`import { ref, computed } from 'vue'` 是静态导入，未使用的 API 会被 Tree-shaking 移除，打包体积更小。
+
+## 【问题】
+组合式 API 与选项式 API 的区别与联系？
+
+## 【回答】
+- **选项式 API**：以"组件实例 `this`"为中心，把响应性细节抽掉，**对初学者友好**；
+- **组合式 API**：直接在**函数作用域**定义响应式状态并从多个函数组合，**更自由，但对响应式系统的理解要求更高**。
+- **联系**：两者底层是**同一套响应式系统**，**选项式底层基于组合式实现**。
