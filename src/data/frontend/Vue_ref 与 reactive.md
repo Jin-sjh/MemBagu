@@ -2,7 +2,7 @@
 category: Vue
 topic: ref 与 reactive
 type: bagu
-tags: [Vue, ref, reactive, 响应式, Proxy, 面试]
+tags: [Vue, ref, reactive, 响应式, Proxy, RefImpl, 源码, 面试]
 difficulty: medium
 created: 2026-09-06
 ---
@@ -101,3 +101,49 @@ reactive 返回的是 Proxy 对象，**解构得到的是普通原始值**，脱
   ✅ 正确：仅限顶层裸变量，属性引用不解包
 - ❌ 错误：reactive 不能传数字字符串
   ✅ 正确：传基础类型不会报错，但不会有响应式
+
+## 【问题】
+ref 传入基本类型（如 `ref(123)`）和引用类型（如 `ref({name:'xxx'})`）时，`.value` 的实现有什么不同？（源码级 RefImpl 视角）
+
+## 【回答】
+ref 返回一个 **RefImpl 类实例**，内部用 `_value` 字段保存值，`.value` 走 getter/setter。两种入参的内部处理路径不同：
+
+**① 传入基本类型（ref(123)）**
+
+1. 创建 RefImpl 实例，原始基础值直接存入内部 `_value` 字段；
+2. `.value` 的 getter：返回内部保存的基础值，同时 **track 收集依赖**；
+3. `.value` 的 setter：赋入新基础值，**trigger 触发更新**；
+4. 全程**不调用 reactive**，完全靠 RefImpl 类自身的 getter/setter 完成响应式。
+
+**② 传入引用类型（ref({name:'xxx'})）**
+
+1. 同样创建 RefImpl 实例；
+2. 构造函数内部会把传入对象交给 **reactive() 转成 Proxy**，代理对象存入 `_value`；
+3. `.value` 的 getter：返回这个 **reactive 代理对象**，同时收集依赖；
+4. `.value` 的 setter：若新值仍是对象，再次经 reactive 代理后替换 `_value` 并触发更新；
+5. 若修改的是 `.value.xxx` 属性：本质是操作 reactive 代理对象的内部属性，**由 Proxy 负责劫持，不走 ref 的 setter**。
+
+伪代码示意（Vue 源码简化）：
+
+```ts
+class RefImpl<T> {
+  private _value: T
+  constructor(value: T) {
+    // 对象则再包一层 reactive，基础类型原样保存
+    this._value = isObject(value) ? reactive(value) : value
+  }
+  get value() {
+    track() // 收集依赖
+    return this._value
+  }
+  set value(newVal) {
+    this._value = isObject(newVal) ? reactive(newVal) : newVal
+    trigger() // 派发更新
+  }
+}
+```
+
+**一句话区分：**
+
+- **基本类型 ref：响应式来自 RefImpl 类的访问器属性（getter/setter）；**
+- **对象 ref：外层壳子仍是 RefImpl，内部实际响应能力委托给 reactive(Proxy)。**
