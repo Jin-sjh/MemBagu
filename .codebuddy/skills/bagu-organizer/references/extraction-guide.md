@@ -20,6 +20,9 @@
 
 接入后统一得到「纯文本资料」，进入第 2 步。
 
+> 工具名映射：上表按 IDE 版书写。CLI（CodeBuddy Code）下等价工具为
+> `read_file`→`Read`、`write_to_file`→`Write`、`replace_in_file`→`Edit`、`web_fetch`→`WebFetch`。
+
 ## 2. 资料结构化（可借力脚本）
 
 运行 `scripts/extract_candidates.py <资料文件>` 可自动：

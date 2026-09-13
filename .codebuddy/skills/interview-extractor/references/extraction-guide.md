@@ -15,6 +15,9 @@
 | 粘贴文本 | 以粘贴内容为准，直接用于提取 | 最常见补充方式 |
 | 多个来源 | 逐个接入，归并到同一批提取任务 | 同公司岗位合并去重 |
 
+> 工具名映射：上表按 IDE 版书写。CLI（CodeBuddy Code）下等价工具为
+> `read_file`→`Read`、`write_to_file`→`Write`、`replace_in_file`→`Edit`、`web_fetch`→`WebFetch`。
+
 ## 2. 提取「公司 / 岗位 / 轮次」元数据
 
 先从资料中识别三个关键元数据（写入 frontmatter）：

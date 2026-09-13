@@ -2,7 +2,7 @@
 """Segment a material file into 八股-worthy chunks to assist extraction.
 
 Usage:
-    python3 extract_candidates.py <material_file> [--max-excerpt 600]
+    python extract_candidates.py <material_file> [--max-excerpt 600]   # Windows 用 python
 
 Reads a .md / .txt / pasted-text file, splits it into topic segments
 (by Markdown headings, or by blank lines when no headings exist), and for

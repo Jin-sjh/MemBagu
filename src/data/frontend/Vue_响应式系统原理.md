@@ -41,7 +41,7 @@ targetMap                            找到 dest Map
 - 渲染副作用为何并入 microtask（批量刷新性能优化）
 
 ## 【衍生问题】
-- ref 和 reactive 的区别？（原资料此处被截断，待补充）
+- ref 和 reactive 的区别？已专文覆盖，见 `Vue_ref 与 reactive.md`（含 RefImpl 源码级拆解、模板解包规则、选型与避雷）。
 
 ## 【问题】
 Vue 2 的 `Object.defineProperty` 与 Vue 3 的 `Proxy` 在响应式实现上有哪些区别？（必背对比表）
@@ -61,3 +61,23 @@ Vue 2 的 `Object.defineProperty` 与 Vue 3 的 `Proxy` 在响应式实现上有
 
 ## 【口诀】
 增删数组 Proxy 行，惰性递归性能赢；defineProperty 只管已有属性，$set 重写方法来救场。
+
+## 【问题】
+为什么修改一个 Vue 变量，页面就会自动变化？（直觉层，一面开场常问）
+
+## 【回答】
+**JavaScript 本身并不知道「哪些代码依赖了某个变量」。** 例如：
+
+```js
+let price = 10
+let total = price * 2
+```
+
+把 `price` 改成 20，JS 不会去重算 `total`。
+
+所以 Vue 需要一套机制：**记录「谁使用了这个数据」，并在数据变化时通知它**——这就是响应式系统的职责。
+
+Vue 的响应式类似**发布-订阅**：数据是发布者，依赖它的组件是订阅者，**数据变化 → 通知所有订阅者重新渲染**。
+
+落到实现上就是两个动作：读取数据时 **track（依赖收集）**记录订阅者，修改数据时 **trigger（派发更新）**通知订阅者重新执行副作用。
+

@@ -61,7 +61,7 @@ description: This skill should be used when the user drops in an IMAGE (screensh
 ### Step 5 — 查重与合并
 
 ```bash
-python3 <skill_dir>/scripts/scan_entries.py
+python ${CODEBUDDY_SKILL_DIR}/scripts/scan_entries.py
 ```
 
 - **已存在同公司+岗位文件** → 读取原文件，新问题合并进去，`rounds`/`tags` 取并集，
@@ -97,6 +97,21 @@ python3 <skill_dir>/scripts/scan_entries.py
 - `references/format-spec.md` — 面经文件格式规范、frontmatter 字段、解析器行为、命名反模式。
 - `references/extraction-guide.md` — 图片/链接接入方式、公司/岗位/轮次识别、提取/整理方法论。
 - `scripts/scan_entries.py` — 扫描 `src/data/` 输出已有面经文件清单，用于查重与合并判断。
+
+## Tool Name Mapping（IDE / CLI 通用）
+
+本文件的工具名按 CodeBuddy / WorkBuddy **IDE 版**书写；CLI（CodeBuddy Code）下等价工具名不同，
+按当前运行环境自行映射：
+
+| 本文件写法 | CLI 等价 |
+| --- | --- |
+| `read_file` | `Read` |
+| `write_to_file` | `Write` |
+| `replace_in_file` | `Edit` |
+| `web_fetch` | `WebFetch` |
+
+脚本一律用 `python` 调用（Windows 无 `python3`），路径用 `${CODEBUDDY_SKILL_DIR}` 占位符，
+加载时自动替换为当前 SKILL.md 所在目录的绝对路径（CLI 下别名 `${CLAUDE_SKILL_DIR}` 同样生效）。
 
 ## Cautions
 

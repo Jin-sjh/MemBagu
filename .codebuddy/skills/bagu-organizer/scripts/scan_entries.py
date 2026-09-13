@@ -2,7 +2,7 @@
 """Inventory MemBagu 八股 entries to assist classification and deduplication.
 
 Usage:
-    python3 scan_entries.py [repo_root]
+    python scan_entries.py [repo_root]   # Windows 用 python; macOS/Linux 可用 python3
 
 Scans <repo>/src/data and prints a compact inventory:
   - Each library (top-level folder) with its file count

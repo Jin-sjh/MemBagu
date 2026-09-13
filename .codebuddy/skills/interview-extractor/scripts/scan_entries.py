@@ -3,7 +3,7 @@
 deduplication when deciding whether to create a new file or merge.
 
 Usage:
-    python3 scan_entries.py [repo_root]
+    python scan_entries.py [repo_root]   # Windows 用 python; macOS/Linux 可用 python3
 
 Scans <repo>/src/data and prints:
   - All files whose name starts with "面经_"

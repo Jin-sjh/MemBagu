@@ -9,7 +9,9 @@
 src/data/<library>/<category>_<topic>.md
 ````
 
-- `<library>`：顶层文件夹，目前固定为以下四个之一：`frontend`、`AI`、`leetcode`、`cs-basics`。
+- `<library>`：顶层文件夹。规范收口的四个为：`frontend`、`AI`、`leetcode`、`cs-basics`。
+  实际仓库中还存在少量历史遗留的顶层目录（如 `强化学习`、`面经`），**新建条目一律不要放进这些
+  遗留目录**，按下面第 2 节归到四大 library 内；发现遗留目录时提醒用户后续收敛。
 - `<category>_<topic>.md`：文件名由下划线连接，且 `category` 部分必须与 frontmatter 中的
   `category` 字段完全一致（解析器在缺少 frontmatter 时会回退用文件名前缀作为 category）。
 

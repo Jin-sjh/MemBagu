@@ -52,7 +52,7 @@ description: This skill should be used when the user wants to organize 八股 (t
 是否疑似算法题、八股价值分与建议提问，作为抽取骨架：
 
 ```bash
-python3 <skill_dir>/scripts/extract_candidates.py <material_file>
+python ${CODEBUDDY_SKILL_DIR}/scripts/extract_candidates.py <material_file>
 ```
 
 （无本地文件、纯粘贴文本时，可跳过脚本，直接在第 3 步按文本抽取。）
@@ -75,7 +75,7 @@ python3 <skill_dir>/scripts/extract_candidates.py <material_file>
 运行以下脚本查看已有归类，确保命名一致、优先复用已有 category：
 
 ```bash
-python3 <skill_dir>/scripts/scan_entries.py
+python ${CODEBUDDY_SKILL_DIR}/scripts/scan_entries.py
 ```
 
 依据 `references/format-spec.md` 第 2 节决定：
@@ -136,6 +136,21 @@ python3 <skill_dir>/scripts/scan_entries.py
 - `references/extraction-guide.md` — Mode B 资料接入方式、抽取/蒸馏方法论、类型判定、示例。
 - `scripts/scan_entries.py` — 扫描 `src/data/` 输出已有 library/category/topic 清单，用于分类一致与去重。
 - `scripts/extract_candidates.py` — 把资料按标题切成 segment，标记显式 Q&A / 算法题 / 八股价值分 / 建议提问，辅助 Mode B 抽取。
+
+## Tool Name Mapping（IDE / CLI 通用）
+
+本文件的工具名按 CodeBuddy / WorkBuddy **IDE 版**书写；CLI（CodeBuddy Code）下等价工具名不同，
+按当前运行环境自行映射：
+
+| 本文件写法 | CLI 等价 |
+| --- | --- |
+| `read_file` | `Read` |
+| `write_to_file` | `Write` |
+| `replace_in_file` | `Edit` |
+| `web_fetch` | `WebFetch` |
+
+脚本一律用 `python` 调用（Windows 无 `python3`），路径用 `${CODEBUDDY_SKILL_DIR}` 占位符，
+加载时自动替换为当前 SKILL.md 所在目录的绝对路径（CLI 下别名 `${CLAUDE_SKILL_DIR}` 同样生效）。
 
 ## Cautions
 
