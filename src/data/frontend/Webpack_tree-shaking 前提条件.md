@@ -82,3 +82,37 @@ Vue 2 为什么 Tree-shaking 效果差？
 
 ## 【回答】
 Vue 2 基于 Options API，`this` 是动态对象，所有选项（如 `methods`、`computed`）都挂载在 `this` 上，打包工具无法静态分析哪些方法被使用，因此无法做 Tree-shaking；Vue 3 用 Composition API，基于静态 `import`，天然支持 Tree-shaking，打包体积更小。
+
+---
+
+## 【问题】
+Tree Shaking 的核心工作流程是怎样的？
+
+## 【回答】
+Tree Shaking 是基于模块静态结构和使用关系移除未使用代码的死代码消除策略，流程为：
+```
+解析 ESM 依赖图
+  ↓ 标记被使用的 export
+  ↓ 判断模块副作用
+  ↓ 删除不可达且无副作用代码
+  ↓ 压缩器进一步消除死代码
+```
+**ESM 的静态 import/export 让分析更可靠**；它先标记被使用的导出，再结合 `sideEffects` 等副作用信息裁剪，最后由压缩器进一步消除死代码。Tree Shaking 强调**模块级依赖裁剪**，与一般 Dead Code Elimination 有重叠但不完全相同。
+
+---
+
+## 【问题】
+sideEffects 配置有什么作用？错误声明会导致什么问题？
+
+## 【回答】
+`sideEffects: false` 是给打包器的声明，表示**模块可安全整体裁剪**（无副作用）。但风险在于：**若模块导入 CSS、注册 polyfill 或执行初始化却错误声明 `sideEffects: false`，这些必要副作用可能被错误删除**，导致样式丢失或运行异常。
+因此只有真正无副作用的文件才能标记；有副作用的模块（如 `.css`、polyfill 入口）必须排除在 `false` 之外，或显式列入保留名单。
+
+---
+
+## 【问题】
+Tree Shaking 和普通死代码消除（DCE）有什么区别？
+
+## 【回答】
+两者都移除未使用代码，但**Tree Shaking 强调模块级依赖裁剪**，依赖 ESM 的静态结构识别“哪些 export 未被使用”并整体移除；**普通 DCE 更偏向函数/语句级别**，由压缩器（如 Terser）在生成产物后消除不可达分支和未引用变量。
+Tree Shaking 必须在**模块静态可分析、正确 sideEffects 配置、配合代码压缩**的前提下才生效；CommonJS 动态 require、运行时反射和副作用不明确都会降低其效果。

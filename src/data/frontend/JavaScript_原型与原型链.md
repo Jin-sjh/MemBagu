@@ -2,7 +2,7 @@
 category: JavaScript
 topic: 原型与原型链
 type: bagu
-tags: [JavaScript]
+tags: [JavaScript, 原型, 原型链, new, instanceof, 继承]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -63,3 +63,93 @@ JavaScript 原型链的核心规则
 
 ## 【回答】
 作用域链和原型链是 JS 中两种完全不同的查找机制，**作用域链主要用于变量和函数的查找**，基于词法作用域，由函数嵌套关系形成，查找时从当前局部作用域逐层向外层作用域直至全局作用域检索；而**原型链用于对象属性和方法的查找**，基于对象的 `__proto__` 原型引用形成继承链路，实例自身没有的属性方法，会顺着原型对象向上查找，最终到 `Object.prototype` 直至 `null`。简单来说，作用域链管变量访问，原型链管对象属性与方法继承，二者底层结构、作用场景完全不同。
+
+## 【问题】
+为什么需要原型？方法放在原型上有什么好处？
+
+## 【回答】
+若把相同方法分别写在每个对象上，每个对象都会拥有一份不同的函数值，**既重复占用资源，也不利于统一修改**。
+
+原型机制把"对象独有的数据"和"多个对象共享的行为"分开：方法放到原型对象上，实例通过原型委托访问同一份方法。
+
+```javascript
+function User(name) { this.name = name; }
+User.prototype.sayHi = function () { return `hi ${this.name}`; };
+const u1 = new User('Tom');
+const u2 = new User('Jack');
+u1.sayHi === u2.sayHi; // true，共享同一个函数
+```
+
+核心收益：**方法共享、表达对象关系、不复制属性即可完成委托式继承**。
+
+## 【问题】
+prototype、__proto__ 和 constructor 有什么区别？
+
+## 【回答】
+- **prototype**：函数对象上的数据属性，用作构造实例的原型对象。
+- **__proto__**：访问对象内部 `[[Prototype]]` 的历史访问器，不建议作为通用业务 API（应改用 `Object.getPrototypeOf` / `Object.create`）。
+- **constructor**：通常是原型对象上指回构造函数的**普通属性**，不是引擎永久维护的魔法指针。
+
+函数默认创建的 `User.prototype` 通常有 `constructor: User`；如果整体替换为没有该属性的普通对象，它会沿原型链找到 `Object.prototype.constructor`：
+
+```javascript
+function User() {}
+User.prototype = { sayHi() {} };
+User.prototype.constructor === Object; // true
+```
+
+## 【问题】
+instanceof 的原理是什么？它一定可靠吗？
+
+## 【回答】
+`value instanceof Ctor` 检查 **`Ctor.prototype` 是否出现在 `value` 的原型链上**，判断的是原型链关系，不是"对象是否由某构造函数唯一创建"。简化实现即沿 `value` 的原型链向上找，遇到 `Ctor.prototype` 返回 true。
+
+它**不绝对可靠**：跨 Realm（如 iframe）对象、被手动修改的 `prototype`、以及自定义的 `Symbol.hasInstance` 都可能影响结果。判断类型名不应依赖 `instanceof`。
+
+## 【问题】
+class 和原型是什么关系？class 彻底脱离原型模型了吗？
+
+## 【回答】
+没有。`class` 只是提供更清晰语法，实例方法通常**仍放在原型上**，静态方法放在构造函数上。类语法对构造、方法、继承、私有字段提供封装，但没有消灭原型模型。
+
+注意：`class` 方法默认**不可枚举**，类构造函数**必须通过 `new` 调用**，这些与手写构造函数行为并不完全相同。数组的 `arr.toString` 通常先命中 `Array.prototype.toString`，而非 `Object.prototype.toString`。
+
+## 【问题】
+new 和 Object.create 有什么区别？
+
+## 【回答】
+**`new Ctor()`**：创建对象、把 `[[Prototype]]` 设为 `Ctor.prototype`、以新对象为 `this` 执行构造函数、并根据显式返回值决定结果。
+
+**`Object.create(proto)`**：只创建一个新对象并把其 `[[Prototype]]` 设为 `proto`，**不会执行构造函数，也不会自动初始化实例字段**。
+
+无原型对象 `Object.create(null)` 适合纯字典场景（避免继承 `toString` 等），但失去常见对象方法。二者不等同。
+
+## 【问题】
+构造函数显式返回对象或基本类型时，new 的结果分别是什么？
+
+## 【回答】
+**显式返回对象会覆盖默认实例**；**返回基本类型则被忽略**，仍返回新创建的实例。即返回值是对象/函数则用它，否则用新实例：
+
+```javascript
+function A() { this.x = 1; return { x: 2 }; }
+function B() { this.x = 1; return 2; }
+new A().x; // 2，返回对象覆盖实例
+new B().x; // 1，基本类型被忽略
+```
+
+手写 `myNew` 也遵循此规则（result 为 object/function 时返回 result，否则返回新 obj）。
+
+## 【问题】
+为什么不能把可变的数组/对象直接放在原型上？
+
+## 【回答】
+因为原型上的属性被**所有实例共享**，写在原型上的数组/对象会被实例共享，修改一个实例可能影响全部实例：
+
+```javascript
+function User() {}
+User.prototype.list = [];
+const a = new User();
+a.list.push(1); // 其它实例的 list 也受影响
+```
+
+正确做法：**实例独有状态放在构造函数中**（`this.list = []`），共享方法放原型。可变数据不要直接放原型，避免跨实例污染。

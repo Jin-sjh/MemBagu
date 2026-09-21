@@ -2,7 +2,7 @@
 category: HTTP
 topic: 浏览器缓存
 type: bagu
-tags: [HTTP]
+tags: [HTTP, 浏览器缓存, 强缓存, 协商缓存, 缓存策略]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -72,4 +72,32 @@ Cache-Control: no-cache, private, max-age=0
 ETag: "8b0c55f5e6e3e203"
 Expires: Thu, 07 Dec 2017 11:17:56 GMT
 Last-Modified: Wed, 06 Dec 2017 13:17:44 GMT
+
+---
+
+## 【问题】
+强缓存和协商缓存有什么区别？
+
+## 【回答】
+**Cache-Control: max-age 描述新鲜时间**；**no-cache 允许存储但使用前需验证**；**no-store 禁止存储**。**Expires 是较旧的绝对时间机制，可能受时钟影响**。ETag 是实体版本标识，Last-Modified 是时间依据，二者可组合，实际选型取决于生成成本、精度和部署策略。
+
+---
+
+## 【问题】
+前端静态资源（HTML 与带 Hash 的文件）应怎么设计缓存策略？
+
+## 【回答】
+**HTML 入口通常需要较短缓存或协商**，以便及时获得新资源；**带内容 Hash 的 JS/CSS/图片文件内容变化即 URL 变化，可设置长期 immutable 缓存**。发布必须保证 HTML 引用的资源在缓存和 CDN 上可获得，否则会出现新旧版本不匹配。
+
+---
+
+## 【问题】
+关于 HTTP 缓存有哪些常见误区？
+
+## 【回答】
+- **误区：no-cache 是不缓存**。实际 no-cache 允许存储但使用前需验证，**no-store 才是禁止存储**。
+- **误区：304 没有响应体就等于没有网络成本**。仍然发生了协商请求。
+- **误区：所有资源都应长期缓存**。入口 HTML 的更新和回滚会受影响。
+
+缓存策略必须和发布、回滚、CDN 一起设计；缓存降低延迟、带宽和源站压力，但会引入版本失效、调试困难、CDN 变体和隐私问题。
 ```

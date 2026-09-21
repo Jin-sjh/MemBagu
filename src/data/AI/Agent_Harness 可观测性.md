@@ -121,7 +121,51 @@ Agent 不是一次模型调用，而是多次规划、多次工具调用、多�
 
 渐进建设：先跑通 Trace→补工具调用和成本指标→做失败样本回放→做评测闭环和自动告警。方向一定要对：**不要把 Agent 可观测性做成日志大屏，要做成 Agent 改进系统**。
 
+## 【问题】
+Agent 系统为什么比传统服务更需要 Trace？
+
+## 【回答】
+传统服务调用链相对固定；Agent **路径依赖模型决策**，分支多、偶现问题多。Trace 能把「哪一步选了哪个工具、参数是什么、返回多长」串起来，否则只能猜 Prompt。
+
+## 【问题】
+结构化日志和 Trace 有什么区别？日志里能记完整 Prompt 吗？
+
+## 【回答】
+- **结构化日志**是事件流，适合检索与告警。必备字段：timestamp、level、trace_id、span_id、tenant_id、agent_name、step、model、latency_ms、token_usage、error_code；
+- **Trace** 是因果树（Trace 一次请求，Span 一个单元如一次 LLM/工具/检索，span_id/parent_span_id 构成树），适合分析延迟与依赖。
+
+二者通过 trace_id 关联，互补而非二选一。切忌只打一大段自然语言没有可过滤字段。生产日志应**脱敏 + 采样 + 权限**，避免 PII 与密钥泄露（开发环境可记完整）。
+
+## 【问题】
+OpenTelemetry 在 Agent 里一般打哪些 Span？
+
+## 【回答】
+- 顶层**请求 Span**；
+- 子 Span 包括**每次 LLM、检索、工具、重试、降级**；
+- 记录属性如 model、token、tool.name、error.type。
+
+最小实现：`contextvars` 存 trace_id，`with span("llm")` 记录起止；导出到 OpenTelemetry，或写入 Kafka 再由 Flink 聚合。
+
+## 【问题】
+小型团队没有 LangSmith，最小可观测方案是什么？
+
+## 【回答】
+- **结构化日志 + trace_id** + 每次 LLM/工具的耗时与 token；
+- **Sentry** 捕获异常；
+- 用 **OpenTelemetry 导出到 Jaeger** 或云厂商 APM；
+- 评估用 **CSV 用例 + CI 脚本**。
+
 ## 【衍生问题】
 - 可观测性如何与 Context Engineering、Agent Evaluation 配合形成完整治理闭环？——待补充
 - OpenTelemetry / LangSmith / Langfuse 等成熟方案如何接入自建 Harness 的打点？——待补充
 - 目标锚点 / 检查点评估里的"相关度"如何用模型自动打分，阈值怎么定？——待补充
+
+## 【问题】
+生产环境里，AI Agent 的监控告警具体怎么落地？除了系统指标还要盯哪些 AI 特有指标？
+
+## 【回答】
+在可观测性体系之上，落地一套**系统/业务/AI 三维监控 + 分级告警**（以下为该文档工程实践口径，非行业标准）：
+- **AI 特有指标**：LLM 调用延迟/成功率、Token 消耗趋势、检索命中率与 rerank 分数分布、**幻觉率（NLI 检测）、Agent 迭代次数分布（查死循环趋势）、工具调用成功率与延迟**。
+- **工具栈**：指标 Prometheus + Grafana（看板）、日志 ELK、链路 Jaeger、LLM 调用 LangFuse。
+- **告警分级**：P99>10s 或错误率>5% 为 P1（电话+钉钉）；幻觉率>5% 或检索命中率<70% 为 P2；Token 日耗超阈值 P3。
+- 要点：**AI 系统必须监控"模型行为指标"（幻觉率/迭代分布），否则只能等用户投诉才发现**。

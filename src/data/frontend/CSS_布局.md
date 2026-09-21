@@ -2,7 +2,7 @@
 category: CSS
 topic: 布局
 type: bagu
-tags: [CSS]
+tags: [CSS, 布局, Flex, 弹性盒子, 响应式, 对齐]
 difficulty: hard
 created: 2026-07-24
 ---
@@ -783,3 +783,37 @@ Float 方案优缺点
 - 容易影响周围元素的布局，维护成本高
 
 ---
+
+## 【问题】
+Flex 的 align-content 与 align-items 有什么区别？什么时候 align-content 才生效？
+
+## 【回答】
+**align-items** 沿**交叉轴对单行内的项目对齐**（如 center、stretch）；**align-content** 在**多行时分配行轨道之间的空间**（如 space-between、space-around）。关键区别：**align-content 只有在 Flex 容器出现换行（`flex-wrap: wrap`）形成多行时才生效**，单行布局下它不起作用。面试容易把两者混为一谈，应先判断是"行内对齐"还是"多行间距分配"。
+
+---
+
+## 【问题】
+为什么 Flex 子项内容过长时反而收缩不了？min-width:0 有什么作用？
+
+## 【回答】
+Flex 子项默认 **`min-width: auto`**，意味着最小尺寸不能小于其内容尺寸，因此**长内容（如长文本、长 URL）会阻止子项收缩**，导致布局溢出。给子项设置 **`min-width: 0`** 可以允许文本真正缩小，再配合 `overflow: hidden` 与 `text-overflow: ellipsis` 实现溢出省略。这是 Flex 布局中非常常见的"收缩失败"坑点。
+
+---
+
+## 【问题】
+flex: 1 和 flex: auto 有什么区别？
+
+## 【回答】
+二者都展开为 `flex-grow: 1; flex-shrink: 1`，区别在 **flex-basis**：
+- **flex: 1** 通常展开为 **`1 1 0%`**，基础尺寸为 0，完全按剩余空间比例分配；
+- **flex: auto** 展开为 **`1 1 auto`**，基础尺寸先取内容/自身宽度，再分配剩余空间。
+
+因此同样三个子项，`flex:1` 通常等分剩余空间，而 `flex:auto` 会先保留各自内容宽度再分配，最终宽度不一定相等。
+
+---
+
+## 【问题】
+Flex 布局中 gap 和 margin 实现项目间距有什么不同？
+
+## 【回答】
+`gap` 描述**项目之间的间距**，`justify-content: space-between` 负责**剩余空间分配**。相比给每个子项加 margin，**gap 不需要为首尾项写特殊规则**，也不会把容器外部边缘误算成间距。若项目还需要伸缩，还要配合 **`min-width: 0`** 和明确的宽度策略，避免长内容撑破布局。

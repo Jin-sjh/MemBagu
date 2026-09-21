@@ -2,7 +2,7 @@
 category: HTTP
 topic: Cookie 和 Session 的区别
 type: bagu
-tags: [HTTP]
+tags: [HTTP, Cookie, Session, JWT, 鉴权, 安全]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -53,3 +53,35 @@ cookie 和 session 的区别是什么？
 （4）单个 cookie 保存的数据不能超过 4KB，很多浏览器都限制一个站点最多保存 20 个 cookie。
 
 所以个人建议可以将登录信息等重要信息存放在 session 中，其他信息（如果需要保留）可以存放在 cookie 中。
+
+---
+
+## 【问题】
+Cookie、Session、JWT 三者是什么关系，为什么说它们不是互斥技术？
+
+## 【回答】
+**Cookie 是浏览器携带的小型状态载体**，**Session 是服务端保存会话状态的方案**，**JWT 是自包含的签名令牌格式**；三者不是同一层面的互斥技术。典型关系：登录后服务端创建 Session 或签发 JWT，Session ID/JWT 通过 Cookie 或 Authorization 传递，服务端验证并决定身份/权限。Cookie 只是传输载体；Session ID 放 Cookie 中时服务端用 ID 查状态；JWT 由 header/payload/signature 组成，签名可验证完整性，但 **payload 默认不是加密内容**。
+
+---
+
+## 【问题】
+Session + Cookie 和 JWT 该怎么选型？
+
+## 【回答】
+**Session + HttpOnly Cookie 优点是可撤销、敏感凭证不暴露给 JS**，缺点服务端需存状态/共享存储；**JWT 优点是服务端验证自包含、跨服务方便**，缺点是撤销困难、令牌泄漏影响大、体积大；Access + Refresh Token 短 access 降低暴露窗口，但刷新、轮换、撤销和并发复杂。**JWT 并不"完全无状态"**：签发、密钥、撤销、刷新和权限数据仍需服务端管理。
+
+---
+
+## 【问题】
+退出登录时只删除客户端 JWT 够吗？
+
+## 【回答】
+不够：**已签发的 JWT 在过期前可能仍有效**，需要短过期、撤销列表、版本号或刷新令牌轮换等策略。JWT 的 **payload 默认不是加密内容，不能放敏感秘密**。
+
+---
+
+## 【问题】
+HttpOnly Cookie 能防住 XSS 和 CSRF 吗？
+
+## 【回答】
+**HttpOnly Cookie 能降低脚本直接读取凭证的风险，但不能消除 XSS，也不能自动防 CSRF**；SameSite、CSRF Token、Origin 校验和正确授权仍需配合。选择时看撤销需求、跨服务、客户端类型、XSS/CSRF 风险和运维复杂度，而不是只说 JWT 更先进。

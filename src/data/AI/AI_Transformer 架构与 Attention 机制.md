@@ -920,3 +920,19 @@ KV Cache 缓存的就是 K 矩阵和 V 矩阵。
 - Grouped Query Attention (GQA) 如何优化 KV Cache？
 - 长文本场景下 KV Cache 会遇到什么挑战？
 
+## 【问题】
+请写出缩放点积注意力（Scaled Dot-Product Attention）的公式，并解释为什么要除以 √d_k？
+
+## 【回答】
+- 公式：**Attention(Q, K, V) = softmax(QKᵀ / √d_k) V**，其中 d_k 为每个头的维度。
+- **除以 √d_k 的原因**：当 d_k 较大时，q·k 的点积方差约为 d_k（分量独立零均值单位方差），数值幅度大，softmax 会进入极陡区、梯度不稳定；除以 √d_k 把方差缩到约 1，使 softmax 更平滑、训练更稳定。
+- 实现上 Q = XW_Q、K = XW_K、V = XW_V，对第 i 个位置用注意力权重对 V 加权求和。
+
+## 【问题】
+编码器和解码器的自注意力有什么不同？解码器为什么要 causal mask，Cross-Attention 的 Q/K/V 分别来自哪里？
+
+## 【回答】
+- **Encoder 自注意力**：双向，每个位置能看到整句，无 mask，用于编码源序列内部关系。
+- **Decoder 自注意力**：用 **causal mask** 保证自回归——位置 i 只能看自己及之前，防止训练时看到"未来"token 造成信息泄漏，使训练与推理一致。
+- **Cross-Attention（Seq2Seq 中）**：**Q 来自 Decoder 当前隐藏状态，K / V 来自 Encoder 输出**（全句 KV 固定），让 Decoder 读取源句信息。
+

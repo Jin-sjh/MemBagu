@@ -169,3 +169,11 @@ Chunked Prefill 解决什么问题？
 - vLLM V0 与 V1 引擎在调度器设计上有哪些关键差异？（**待补充**）
 - PagedAttention 如何通过 Copy-on-Write 支持 beam search 与 parallel sampling 的前缀共享？（**待补充**）
 - Prefill / Decode 分离部署（PD 分离）解决了什么问题？（**待补充**）
+
+## 【问题】
+vLLM 的 PagedAttention 解决什么问题？
+
+## 【回答】
+- 解决 **KV Cache 随请求动态增长导致的显存碎片化与浪费**（变长序列按最大长度预分配连续显存，浪费 60%–80%）。
+- 做法：把 KV Cache 存成**非连续块（类似 OS 分页）**，按请求动态分配、块表映射，浪费降至 4% 以下，提高 batch 利用率与吞吐。
+- 需与 Continuous Batching 配合：分页装得下、迭代级调度用满，共同把有效 batch 顶到显存上限。

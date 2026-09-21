@@ -152,3 +152,19 @@ MQA（Multi-Query Attention）和 GQA（Grouped-Query Attention）如何进一�
 - MQA 和 GQA 对模型效果有什么影响？
 - 为什么 LLaMA-2 选择 GQA 而不是 MQA？
 - 除了 MQA/GQA，还有哪些 KV Cache 压缩技术？
+
+## 【问题】
+MQA 和 GQA 的设计动机是什么？为什么能省显存？它们与 KV Cache 什么关系？
+
+## 【回答】
+- **动机**：标准 MHA 每个头有独立 K/V，KV Cache 体积随头数线性增长，推理显存与带宽压力大。
+- **MQA**：所有头共享一套 K/V，KV Cache 最小，但可能略损质量。
+- **GQA**：多组 Query 共享一组 K/V（如 8 组 Q 对应 2 组 KV），在显存 / 带宽与质量间折中；Llama 3、Mistral 等采用 GQA。
+- 本质：**减少每步要读写的 K/V 体积，Decode 阶段受益明显**。
+
+## 【问题】
+KV Cache 是什么？为什么能加速自回归生成？代价是什么？
+
+## 【回答】
+- **KV Cache 缓存每层、每头已生成（及 prompt）位置的 K 和 V**；新一步只算当前 token 的 Q，与缓存的 K/V 做注意力，**避免重复计算历史 K/V**，以空间换时间。
+- 显存随层数、头数、序列长度、精度线性增长，是**长上下文推理的主要瓶颈之一**；可用 MQA/GQA、量化、PagedAttention 等压缩。

@@ -2,7 +2,7 @@
 category: HTTP
 topic: SSE 与 WebSocket
 type: bagu
-tags: [HTTP]
+tags: [HTTP, SSE, WebSocket, 实时通信, 流式]
 difficulty: hard
 created: 2026-07-24
 ---
@@ -291,3 +291,35 @@ WebSocket 是双向全双工，协议要升级、端口可能受限、代理/防
 **五、一句话记牢**
 
 SSE 就是"订阅报纸"：一次订阅（建连接），服务器持续送报（推数据），比反复打电话问（轮询）高效，比双向热线（WebSocket）简单便宜。
+
+---
+
+## 【问题】
+除了原生 EventSource，前端还能怎么实现 SSE 流式接收？
+
+## 【回答】
+**fetch + ReadableStream 比 EventSource 更灵活**，可自定义 Header、POST body、AbortController 和协议解析，但需要自己处理 UTF-8 解码、事件边界和重连。SSE 使用 **text/event-stream**，服务端持续写入事件，客户端 EventSource 接收并可按 id/Last-Event-ID 恢复；客户端到服务端仍需普通 HTTP 请求，**逻辑双向不等于同一连接双向**。
+
+---
+
+## 【问题】
+WebSocket 工程化落地要注意哪些问题？
+
+## 【回答】
+WebSocket 通常从 **HTTP Upgrade 握手切换为全双工消息通道**，适合高频双向交互、协同编辑、实时控制和游戏。工程上要设计**心跳、断线检测、重连退避、消息顺序、幂等、鉴权和背压**；**协议连上不代表业务消息一定可靠**。
+
+---
+
+## 【问题】
+处理流式（Streaming）响应时，前端解析和停止要注意什么？
+
+## 【回答】
+**网络 chunk 不等于完整字符或完整 JSON**，解析器应使用流式 UTF-8 decoder 和增量 buffer。停止生成至少包括**客户端 abort、服务端检测断开/取消信号和模型任务终止**；**只关闭前端显示不保证后端计算停止**。
+
+---
+
+## 【问题】
+面试时怎么答 SSE 和 WebSocket 的选型？
+
+## 【回答】
+**SSE 适合单向持续推送**，浏览器重连和文本事件语义简单；**WebSocket 适合同一连接上的高频双向通信**，但基础设施和状态管理更复杂。LLM Streaming 常用 SSE 是因为服务端主要向下游持续推送文本、HTTP 生态和代理兼容较好；当需要客户端高频实时上行、复杂双向事件或多路交互时再评估 WebSocket。

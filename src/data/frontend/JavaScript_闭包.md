@@ -2,7 +2,7 @@
 category: JavaScript
 topic: 闭包
 type: bagu
-tags: [作用域, 内存管理, 函数式, 垃圾回收, V8, React]
+tags: [作用域, 内存管理, 函数式, 垃圾回收, V8, React, 闭包, 防抖]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -266,3 +266,47 @@ React Hooks 里的 stale closure（过期闭包）是什么？
 - 手写 `once` / `memoize` / `debounce`，说明闭包各自保存了什么状态（**待补充**）。
 - 闭包中的 `this` 指向问题（**待补充**）。
 - `WeakMap` / `WeakRef` 与闭包持有 DOM 的取舍（**待补充**）。
+
+## 【问题】
+闭包保存的是值还是引用？为什么多个返回函数会共享同一个外部变量？
+
+## 【回答】
+闭包访问的是**同一个词法绑定**，不是把当前值"复制"给函数。因此多个内部函数共享外层同一绑定，值的后续变化会被所有读取方看到：
+
+```javascript
+function pair() {
+  let value = 0;
+  return [() => ++value, () => value];
+}
+const [inc, read] = pair();
+inc();  // 1
+read(); // 1，共享同一个绑定
+```
+
+**关键点是"共享绑定"，不是把值简单复制给函数。** 同一外层作用域导出的多个函数操作的是同一个变量，不是各自副本，容易被意外修改。
+
+## 【问题】
+闭包里的变量具体存在哪里？是物理上"复制"了一份吗？
+
+## 【回答】
+规范上闭包变量存在于**环境记录（Environment Record）**中，由函数创建时存入的 `[[Environment]]` 链引用；**具体内存布局由引擎（如 V8）决定**，开发者不能用 DevTools 的显示形式推断所有底层布局。
+
+闭包不是把变量值复制给函数，而是通过环境引用**共享绑定**。只要内部函数仍可达（被外部变量、定时器、事件监听引用），对应环境就不会被回收；"调用结束"不代表环境立即释放。
+
+## 【问题】
+防抖函数是怎么用闭包实现的？
+
+## 【回答】
+防抖需要在多次调用之间保存定时器句柄，闭包正好用于跨调用保留状态：
+
+```javascript
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+```
+
+`timer` 被返回函数捕获，所以每次事件调用都操作同一个句柄，达到"停止触发 delay 后才执行"的效果。闭包在这里保存的是 **timer 状态和 `this`/args**，体现"私有状态 + 受控操作"。

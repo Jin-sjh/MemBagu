@@ -1,0 +1,395 @@
+394
+p4 | # 编辑 .env 填入你的 API Key
+p11 | Q1：一句话说明什么是 AI Agent？
+p11 | Q2：为什么说 Agent = LLM + Planning + Memory + Tools？缺一块会怎样？
+p13 | Q3：Agent 和 Prompt Chain 有什么本质区别？
+p13 | Q4：ChatBot 加上插件是不是就变成 Agent 了？
+p16 | Q5：Agent 的记忆一般怎么设计？
+p16 | Q6：规划和执行要不要拆开两个模型？
+p17 | Q7：如何避免 Agent 在工具调用间「迷失」？
+p19 | Q8：基于效用的 Agent 和基于目标的有什么区别？
+p19 | Q9：反应式 Agent 有什么优缺点？
+p20 | Q10：企业内部落地 Agent，你最先关心哪三个非功能需求？
+p21 | Q11：怎么评估一个 Agent 的好坏？
+p21 | Q12：Agent 的最大风险是什么？
+p21 | Q13：请用你自己的话定义 LLM Agent，并说明与单次调用的差异。 ​
+p22 | Q14：ReAct 框架里三个字母代表什么？解决什么问题？ ​
+p22 | Q15：你会如何设计 Agent 的停止条件？ ​
+p22 | Q16：工具描述（tool description）为什么非常重要？ ​
+p22 | Q17：Memory 用向量库就够了吗？ ​
+p23 | Q18：多 Agent 协作和单 Agent 多工具怎么选？ ​
+p23 | Q19：如何做「人在回路」又不打断体验？ ​
+p23 | Q20：Agent 日志应记录什么？ ​
+p23 | Q21：为什么「让模型自己选工具」可能不如「路由器 + 规则」？ ​
+p23 | Q22：简述 Planner-Executor 架构及优缺点。 ​
+p24 | Q23：Agent 如何做版本管理与灰度？ ​
+p24 | Q24：举一个「不是 Agent 但常被误认为 Agent」的例子。 ​
+p24 | Q25：你如何向非技术经理解释 Agent 的风险？ ​
+p24 | Q26：上下文窗口越来越大，还需要外部记忆吗？ ​
+p24 | Q27：如何测试 Agent？ ​
+p29 | Q1：ReAct 和「普通 CoT 提示」有什么本质区别？
+p29 | Q2：ReAct 为什么要显式写出 Thought？
+p31 | # 极简解析：生产环境请用更稳健的正则/JSON
+p32 | # 用法示例（llm 替换为真实 API 调用）
+p32 | # 仅演示：真实场景接 OpenAI/Claude/本地模型
+p35 | Q3：Plan-and-Execute 相比 ReAct 什么时候更占优？
+p35 | Q4：Re-planning 会不会导致「计划抖动」？怎么缓解？
+p36 | # 这里可把 ReAct 当作单步执行器
+p37 | # 触发重规划（演示）
+p39 | Q5：Reflexion 和「让模型自己检查一遍」有什么不同？
+p41 | Q6：LATS 相比单次 ReAct 多在哪里成本？换来什么收益？
+p44 | Q7：LangChain 里 AgentExecutor 解决的核心问题是什么？
+p44 | Q8：工具描述为什么重要？
+p45 | # 示意代码：突出 AgentExecutor 的“循环本质”
+p47 | Q9：什么时候选 LangGraph 而不是 AgentExecutor？
+p47 | Q10：LangGraph 的状态更新为什么要谨慎设计？
+p48 | # 伪代码：LangGraph 中会把 node/route_fn 注册到 StateGraph
+p48 | # graph.add_node("planner", planner_node)
+p48 | # graph.add_node("exec", exec_node)
+p48 | # graph.add_conditional_edges("planner", route_fn, {"exec": "exec", "end":
+p49 | Q11：多 Agent 一定比单 Agent 更强吗？
+p49 | Q12：如何避免多 Agent「互相附和」？
+p50 | Q13：请用一句话解释 ReAct。
+p51 | Q14：ReAct 轨迹里，哪一部分必须由系统生成？为什么？
+p51 | Q15：Plan-and-Execute 的最大风险是什么？如何缓解？
+p51 | Q16：Reflexion 的关键产出是什么？它如何提升下一轮？
+p51 | Q17：LATS 与 ReAct 在「探索能力」上如何对比？
+p51 | Q18：LangChain AgentExecutor 中为什么要限制 max_iterations？
+p51 | Q19：描述 LangGraph 的条件边解决的业务问题。
+p51 | Q20：什么时候更建议「单 Agent + 强工具」，而不是多 Agent？
+p51 | Q21：多 Agent 系统的「评估器」可以有哪些实现？
+p52 | Q22：ReAct Prompt 为什么要给 few-shot 示例？
+p52 | Q23：Re-planning 与 Reflexion 都「改正错误」，区别是什么？
+p52 | Q24：LangGraph 相比普通脚本编排的核心收益？
+p52 | Q25：如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进？
+p52 | Q26：你如何为一个企业场景选择 ReAct vs Plan-and-Execute？
+p52 | Q27：为什么说「工具描述」是 Agent 的接口设计？
+p57 | # 最小概念示例：Embedding + 向量检索 + LLM（需安装 openai 等依赖）
+p58 | # chunks = ["公司年假规定...", "报销流程..."]
+p58 | # context = naive_retrieve("年假多少天？", chunks)
+p58 | # prompt = f"仅根据上下文回答：\n{context}\n\n问题：年假多少天？"
+p61 | # --- 方式 A：pypdf 读取纯文本 PDF ---
+p61 | # --- 方式 B：Unstructured 分区（适合后续按类型路由）---
+p61 | # from unstructured.partition.auto import partition
+p62 | # elements = partition(filename="手册.pdf")
+p62 | # texts = [el.text for el in elements if getattr(el, "text", None)]
+p64 | # 索引阶段：只对 ChildChunk.text 做 embed，payload 带 parent_id
+p64 | # 检索阶段：命中 child_id -> 查 ParentChunk.text 作为生成上下文
+p65 | # 1) 固定字符分块
+p65 | # 2) 递归字符分割（推荐作为默认基线）
+p65 | # 3) Markdown 按标题分块
+p65 | # 4) 语义分块（需 embedding 模型；此处仅展示 API 思路）
+p65 | # embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+p65 | # semantic_splitter = SemanticChunker(embeddings,
+p66 | # semantic_chunks = semantic_splitter.create_documents([text])
+p67 | # pip install sentence-transformers
+p71 | # 示例：向量路 Top-K 与 BM25 路 Top-K 的 doc_id 列表
+p72 | # vec_ids = ["d3", "d1", "d2"]
+p72 | # bm25_ids = ["d1", "d4", "d3"]
+p72 | # print(rrf_fuse([vec_ids, bm25_ids]))
+p74 | # concrete_ctx = retriever.invoke(q1)
+p74 | # background_ctx = retriever.invoke(q2)
+p74 | # final_prompt = merge(concrete_ctx, background_ctx)
+p76 | # q = model.encode(["问题"], normalize_embeddings=True)[0]
+p76 | # d = model.encode(docs, normalize_embeddings=True)
+p76 | # idxs = mmr_select(q, d, top_k=3)
+p79 | # pip install ragas datasets
+p79 | # 以下为结构示意，版本差异请以官方文档为准
+p81 | Q1：简述 RAG 两步流水线（离线与在线）。
+p81 | Q2：RAG 与微调如何配合？
+p81 | Q3：为什么需要 chunk_overlap？
+p81 | Q4：RecursiveCharacterTextSplitter 的分隔符顺序为什么重要？
+p81 | Q5：语义分块比递归分块更好吗？
+p81 | Q6：父子文档如何存储？
+p82 | Q7：Embedding 是否需要归一化？
+p82 | Q8：FAISS IndexFlatIP 与 IndexHNSW 区别？
+p82 | Q9：混合检索权重 alpha 怎么定？
+p82 | Q10：RRF 为什么鲁棒？
+p82 | Q11：HyDE 的风险如何缓解？
+p82 | Q12：BM25 在中文要不要分词？
+p82 | Q13：Cross-Encoder 为何不能替代向量索引？
+p82 | Q14：MMR 的 lambda 参数含义？
+p82 | Q15：GraphRAG 解决普通 RAG 的什么痛点？
+p82 | Q16：Agentic RAG 与一次性 RAG 差异？
+p82 | Q17：Self-RAG 核心思想？
+p82 | Q18：Corrective RAG 触发条件？
+p82 | Q19：RAGAS 的局限？
+p82 | Q20：如何做低成本在线评估？
+p83 | Q21：索引频繁更新如何保持一致性？
+p83 | Q22：如何防止 Prompt 注入污染 RAG？
+p83 | Q23：长上下文模型出现后 RAG 会消失吗？
+p83 | Q24：多模态 RAG 要点？
+p83 | # pip install langchain langchain-openai langchain-community faiss-cpu
+p89 | # 工具 JSON Schema（parameters）
+p89 | # 假实现：真实项目里对接 HTTP API
+p94 | # 伪实现
+p94 | # 注册到 Agent 时通常传入 tools=[search_product]
+p94 | # 例如 create_react_agent(llm, tools=[search_product], ...)
+p96 | # 需要: pip install mcp
+p96 | # 以下为概念示例，包名与 API 请以官方文档为准
+p96 | # 通常以 `mcp.run(transport="stdio")` 由 Host 拉起子进程
+p99 | # 需要: pip install numpy openai
+p99 | # 使用：仅把 route_tools 返回的子集塞进 chat.completions 的 tools 参数
+p102 | # 例：先串行拿 user_id，再并行查订单与积分（伪函数）
+p107 | Q1：Function Calling 和「让模型输出 JSON」有什么本质区别？ ​
+p107 | Q2：描述 OpenAI 兼容接口里 tool_calls  与 tool  消息的对应关系。 ​
+p108 | Q3：为什么工具 description  比函数名更重要？ ​
+p108 | Q4：如何设计 JSON Schema 降低模型填错概率？ ​
+p108 | Q5：LangChain Tool 的 docstring 为什么要写「何时不要用」？ ​
+p108 | Q6：MCP 解决的主要痛点是什么？ ​
+p108 | Q7：MCP 与 Function Calling 是替代关系吗？ ​
+p108 | Q8：工具路由什么时候必须上？ ​
+p109 | Q9：向量路由的缺陷与改进？ ​
+p109 | Q10：并行工具调用要注意什么？ ​
+p109 | Q11：什么是工具编排中的「依赖 DAG」？ ​
+p109 | Q12：敏感操作为什么推荐「两阶段提交」式工具设计？ ​
+p109 | Q13：工具返回为什么要尽量结构化（JSON）？ ​
+p109 | Q14：如何做工具调用的权限控制？ ​
+p110 | Q15：代码执行工具如何做到基本安全？ ​
+p110 | Q16（加一）：审计日志至少记哪些字段？ ​
+p110 | Q17（加一）：Calculator 为什么禁止 eval ？ ​
+p112 | Q1：为什么 Agent 需要记忆？没有行不行？
+p113 | Q2：用人类记忆模型设计 Agent 记忆有什么好处？
+p114 | Q3：Conversation Buffer 和 Window Buffer 的区别与取舍？
+p114 | Q4：如何做 Token 预算分配才不容易翻车？
+p115 | # 不同模型请换对应 encoding
+p115 | # 先限制消息条数
+p115 | # 再按 token 预算从尾部往前保留
+p115 | # 简单策略：丢弃最早一条（生产可改为优先丢 tool 大 payload）
+p116 | # 使用示例
+p117 | Q5：长期记忆为什么常用向量数据库？有什么局限？
+p117 | Q6：记忆的更新怎么做才不容易脏数据？
+p117 | Q7：衰减会不会把重要但很久不用的信息删掉？
+p120 | # 综合得分：相关性 + 重要性 + 近期性（权重可调）
+p121 | Q8：只用向量检索、不做摘要可以吗？
+p122 | Q9：增量摘要误差累积怎么缓解？
+p122 | # pip install langchain langchain-openai
+p122 | # 模拟多轮写入
+p123 | Q10：情景记忆和语义记忆为什么要区分存储？
+p126 | Q11：混合检索怎么去重与限长？
+p126 | Q12：只做强相关性检索会有什么问题？
+p129 | Q13：MemGPT 和简单 RAG 的本质区别是什么？
+p129 | Q14：记忆图谱比向量库强在哪里，弱在哪里？
+p129 | # llm_complete 为调用大模型的函数占位
+p131 | Q15：生产环境记忆系统最容易出的事故是什么？怎么防？
+p131 | Q16：记忆和 Tool Use 的边界是什么？
+p132 | Q17：如何评测记忆系统好坏？
+p132 | Q18：未来记忆系统趋势你怎么看待？
+p132 | Q19：Embedding 模型升级后旧向量怎么办？
+p132 | Q20：多 Agent 共享记忆要注意什么？
+p135 | Q1：单 Agent 和多 Agent 的本质区别是什么？什么时候该上多 Agent？
+p136 | Q2：什么是「注意力漂移」？多 Agent 如何缓解？
+p136 | Q3：多 Agent 的「容错」具体怎么体现？
+p136 | # 真实场景此处应是 LLM 调用；这里用占位函数模拟
+p138 | Q4：Boss-Worker 和 Pipeline 有什么本质差异？
+p138 | Q5：民主讨论模式如何避免永远开不完会？
+p141 | Q6：黑板模式和消息队列有什么相似与不同？
+p142 | # 用法示意
+p143 | Q7：动态任务分配和固定 Pipeline 各适合什么场景？
+p144 | # 负载优先：相同能力选最闲
+p145 | Q8：为什么光有投票不够？
+p146 | # opinions: [{"choice": "block", "weight": 2.0}, ...]
+p147 | Q9：多 Agent 系统为什么推荐状态机而不是纯自然语言传递一切？
+p149 | Q10：AutoGen 和 LangGraph 多 Agent 有什么气质差异？
+p149 | Q11：CrewAI 的「Crew」抽象解决什么问题？
+p150 | Q12：MetaGPT 适合直接上生产吗？
+p150 | # --- LangGraph 思路：节点 + 边 + 状态 ---
+p150 | # graph.add_node("plan", plan_fn)
+p150 | # graph.add_node("code", code_fn)
+p150 | # graph.add_edge("plan", "code")
+p150 | # graph.set_entry_point("plan")
+p150 | # --- Crew 思路：角色 + 任务列表 ---
+p151 | Q13：企业里多 Agent 与「传统工作流引擎（BPM）」关系是什么？
+p152 | # 真实场景：哈希/泛化/抑制
+p153 | Q14：如何检测多 Agent 系统的「死循环」？
+p153 | Q15：错误隔离在多 Agent 里如何实现？
+p154 | Q16：多 Agent 会不会降低「一致性」（同一产品前后端接口对不上）？
+p154 | Q17：如何做跨 Agent 的权限隔离？
+p154 | Q18：多 Agent 的评估怎么做？
+p155 | Q19：为什么需要「人机在环」？
+p155 | Q20：多 Agent 与「单 Agent + 多个工具」取舍？
+p159 | # Q,K,V: (batch, heads, seq_len, d_k)
+p161 | # batch=2, seq=128, heads=8, d_model=512 -> d_k=64
+p161 | # Q: (2, 8, 128, 64)  # 注意力在最后一维 seq 上 softmax
+p162 | # 合并多头: (2, 128, 512) @ W_o
+p167 | # 前向：h = W x + (B A) x = (W + B A) x
+p167 | # 训练参数：B (d×r), A (r×k)，远小于 W (d×k) 当 r 小时
+p173 | Q1：写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。
+p173 | Q2：多头注意力为什么比单头好？
+p173 | Q3：Encoder 和 Decoder 的自注意力有何不同？
+p173 | Q4：RoPE 与正弦绝对位置编码各有什么特点？
+p173 | Q5：Pre-Norm 和 Post-Norm 区别？
+p174 | Q6：解释 MQA 与 GQA 的动机。
+p174 | Q7：Flash Attention 核心优化思想？
+p174 | Q8：BPE 如何构建词表？
+p174 | Q9：SentencePiece 适合中文的原因？
+p174 | Q10：Tokenizer 不一致会导致什么问题？
+p174 | Q11：Prefill 和 Decode 阶段特点？
+p174 | Q12：KV Cache 是什么？为什么能加速？
+p174 | Q13：Temperature、Top-k、Top-p 各影响什么？
+p175 | Q14：对话生成为什么少用 Beam Search？
+p175 | Q15：LoRA 的低秩假设直觉？
+p175 | Q16：QLoRA 为什么省显存？
+p175 | Q17：SFT 损失通常怎么算？
+p175 | Q18：RLHF 三阶段是什么？
+p175 | Q19：DPO 相对 RLHF 最大简化是什么？
+p175 | Q20：PPO 中 KL 惩罚目的？
+p175 | Q21：INT4 量化主要风险？
+p176 | Q22：GPTQ 大致做什么？
+p176 | Q23：张量并行与流水线并行区别？
+p176 | Q24：PagedAttention 解决什么？
+p176 | Q25：投机解码如何加速？
+p176 | Q26：MoE 训练难点？
+p176 | Q27：开源模型相对闭源 API 的核心优势场景？
+p176 | Q28：GRPO / KTO 你了解到什么程度？
+p181 | Q1：为什么要做模型路由，而不是全量用一个最强模型？
+p181 | Q2：熔断器和重试分别解决什么问题？一起用时要注意什么？
+p185 | Q3：为什么说本地 tiktoken 计数只能「估算」？
+p185 | Q4：语义缓存和精确缓存怎么选？
+p186 | # 生产环境请用 Redis；此处演示 LRU
+p186 | # redis.setex(key, ttl, response)
+p188 | Q5：Agent 系统为什么比传统服务更需要 Trace？
+p188 | Q6：结构化日志和 Trace 有什么区别？
+p189 | # 用法：new_trace(); with Span("llm_call"): ...
+p190 | Q7：为什么说「永远不信任模型输出的工具调用」？
+p191 | Q8：Prompt 注入和越狱有什么区别？
+p193 | Q9：金丝雀发布要关注哪些指标？
+p195 | Q10：Streaming 会影响计费或日志吗？
+p196 | # val = await redis.get(key)
+p196 | # await redis.setex(key, ttl, value)
+p198 | Q11：用 LLM 给 LLM 打分有什么坑？
+p198 | Q12：如何设计 Agent 的回归测试集？
+p198 | # 简化：假定 first 就是要调用的 JSON 字符串
+p200 | Q13：只靠「请诚实回答」能否解决幻觉？
+p200 | Q14：RAG 一定能降幻觉吗？
+p201 | Q15：你会如何设计一个多模型网关的架构？
+p201 | Q16：指数退避为什么要加 jitter？
+p201 | Q17：语义缓存如何保证安全？
+p201 | Q18：OpenTelemetry 在 Agent 里一般打哪些 Span？
+p201 | Q19：工具调用的「两步授权」怎么做？
+p201 | Q20：蓝绿与金丝雀如何取舍？
+p202 | Q21：K8s 部署 Agent 服务时 HPA 可以按什么指标扩？
+p202 | Q22：异步一定能提高 Agent 吞吐吗？
+p202 | Q23：如何监控一次 Agent 任务的「真实成本」？
+p202 | Q24：评估集泄露怎么防？
+p202 | Q25：线上发现幻觉率升高，你如何排查？
+p202 | Q26：小型团队没有 LangSmith，最小可观测方案是什么？
+p202 | Q27：如何做「关键路径」与「非关键路径」分级？
+p202 | Q28：并发控制 Semaphore 设多大？
+p202 | Q29：为什么 Agent 更需要「版本化」的 Prompt 与模型？
+p220 | # 生产环境应先剥离 ```json 代码块、修复常见 JSON 问题
+p220 | # 若解析失败：可把 ValidationError 信息喂回模型要求修正
+p226 | # 伪代码：展示「可优化 Prompt」这一思想，非可运行完整业务
+p226 | # 使用 Teleprompter（如 BootstrapFewShot）在 trainset 上优化 predictor
+p226 | # tp = dspy.teleprompt.BootstrapFewShot(metric=your_metric)
+p226 | # optimized = tp.compile(predictor, trainset=...)
+p231 | Q14：Prompt 和微调的关系？
+p231 | Q15：如何避免 Few-shot 示例泄露隐私？
+p231 | Q16：CoT 有哪些缺点？
+p231 | Q17：Self-Consistency 适合什么不适合什么？
+p231 | Q18：结构化输出为什么要后端校验？
+p231 | Q19：System Prompt 能否被用户覆盖？
+p231 | Q20：间接注入如何与 RAG 结合防御？
+p231 | Q21：Agent 里 ReAct 和 Plan-and-Execute 怎么选？
+p231 | Q22：DSPy 优化 Prompt 的前提是什么？
+p231 | Q23：温度设 0 一定最好吗？
+p232 | Q24：如何版本管理 Prompt？
+p232 | Q25：多语言混合 Prompt 注意什么？
+p232 | Q26：如何评估 Prompt 好坏？
+p232 | Q27：长上下文模型出现后 Prompt 工程会消失吗？
+p232 | Q28：Function Calling 与「输出 JSON」二选一？
+p300 | Q1: 为什么选择 ReAct 模式而不是 Plan-and-Execute？ ​
+p301 | Q2: 为什么采用多路检索而不是单一向量检索？ ​
+p302 | Q3: Agent 编排器是怎么设计的？为什么这样设计？ ​
+p304 | Q4: 多 Agent 协作和单 Agent 有什么区别？你怎么选择？ ​
+p305 | Q5: 意图识别模块是怎么实现的？ ​
+p306 | Q6: 为什么选择 Milvus 而不是其他向量数据库？ ​
+p307 | Q7: 系统的可扩展性是怎么设计的？ ​
+p309 | Q8: 如果让你重新设计这个系统，你会怎么改进？ ​
+p310 | Q9: 你的系统能支持多少并发？怎么评估的？ ​
+p311 | Q10: 为什么要做模型路由？直接用一个模型不行吗？ ​
+p312 | Q11: 怎么设计的对话管理和上下文维护？ ​
+p313 | Q12: 你的系统支持哪些模型？怎么做模型适配的？ ​
+p314 | Q13: 如何处理长文档输入？上下文窗口不够怎么办？ ​
+p315 | Q14: 系统的安全架构是怎么设计的？ ​
+p316 | Q15: 你怎么看待 MCP（Model Context Protocol）？在你的系统中是怎么使
+p317 | Q16: 如何设计 Agent 的错误恢复和重试机制？ ​
+p318 | Q17: 你的系统支持多租户吗？怎么实现的？ ​
+p319 | Q18: 你怎么看 Agent 架构的未来发展？ ​
+p320 | Q1: 向量数据库是怎么选型的？分块策略是什么？ ​
+p321 | Q2: ReAct 的 Prompt 是怎么设计的？ ​
+p323 | Q3: 熔断器是怎么实现的？三个状态是什么？ ​
+p324 | Q4: 记忆系统的短期和长期记忆是怎么配合的？ ​
+p326 | Q5: 文档解析支持哪些格式？怎么处理表格和图片？ ​
+p327 | Q6: 重排序是怎么做的？用的什么模型？ ​
+p328 | Q7: Function Calling 和 MCP 有什么区别？你怎么选的？ ​
+p330 | Q8: 会话摘要压缩的阈值是多少？怎么确定的？ ​
+p331 | Q9: RRF 融合排序的公式是什么？权重怎么调？ ​
+p332 | Q10: 嵌入模型用的什么？维度多少？怎么选的？ ​
+p334 | Q11: Guardrails（护栏）是怎么实现的？ ​
+p335 | Q12: 怎么实现的 Streaming 流式输出？ ​
+p336 | Q13: 怎么做的日志和链路追踪？ ​
+p338 | Q14: 怎么做的异步并行处理？ ​
+p339 | Q15: 知识图谱是怎么构建和使用的？ ​
+p340 | Q16: 怎么做的 A/B 测试和 Prompt 版本管理？ ​
+p342 | Q17: Token 计数和费用统计是怎么实现的？ ​
+p342 | # GPT-4o: input $2.5/1M, output $10/1M
+p342 | # GPT-4o-mini: input $0.15/1M, output $0.6/1M
+p343 | Q18: 怎么做的数据预处理和数据清洗？ ​
+p344 | Q1: Token 成本是怎么控制的？ ​
+p345 | Q2: 延迟优化做了哪些措施？ ​
+p346 | Q3: 缓存策略是什么？命中率多少？ ​
+p347 | Q4: 流式输出是怎么实现的？ ​
+p348 | Q5: 异步处理在哪些地方使用了？ ​
+p349 | Q6: 数据库查询是怎么优化的？ ​
+p351 | Q7: 模型推理速度是怎么优化的？ ​
+p351 | Q8: 前端渲染性能怎么优化？ ​
+p352 | Q9: 冷启动问题是怎么解决的？ ​
+p353 | Q10: 网络传输是怎么优化的？ ​
+p354 | Q11: Embedding 计算是怎么优化的？ ​
+p355 | Q12: 怎么做的资源监控和自动扩缩容？ ​
+p356 | Q1: Agent 死循环怎么检测和防止的？
+p357 | Q2: 模型幻觉怎么控制的？ ​
+p359 | Q3: 模型超时怎么处理？ ​
+p360 | Q4: 检索结果不准确怎么办？ ​
+p361 | Q5: 工具调用失败怎么处理？ ​
+p362 | Q6: 多 Agent 之间通信失败怎么处理？ ​
+p363 | Q7: 知识库数据不一致怎么处理？ ​
+p364 | Q8: 高并发下的限流降级策略是什么？ ​
+p365 | Q9: 数据丢失和恢复策略是什么？ ​
+p366 | Q10: 模型输出格式异常怎么处理？ ​
+p367 | Q11: 敏感信息泄露怎么防止？ ​
+p368 | Q12: 系统容量规划是怎么做的？ ​
+p368 | # 0.7 是安全系数，留 30% 余量
+p369 | Q1: 怎么做的测试？覆盖率多少？ ​
+p370 | Q2: 怎么做的监控和告警？ ​
+p372 | Q3: 怎么部署的？CI/CD 是什么流程？ ​
+p373 | Q4: 日志系统怎么设计的？ ​
+p374 | Q5: 安全性怎么保证的？（Prompt 注入等） ​
+p375 | Q6: 代码质量是怎么保证的？ ​
+p376 | Q7: 文档是怎么维护的？ ​
+p377 | Q8: 怎么做的版本管理和发布管理？ ​
+p378 | Q9: 怎么做技术债务管理？ ​
+p379 | Q10: 如何做的性能基准测试？ ​
+p380 | Q11: 怎么做的配置管理？ ​
+p381 | Q12: 团队协作和知识共享是怎么做的？ ​
+p382 | Q1: 你的系统解决了什么业务问题？ ​
+p383 | Q2: 用户反馈怎么样？怎么收集和处理的？ ​
+p384 | Q3: 你觉得 AI Agent 在企业中的价值是什么？ ​
+p385 | Q4: 和竞品相比你们的优势是什么？ ​
+p386 | Q5: 下一步的技术规划是什么？ ​
+p386 | Q6: 你在项目中的角色是什么？最大的贡献是什么？ ​
+p387 | Q7: 项目中遇到的最大挑战是什么？怎么解决的？ ​
+p388 | Q8: 这个项目的 ROI 是怎么计算的？ ​
+p389 | Q1: Transformer 的 Self-Attention 怎么计算？ ​
+p390 | Q2: LoRA 的原理是什么？为什么低秩有效？ ​
+p391 | Q3: RAG 和微调怎么选？各自优劣？ ​
+p393 | Q4: KV Cache 是什么？为什么需要？ ​
+p394 | Q5: RLHF 和 DPO 的区别？ ​
+p396 | Q6: Embedding 模型是怎么训练的？对比学习怎么做的？ ​
+p397 | Q7: 向量数据库的索引原理是什么？HNSW 怎么工作的？ ​
+p398 | Q8: Prompt Engineering 有哪些关键技巧？ ​
+p400 | Q9: 大模型的 Context Window 限制怎么突破？ ​
+p401 | Q10: LLM 的解码策略有哪些？Temperature 和 Top-p 怎么影响输出？ ​
+p402 | Q11: 什么是 Agent 的工具学习（Tool Learning）？ ​
+p403 | Q12: 什么是 Mixture of Experts（MoE）？为什么重要？ ​

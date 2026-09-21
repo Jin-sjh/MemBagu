@@ -2,7 +2,7 @@
 category: CSS
 topic: 如何提高 CSS 性能
 type: bagu
-tags: [CSS]
+tags: [CSS, 性能优化, 重排重绘, 合成层, 关键渲染路径, DevTools]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -70,3 +70,40 @@ CSS 性能优化主要围绕**减少渲染阻塞、降低浏览器重绘重排�
 4. **工程化**：内联关键 CSS + 异步非关键 CSS
 
 这个回答覆盖基础 + 进阶，面试中说出来绝对稳！
+
+---
+
+## 【问题】
+CSS 为什么会阻塞关键渲染路径
+
+## 【回答】
+**CSS 可能阻塞关键渲染路径，因为浏览器需要解析 CSSOM 并计算样式**。CSS 过大、规则复杂、频繁样式修改、大量阴影 / filter、fixed / sticky 和布局树规模都可能增加主线程或 GPU 成本。
+
+---
+
+## 【问题】
+Reflow、Repaint、Composite 三者有什么区别和先后顺序
+
+## 【回答】
+**Reflow（Layout）重新计算尺寸和位置**（宽高、边距、字体、结构变化）；**Repaint 重新绘制颜色、背景、阴影等视觉内容**；**Composite 重新合成已有图层**。顺序上：几何变化 → Layout → Paint → Composite；视觉变化可能跳过 Layout；`transform / opacity` 满足条件下可能只走 Composite，但不保证不 Layout / Paint。
+```
+几何变化 → Layout → Paint → Composite
+视觉变化 → 可能跳过 Layout → Paint → Composite
+合成属性 → 可能只 Composite
+```
+
+---
+
+## 【问题】
+哪些 CSS 特性会增加 Paint / GPU 成本
+
+## 【回答】
+**阴影、filter、backdrop-filter 可能增加 Paint / GPU 成本**；**fixed / sticky 会因滚动和合成复杂度带来额外工作**。Critical CSS 能缩短首屏关键路径，把首屏必需样式内联、非关键样式延迟加载。
+
+---
+
+## 【问题】
+如何用 DevTools 验证 CSS 性能，而不是背“transform 一定快”
+
+## 【回答】
+用 **Performance、Coverage、Layers 和 Lighthouse / RUM** 验证，看 Recalculate Style / Layout / Paint 与帧、长任务和内存；不能只凭属性名称判断。选择器复杂度通常不是主要瓶颈，除非实测证明样式匹配 / 重算占比显著。

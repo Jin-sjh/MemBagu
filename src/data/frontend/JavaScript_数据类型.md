@@ -2,7 +2,7 @@
 category: JavaScript
 topic: 数据类型
 type: bagu
-tags: [JavaScript]
+tags: [JavaScript, 数据类型, 类型转换, Symbol, 基本类型, 运算符]
 difficulty: hard
 created: 2026-07-24
 ---
@@ -185,3 +185,88 @@ console.log(arr1 === arr1); // true，相同地址
 **4. 可变性**
 - 基本类型的值是不可变的，修改时会创建新的值
 - 引用类型的对象是可变的，可以修改其属性而不改变引用地址
+
+## 【问题】
+const 声明的对象能被修改吗？
+
+## 【回答】
+**不能修改的是"绑定"，不是"对象内容"。** `const` 只禁止变量重新指向其他值，不会冻结对象内部。
+
+```javascript
+const user = { name: 'A' };
+user.name = 'B';   // 可以，对象内部属性仍可修改
+// user = {};      // 不可以，不能重新绑定
+```
+
+若要让对象真正不可变，需要 `Object.freeze` 或不可变数据策略。**误区**：认为 `const` 让对象不可变——正确理解是只保护绑定，需 `Object.freeze` 才能限制修改。
+
+## 【问题】
+== 和 === 有什么区别？Object.is 又有什么不同？
+
+## 【回答】
+**=== 严格相等**：不进行类型转换，类型和值都相等才为真。
+
+**== 宽松相等**：允许按规范进行类型转换，规则复杂，容易掩盖输入错误，工程上默认使用 `===`。
+
+```javascript
+'2' == 2;   // true：发生类型转换
+'2' === 2;  // false：类型不同
+```
+
+`Object.is` 与 `===` 的主要差异在 **NaN 和 +0/-0**：
+- `Object.is(NaN, NaN)` 为 true（而 `NaN === NaN` 为 false）；
+- `Object.is(0, -0)` 为 false（而 `0 === -0` 为 true）。
+
+判断是否为 `NaN` 应优先用 `Number.isNaN`，不要使用会先隐式转换的全局 `isNaN`。
+
+## 【问题】
+typeof null 为什么返回 "object"？
+
+## 【回答】
+这是 **历史兼容性行为**，不代表 `null` 是普通对象。
+
+```javascript
+typeof null === 'object'; // 历史兼容性行为，不代表 null 是普通对象
+```
+
+`typeof` 只能提供有限分类：数组、`null`、日期等都返回 `object`，无法准确区分所有类型。因此判断数组要用 `Array.isArray`，判断具体对象类型可用 `Object.prototype.toString.call`。**不要把 `typeof null === 'object'` 当作 "null 是对象" 的依据。**
+
+## 【问题】
+Symbol 是什么？有什么使用场景？
+
+## 【回答】
+**Symbol 是唯一的原始值**，适合在不确定对象已有属性名时创建不会意外冲突的键：
+
+```javascript
+const internalId = Symbol('internalId');
+const user = { [internalId]: 42 };
+user[internalId]; // 42
+```
+
+特点：
+- **同一个描述不代表同一个 Symbol**：`Symbol('id') !== Symbol('id')`；
+- 需全局共享时用 `Symbol.for('id')`，并用 `Symbol.keyFor` 反查注册键；
+- Symbol 属性**不会被 `Object.keys` / `for...in` 枚举**，可用 `Object.getOwnPropertySymbols` 或 `Reflect.ownKeys` 获取。
+
+注意它不是"私有属性"或安全边界：拿到 Symbol 引用后仍可访问，且反射 API 可发现它。
+
+## 【问题】
+for...in 和 for...of 有什么区别？
+
+## 【回答】
+**for...in 遍历可枚举的属性名（键）**，可能包含继承属性，不适合直接遍历数组（得到的是索引字符串，且可能受原型影响）。
+
+**for...of 遍历可迭代对象产生的值**，适合数组、字符串、`Map`、`Set`。
+
+不要认为两者都是"遍历数组"——**前者遍历键，后者遍历值**。遍历对象自身属性可用 `Object.keys` + `for...of`；`while` 适合循环次数未知但终止条件明确的场景。
+
+## 【问题】
+JavaScript 的数字有什么精度问题？
+
+## 【回答】
+`number` 使用**双精度浮点数**，不能精确表示所有十进制小数（如 `0.1 + 0.2 !== 0.3`）。
+
+- **NaN** 是唯一不等于自身的值（`NaN === NaN` 为 false），判断用 `Number.isNaN` / `Object.is`；
+- 涉及金额、精确大整数等场景，应采用**整数最小单位、`BigInt` 或专用库**，且它们不能直接混合运算；
+- 存在 `-0`（`Object.is(0, -0)` 为 false，`===` 下 `0 === -0` 为 true）。
+

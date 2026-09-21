@@ -90,6 +90,17 @@ created: 2026-08-04
 - **DeerFlow**：**GuardrailMiddleware Fail-closed（默认拒绝）**（AllowlistProvider，未通过返回 GuardrailBlockedResult）+ **LoopDetection**（MD5(tool_calls) 滑动窗口查重，3 次注入警告、≥5 次硬停止剥离 tool_calls）+ ClarificationMiddleware（人机确认，`Command(goto=END)` 中断执行，始终位于链最末尾）。
 - **nanobot**：bubblewrap 沙箱 + 工作区限制（移除 SSRF/ExecSecurity 等高级特性，保留核心）。
 
+## 【问题】
+
+单 Agent + 强工具，和 多 Agent 协作，怎么取舍？多 Agent 一定更强吗？
+
+## 【回答】
+
+- **单 Agent 多工具**：实现简单、延迟低，适合**任务边界清晰**；
+- **多 Agent**：角色分工、并行探索、对抗审查（如「批评者 Agent」），但带来**协调成本与一致性问题**（错误级联、对话冗长、互相附和）。
+
+**多 Agent 不一定更强**——当任务可清晰分工且有评估机制时收益大，否则单 Agent + 强工具更简单高效。选型看**任务分解结构、组织边界、延迟与成本**。避免多 Agent 互相附和：引入**独立审查角色、基于规则的检查、外部工具验证**（测试、检索），明确停止条件与异议处理流程。成本上多角色多轮对话显著增加 token，需要缓存、摘要、限轮。AutoGen 偏可编程对话与工具、CrewAI 偏角色驱动的团队流水线（Crew），最终以项目 PoC 为准。
+
 ## 【衍生问题】
 - hermes-agent 为什么把 Skill 内容注入**用户消息**而不是 system prompt？（答：注入 system prompt 会改变前缀 → Anthropic cache 失效 → 每次重新计算 → 成本飙升；注入用户消息则 system prompt 不变、cache 持续有效，长对话成本可控。该决策写进 AGENTS.md 作为强制架构约束。）
 - 2026 年 AI Agent 框架的六大趋势？（答：连接一切、上下文工程、安全纵深、极致性能、极简主义、自进化能力。）

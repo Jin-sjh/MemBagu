@@ -93,3 +93,12 @@ $$R_{\Theta,m}^d = \begin{pmatrix} \cos m\theta_0 & -\sin m\theta_0 & 0 & 0 & \c
 $$\Theta = \left\{ \theta_i = 10000^{-2i/d}, i \in [0, 1, \ldots, d/2 - 1] \right\}$$
 
 上图展示了 RoPE (Rotary Position Embedding) 的核心数学实现——通过分块对角矩阵在多个二维平面上同时进行旋转操作。
+
+## 【问题】
+RoPE 与正弦绝对位置编码（Sinusoidal PE）各有什么特点？
+
+## 【回答】
+- **正弦绝对位置编码（Sinusoidal PE）**：固定函数，不同维度用不同频率的正弦 / 余弦；可外推到比训练更长的位置，但绝对位置、方向性弱，外推性有限。
+- **RoPE（旋转位置编码）**：在 Q、K 上施加与位置相关的旋转，相对位置以旋转角度差体现；广泛用于 LLaMA、ChatGLM 等，外推与相对位置性质较好。
+- 另有 **ALiBi**：不在 embedding 加位置向量，而在注意力 logits 上按距离加线性负偏置（远处更负），实现简单、对长度外推有帮助。
+- 现代 LLM 更常选 **RoPE / ALiBi** 而非纯正弦绝对 PE。

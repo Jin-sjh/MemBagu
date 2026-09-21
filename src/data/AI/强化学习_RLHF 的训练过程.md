@@ -35,3 +35,11 @@ Critic Model 会对生成序列中的每个状态（S_t，即到当前 token 为
 - **Critic Model 的损失 (Value Loss)**：使用 Critic Model 预测的 V(S_t) 与计算出的目标回报（例如 R_final）之间的均方误差来更新 Critic Model。
 
 - **Actor Model 的损失 (Policy Loss)**：使用 Critic Model 计算出的优势函数 A_t 来更新 Actor Model。优势函数指导 Actor 调整其策略，使其在给定状态下更有可能选择能带来更高预期回报的动作。PPO 还会引入一个 KL 散度项，以防止策略与原始的预训练模型偏离太远。
+
+## 【问题】
+PPO 里为什么要加 KL 惩罚？目的是什么？
+
+## 【回答】
+- PPO 在奖励中加 **KL 项**，约束当前策略与参考模型（常为 SFT 模型）不要偏离太远。
+- **目的**：防止策略为刷高 RM 分数而产生分布外投机行为（**reward hacking**），保持语言质量与多样性，避免模式崩塌。
+- 本质是"对齐强度"的安全阀：太松会 hack 奖励，太紧则学不动。

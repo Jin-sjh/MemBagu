@@ -2,7 +2,7 @@
 category: AI
 topic: MCP 三类核心能力
 type: bagu
-tags: [AI, MCP]
+tags: [AI, MCP, Function Calling]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -38,3 +38,19 @@ MCP 是 Anthropic 提出的开放协议，为 LLM 应用提供标准化的外部
 | 类比 | REST POST/PUT | REST GET |
 
 MCP 通过这三类原语将 LLM 从封闭系统变为可连接外部世界的开放代理，是构建 AI Agent 的基础协议。
+
+## 【问题】
+MCP 主要解决什么痛点？企业为什么愿意接 MCP 而不是每个业务线自己写 Function？
+
+## 【回答】
+MCP 解决的是**工具集成碎片化、重复建设、难以跨产品复用**的痛点：在此之前每个产品各写一套插件/工具适配。MCP 提供标准边界（Server）与传输（stdio / HTTP / SSE），使工具像外设一样「即插即用」——一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Agent）可复用。
+
+企业价值：降低重复建设、统一安全与观测、换模型不换工具链、利于平台组与业务组分工。治理上工具集中在 MCP Server，便于审计、版本与权限；敏感系统只对内网 Server 开放，模型不直连数据库。
+
+## 【问题】
+MCP 与 Function Calling 是替代关系吗？
+
+## 【回答】
+不是替代，是**互补**。Function Calling 解决「**模型怎么表达调用**」（输出调用指令）；MCP 解决「**工具能力怎么暴露与连接**」（系统级协议：能力发现、资源读取、工具调用、提示模板）。二者常一起出现：模型侧用 FC，工具侧来自 MCP；Host 常把 MCP Server 的工具列表映射为 FC 的 `tools` 定义再交给模型。
+
+MCP 与 OpenAPI 网关不同：OpenAPI 面向通用 HTTP 客户端，MCP 面向 AI Host 与模型工具循环，带会话、资源、提示等 AI 原生语义。

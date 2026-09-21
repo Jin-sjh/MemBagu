@@ -2,7 +2,7 @@
 category: HTTP
 topic: 浏览器存储对比
 type: bagu
-tags: [HTTP]
+tags: [HTTP, 存储, Cookie, IndexedDB, WebStorage]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -99,3 +99,33 @@ Cookie 适合用于在客户端和服务器之间传递数据、跨域访问和�
 ### 场景 3：cookie 太大拖慢请求
 **为什么**：cookie 每次 HTTP 请求都自动带上，体积过大（如塞了多余字段）会白白增加每个请求的头部开销。
 **解决**：只把必要的身份标识放 cookie，大体积数据放 localStorage 或不随请求发送的存储。
+
+---
+
+## 【问题】
+IndexedDB 与 Cookie / localStorage / sessionStorage 有什么区别？什么时候用？
+
+## 【回答】
+四类存储的选择取决于**是否需要自动随请求发送、容量、生命周期和数据结构**。IndexedDB 与另外三者最大的区别是它提供**异步事务型结构化存储**，持久、支持事务和结构化数据，适合大量离线数据/缓存；而 Cookie/localStorage/sessionStorage 都是**同步字符串存储**，容量小、不适合大量结构化数据。
+
+**Cookie 随请求自动携带，有网络成本**；localStorage 持久到清除；sessionStorage 是页面会话级（按 tab 隔离，特征需实测）；IndexedDB 适合离线缓存、草稿和大数据，但事务、版本升级和调试复杂度更高。Web Storage 同步读写大字符串可能阻塞主线程，Cookie 不适合存大数据因为会增加请求头体积。
+
+---
+
+## 【问题】
+Cookie 的 HttpOnly / Secure / SameSite 属性分别有什么作用？
+
+## 【回答】
+`HttpOnly` **限制脚本读取，但不能阻止 XSS 本身**；`Secure` **要求通过 HTTPS 发送**；`SameSite` **控制跨站请求是否携带**，常见取值 Strict、Lax、None，其中 None 通常要求 Secure。
+
+Cookie 仍会随符合条件的请求发送，因此还要考虑 CSRF、防护策略、域/路径和过期时间。敏感登录态通常优先评估 HttpOnly、Secure、合适 SameSite 的 Cookie；Token 放 localStorage 会暴露给能执行脚本的 XSS。没有脱离上下文的"绝对安全存储位置"。
+
+---
+
+## 【问题】
+面试时怎么比较四类浏览器存储？
+
+## 【回答】
+不要只背容量数字，要从四个维度比较：**自动携带、同步/异步、容量、生命周期和安全风险**。
+
+Cookie 随请求自动携带、同步、容量小、适合会话标识；localStorage 不同步携带、持久、适合非敏感偏好；sessionStorage 会话级、按 tab 隔离；IndexedDB 异步、结构化、适合大量离线数据。安全上 Cookie 可用 HttpOnly/Secure/SameSite 降低风险，而 Web Storage 易被 XSS 读取，敏感 Token 不应放 localStorage。验证用 Application 面板看作用域/过期/SameSite，Network 看 Cookie 是否随请求发送。

@@ -2,7 +2,7 @@
 category: JavaScript
 topic: this 指向
 type: bagu
-tags: [JavaScript]
+tags: [JavaScript, this, 箭头函数, 绑定, call/apply/bind, 作用域]
 difficulty: hard
 created: 2026-07-24
 ---
@@ -185,3 +185,78 @@ inner func:  self.foo = bar
 - 箭头函数的 `this` 是词法绑定的，定义时确定，运行时不可改变
 - `bind`、`call`、`apply` 对箭头函数的 `this` 绑定无效
 - 箭头函数与普通函数在 `this` 处理上的本质区别
+
+## 【问题】
+this 的绑定优先级是怎样的？
+
+## 【回答】
+判断 `this` 应按以下顺序（从高到低）：
+
+**`new` 绑定 / 显式绑定（但 new 与 bind 有特殊组合）> 隐式绑定（对象调用）> 默认绑定（独立调用）**。
+
+箭头函数是例外，它**没有自己的 `this`**，不参与这套动态绑定，而是在定义时捕获外层词法 `this`。简单记：先看是否 `new`，再看 `call`/`apply`/`bind`，再看 `obj.xxx()`，最后才是独立调用（非严格模式 `window` / 严格模式 `undefined`）。
+
+## 【问题】
+函数被 bind 之后，还能用 call/apply 改变 this 吗？用 new 调用呢？
+
+## 【回答】
+**普通调用时不能**：`bind` 返回的新函数已固定 `this`，`call`/`apply` 无法覆盖。
+
+**作为构造函数 `new` 调用时，实例绑定优先于 bind 保存的 this**。例如 `User.bind({ name: 'bound' })` 后 `new fixed()`，得到的 `instance.name` 是构造函数体内的 `'instance'`，而非 `'bound'`（`bind` 预置的参数仍可能生效）。这是 bind 与 new 的特殊交互。
+
+## 【问题】
+箭头函数为什么不能作为构造函数用 new？
+
+## 【回答】
+因为箭头函数**没有自己的 `[[Construct]]` 语义和构造能力**，也没有 `prototype`。同时它的 `this` 是词法捕获的、不可被 `call`/`apply`/`bind` 重写，所以 `new (() => {})` 会报错。
+
+需要动态接收调用者（如对象方法、构造函数）时应使用普通函数；回调需要继承外层 `this` 时用箭头函数。不要为"看起来简洁"把所有函数改成箭头函数。
+
+## 【问题】
+DOM 事件监听器和 Promise 回调里的 this 分别是什么？
+
+## 【回答】
+**DOM 事件监听器**中的普通函数，浏览器通常把 `this` 设为触发事件的元素；箭头函数则继承外层 `this`（不是元素）。
+
+**Promise 回调**由 Promise 调用，不存在隐式对象调用关系，普通函数按默认绑定处理（非严格 `window` / 严格 `undefined`）；Promise 不会自动把 `this` 设成 Promise 本身。排查 `this` 时应先确认 API 如何调用回调。
+
+```javascript
+button.addEventListener('click', function () { console.log(this === button); }); // true
+button.addEventListener('click', () => { /* this 来自外层，不是 button */ });
+```
+
+## 【问题】
+为什么把对象方法作为回调传给定时器或解构出来后，this 会丢失？怎么修复？
+
+## 【回答】
+传递的是**函数值本身**，不会自动保留原来的对象调用关系，调用者信息丢失：
+
+```javascript
+setTimeout(user.say, 0);        // 不应依赖 this 为 user
+const { say } = user; say();    // 不再是 user.say()，this 不是 user
+```
+
+修复方式：
+- **箭头函数包装**：`() => user.say()`，回调执行时重新写出对象调用；
+- **bind 固定**：`user.say.bind(user)`，提前创建固定上下文的新函数；
+- 让方法本身不依赖动态 `this`。
+
+箭头包装在回调执行时调用，bind 提前创建固定上下文的函数，二者有区别。
+
+## 【问题】
+如何手写一个简化版的 call / apply？
+
+## 【回答】
+思路：把函数**临时作为对象方法调用**，从而获得隐式绑定：
+
+```javascript
+Function.prototype.myCall = function (receiver, ...args) {
+  const target = receiver == null ? globalThis : Object(receiver);
+  const key = Symbol('fn');
+  target[key] = this;
+  try { return target[key](...args); }
+  finally { delete target[key]; }
+};
+```
+
+这仅用于理解机制；真实规范还涉及严格模式、原始值、构造调用、异常和内置函数等细节，不能当作完整 polyfill。`bind` 还要保存预置参数并返回包装函数，且 `new` 调用时实例 `this` 优先。

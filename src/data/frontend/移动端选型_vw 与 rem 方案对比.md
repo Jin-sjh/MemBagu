@@ -2,7 +2,7 @@
 category: 移动端选型
 topic: vw 与 rem 方案对比
 type: bagu
-tags: [移动端选型]
+tags: [移动端选型, 移动端CSS, DPR, 安全区, 滚动穿透, 视口]
 difficulty: easy
 created: 2026-07-24
 ---
@@ -43,3 +43,43 @@ created: 2026-07-24
 ### 场景 3：大屏 Pad 上 vw 放大过头
 **为什么**：vw 跟随视口宽度等比放大，在 iPad 上元素会大得离谱。
 **解决**：给根容器加 `max-width`（如 750px）并居中，限制最大缩放。
+
+---
+
+## 【问题】
+什么是 DPR？为什么高 DPR 下 1px 边框需要特殊处理
+
+## 【回答】
+**DPR 是设备物理像素与 CSS 像素的比例，1 CSS px 不一定等于 1 物理像素**。高 DPR 下 1px 边框可能需要 transform、伪元素或高分辨率策略才能清晰显示，否则在视网膜屏上会发虚。
+
+---
+
+## 【问题】
+安全区 `env(safe-area-inset-*)` 有什么用
+
+## 【回答】
+用于**避开刘海和 Home Indicator** 等屏幕安全区域，保证内容不被设备硬件遮挡。结合 `viewport-fit=cover` 使用时，用 `env(safe-area-inset-top/right/bottom/left)` 给关键元素留白。
+
+---
+
+## 【问题】
+移动端 fixed 受哪些因素影响？滚动穿透怎么处理
+
+## 【回答】
+fixed 可能受 **viewport、键盘、祖先 transform 和浏览器 UI** 影响。滚动穿透常见于 modal 打开后背景仍滚动，可通过**锁定 body / 滚动容器、管理 touch 行为和恢复 scroll position** 处理。
+
+---
+
+## 【问题】
+300ms 点击延迟还存在吗？dvh 是什么
+
+## 【回答】
+300ms 延迟与早期移动浏览器双击缩放有关，**现代浏览器在合适 viewport / 输入模型下通常已改善，不能当成所有设备现状**。**dvh 是动态视口高度单位**，随可视视口（如键盘弹出）变化，需与 layout viewport 区分。
+
+---
+
+## 【问题】
+键盘弹出为什么要用 visual viewport 区分
+
+## 【回答】
+键盘弹出会**改变可视视口**，需区分布局视口与 visual viewport，并测试 `dvh`、safe-area 和 fixed 元素；iOS 弹性滚动、overscroll 和嵌套滚动要在真实设备验证，不能只在桌面模拟器判断。

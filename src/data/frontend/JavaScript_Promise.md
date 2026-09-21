@@ -2,7 +2,7 @@
 category: JavaScript
 topic: Promise
 type: bagu
-tags: [JavaScript]
+tags: [JavaScript, Promise, 异步编程, 微任务, 并发控制, 错误处理]
 difficulty: hard
 created: 2026-07-24
 ---
@@ -195,3 +195,106 @@ async/await 是 Promise + 生成器（Generator）的语法糖，本质基于 Pr
 **方法3，采用发布/订阅方式。** 性质与"事件监听"类似，但是明显优于后者。
 
 **方法4，通过 Promise 对象实现。** Promise 对象是 CommonJS 工作组提出的一种规范，旨在为异步编程提供统一接口。它的思想是，每一个异步任务返回一个 Promise 对象，该对象有一个 then 方法，允许指定回调函数。
+
+---
+
+## 【问题】
+Promise 的构造函数执行器是同步还是异步？then 回调呢？
+
+## 【回答】
+**构造函数里的执行器是同步调用的**，而 `then/catch/finally` 的回调是异步进入微任务队列的，这两个层次必须分开。
+
+```js
+const p = new Promise((resolve) => {
+  console.log('同步');     // 立即打印
+  resolve(1);
+});
+console.log('继续同步');    // 立即打印
+p.then(v => console.log(v)); // 回调异步进入微任务
+// 输出顺序：同步 → 继续同步 → 1
+```
+
+**关键结论：**
+
+- **执行器（executor）同步执行**：`new Promise(fn)` 会立刻运行 `fn`；
+- **反应（reaction）异步调度**：`then` 回调被排入微任务，等当前调用栈清空后执行；
+- 因此「Promise 回调通常是微任务，但构造函数执行器本身是同步的」是面试常考的区分点。
+
+## 【问题】
+then 返回的新 Promise 结果由什么决定？什么是值穿透和错误穿透？
+
+## 【回答】
+`then(onFulfilled, onRejected)` **返回一个新的 Promise**，新 Promise 的结果由回调的返回值或抛出的异常决定：
+
+| 回调行为 | 新 Promise |
+|---|---|
+| 返回普通值 | fulfilled，值为该返回值 |
+| 返回 Promise/thenable | 采用其最终状态 |
+| 抛出异常 | rejected，reason 为异常 |
+| 对应回调缺省 | 结果透传 |
+
+```js
+Promise.resolve(1)
+  .then(x => x + 1)
+  .then(x => { throw new Error('bad'); })
+  .catch(err => 'recovered')
+  .then(console.log); // recovered
+```
+
+**关键结论：**
+
+- **值穿透**：没有成功处理器时，成功值继续向下传；
+- **错误穿透**：没有失败处理器时，拒绝原因继续向下传；
+- `catch(fn)` 本质近似 `then(undefined, fn)`，`finally(fn)` 无论成败都执行并默认保留原结果，除非它抛错或返回 rejected Promise。
+
+## 【问题】
+Promise.all / race / allSettled / any 各自语义是什么？all 失败后其他请求会停吗？
+
+## 【回答】
+四种组合方法聚合语义不同：
+
+- **`Promise.all`**：全部 fulfilled 才成功；任一 rejected 就尽快 rejected，但**不会自动取消其他底层操作**。
+- **`Promise.allSettled`**：等待全部结束，返回每项的状态和值/原因。
+- **`Promise.race`**：第一个 settled（无论成败）的结果决定整体。
+- **`Promise.any`**：第一个 fulfilled 成功；全部 rejected 时返回 `AggregateError`。
+
+```js
+const results = await Promise.all(urls.map(fetch));
+```
+
+**关键结论：**
+
+- **`Promise.all` 不等于并发限制**：它只组合结果，不控制启动数量，一次性传数千个任务会造成连接/内存/服务端压力；
+- **`all` 失败后其他请求不会自动停**：底层操作需通过 `AbortController` 等单独取消。
+
+## 【问题】
+Promise 能取消吗？为什么需要 AbortController？
+
+## 【回答】
+**Promise 对象本身没有通用的取消协议**——它只能表示「未来结果」，cancel 不是内建能力。取消要分两层：
+
+1. **取消消费者等待或忽略结果**：上层不再关心，但底层工作可能仍在跑；
+2. **用底层 API 真正停止工作**：例如 `fetch` 配合 `AbortController` 发送取消信号。
+
+```js
+const controller = new AbortController();
+fetch(url, { signal: controller.signal });
+controller.abort(); // 真正关闭请求
+```
+
+**关键结论：**
+
+- Promise 只提供**组合基础**，不替你决定取消、重试、并发限制等业务策略；
+- 并发池核心是限制「同时运行数」，重试要区分可重试错误、退避、最大次数和幂等性；
+- 只停 UI 不够，必须把取消信号连到服务端/底层资源，否则任务仍在消耗资源。
+
+## 【问题】
+关于 Promise 有哪些常见误区？
+
+## 【回答】
+高频误区需准确反驳：
+
+- **误区：用了 Promise 就没有回调地狱。** 正解：链式逻辑仍可能复杂，Promise 只是改善了表达模型，复杂分支、取消、重试、并发限制仍需额外设计。
+- **误区：`Promise.all` 控制并发。** 正解：它聚合结果，不限制启动数量。
+- **误区：`setTimeout(fn, 0)` 一定晚于所有 Promise。** 正解：常见浏览器场景通常如此，但跨宿主、不同任务源和具体调度应以规范/实验为准，不能绝对化。
+- **反证条件**：若任务需要取消、背压、暂停或多次值推送，Promise 的「单值模型」可能不够，应考虑流（Observable）或任务抽象。
