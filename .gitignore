@@ -7,6 +7,9 @@ dist/
 # Audio output (generated files)
 audio/
 
+# Local SQLite sync store
+server/data/
+
 # Logs
 logs
 *.log

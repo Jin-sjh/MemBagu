@@ -166,8 +166,14 @@ import { useAutoSave } from './composables/useAutoSave'
 import {
   saveUIStateByLibrary,
   loadUIStateByLibrary,
+  saveProgressByLibrary,
+  loadProgressByLibrary,
+  saveLibraries,
+  setActiveLibraryId,
   exportAllData,
-  importAllData
+  importAllData,
+  pullSnapshot,
+  getMetaTs
 } from './utils/storage'
 
 // 非首屏组件懒加载，减少主包体积
@@ -243,7 +249,11 @@ const importInputRef = ref(null)
 onMounted(async () => {
   await loadLibraries()
   await loadLibraryData(activeLibraryId.value)
-  
+
+  // 与本地 SQLite（server/data/membagu.sqlite）异步合并：不阻塞首屏渲染，
+  // 后端不可达时 pullSnapshot 返回 null，自动退化为纯 localStorage 模式
+  pullFromLocalServer()
+
   startAutoSave(() => {
     saveProgress()
     saveUIStateByLibrary(activeLibraryId.value, {
@@ -475,6 +485,77 @@ async function handleDeleteLibrary(id) {
     if (activeLibraryId.value === id) {
       await loadLibraryData(activeLibraryId.value)
     }
+  }
+}
+
+// ---------- 启动时与本地 SQLite 按时间戳双向合并 ----------
+// 规则：同机单用户、时钟一致，"哪边新用哪边"；较新的一方覆盖另一方并回推同步。
+async function pullFromLocalServer() {
+  const snap = await pullSnapshot()
+  if (!snap) return
+
+  try {
+    // 题库列表
+    const libServerTs = snap.librariesUpdatedAt || 0
+    const libLocalTs = getMetaTs('libraries')
+    if (libServerTs > libLocalTs && Array.isArray(snap.libraries) && snap.libraries.length > 0) {
+      const snapIds = new Set(snap.libraries.map(lib => lib.id))
+      const localOnly = libraries.value.filter(lib => !snapIds.has(lib.id))
+      libraries.value = [
+        ...snap.libraries.map(lib => ({ id: lib.id, name: lib.name, ...(lib.config || {}) })),
+        ...localOnly
+      ]
+      saveLibraries(libraries.value)
+    } else if (libLocalTs > libServerTs) {
+      saveLibraries(libraries.value)
+    }
+
+    // 激活库
+    let activeChanged = false
+    const activeServerTs = snap.activeLibraryUpdatedAt || 0
+    const activeLocalTs = getMetaTs('activeLibraryId')
+    if (
+      activeServerTs > activeLocalTs &&
+      snap.activeLibraryId &&
+      snap.activeLibraryId !== activeLibraryId.value &&
+      libraries.value.some(lib => lib.id === snap.activeLibraryId)
+    ) {
+      activeLibraryId.value = snap.activeLibraryId
+      setActiveLibraryId(activeLibraryId.value)
+      activeChanged = true
+    }
+
+    // 各库复习进度
+    let currentLibraryChanged = false
+    for (const [libId, prog] of Object.entries(snap.progress || {})) {
+      const serverTs = snap.progressUpdatedAt?.[libId] || 0
+      const localTs = getMetaTs('progress', libId)
+      if (serverTs > localTs) {
+        saveProgressByLibrary(libId, prog)
+        if (libId === activeLibraryId.value) currentLibraryChanged = true
+      } else if (localTs > serverTs) {
+        saveProgressByLibrary(libId, loadProgressByLibrary(libId))
+      }
+    }
+
+    // 各库界面状态
+    for (const [libId, state] of Object.entries(snap.uiState || {})) {
+      const serverTs = snap.uiStateUpdatedAt?.[libId] || 0
+      const localTs = getMetaTs('uiState', libId)
+      if (serverTs > localTs) {
+        saveUIStateByLibrary(libId, state)
+        if (libId === activeLibraryId.value) currentLibraryChanged = true
+      } else if (localTs > serverTs) {
+        saveUIStateByLibrary(libId, loadUIStateByLibrary(libId) || {})
+      }
+    }
+
+    // 快照覆盖了当前库的数据 / 切换了激活库 → 重新加载当前库
+    if (currentLibraryChanged || activeChanged) {
+      await loadLibraryData(activeLibraryId.value)
+    }
+  } catch (err) {
+    console.warn('本地 SQLite 快照合并失败:', err)
   }
 }
 

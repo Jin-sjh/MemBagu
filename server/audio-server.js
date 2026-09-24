@@ -2,6 +2,8 @@ import express from 'express'
 import { createReadStream, existsSync, readdirSync, statSync, mkdirSync, unlinkSync, rmSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { initStore } from './sync-store.js'
+import { createSyncRouter } from './sync-routes.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -33,8 +35,14 @@ app.get('/', (req, res) => {
       audioPreview: '/api/audio/preview',
       libraryCreate: '/api/libraries/create',
       libraryExists: '/api/libraries/:id/exists',
-      libraryDelete: '/api/libraries/:id/folder'
-    }
+      libraryDelete: '/api/libraries/:id/folder',
+      syncHealth: '/api/sync/health',
+      syncSnapshot: '/api/sync/snapshot',
+      syncProgress: '/api/sync/progress/:libraryId',
+      syncUIState: '/api/sync/ui-state/:libraryId',
+      syncLibraries: '/api/sync/libraries'
+    },
+    syncEnabled
   })
 })
 
@@ -46,13 +54,23 @@ app.get('/health', (req, res) => {
 // CORS 支持
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200)
   }
   next()
 })
+
+// 本地 SQLite 数据同步（浏览器 localStorage 的持久副本，后端不可用时前端自动降级）
+let syncEnabled = false
+try {
+  await initStore()
+  app.use('/api/sync', createSyncRouter())
+  syncEnabled = true
+} catch (err) {
+  console.warn('SQLite 同步存储初始化失败，数据将仅存浏览器本地:', err.message)
+}
 
 // 验证 ID 合法性：只允许字母、数字、中文和连字符
 function isValidId(id) {
