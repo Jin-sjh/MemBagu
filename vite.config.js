@@ -16,10 +16,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Supabase 独立分片，仅在登录/同步时加载
-          if (id.includes('node_modules/@supabase')) {
-            return 'vendor-supabase'
-          }
           // highlight.js 独立分片，仅在查看题目详情时加载
           if (id.includes('node_modules/highlight.js')) {
             return 'vendor-highlight'

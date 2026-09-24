@@ -2,11 +2,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vue",
-  "installCommand": "npm install",
-  "crons": [
-    {
-      "path": "/api/keepalive",
-      "schedule": "0 1 * * *"
-    }
-  ]
+  "installCommand": "npm install"
 }

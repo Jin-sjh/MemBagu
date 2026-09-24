@@ -30,7 +30,25 @@
             @select="handleLibrarySwitch"
             @manage="openLibraryManager"
           />
-          <Auth ref="authRef" @login="handleLogin" @logout="handleLogout" />
+          <div class="backup-actions">
+            <button
+              class="btn-backup"
+              @click="handleExport"
+              title="把全部本地数据（各库进度、题库配置、界面状态）导出为 JSON 备份"
+            >导出备份</button>
+            <button
+              class="btn-backup"
+              @click="triggerImport"
+              title="从 JSON 备份恢复本地数据（会覆盖当前数据）"
+            >导入备份</button>
+            <input
+              ref="importInputRef"
+              type="file"
+              accept="application/json,.json"
+              hidden
+              @change="handleImport"
+            />
+          </div>
         </div>
       </div>
     </header>
@@ -141,15 +159,15 @@ import QuestionCard from './components/QuestionCard.vue'
 import CategoryFilter from './components/CategoryFilter.vue'
 import SearchBox from './components/SearchBox.vue'
 import LibrarySelector from './components/LibrarySelector.vue'
-import Auth from './components/Auth.vue'
 import { useQuestions } from './composables/useQuestions'
 import { useProgress } from './composables/useProgress'
 import { useLibraries } from './composables/useLibraries'
 import { useAutoSave } from './composables/useAutoSave'
-import { 
-  saveUIStateByLibrary, 
+import {
+  saveUIStateByLibrary,
   loadUIStateByLibrary,
-  saveLibraries
+  exportAllData,
+  importAllData
 } from './utils/storage'
 
 // 非首屏组件懒加载，减少主包体积
@@ -220,8 +238,7 @@ const {
 
 const questionCounts = ref({})
 const learnedCounts = ref({})
-const authRef = ref(null)
-const isLoggedIn = ref(false)
+const importInputRef = ref(null)
 
 onMounted(async () => {
   await loadLibraries()
@@ -237,9 +254,6 @@ onMounted(async () => {
       currentIndex: currentIndex.value,
       categoryIndexMap: categoryIndexMap.value
     })
-    if (isLoggedIn.value) {
-      syncToCloud()
-    }
   }, 30000)
 })
 
@@ -464,94 +478,36 @@ async function handleDeleteLibrary(id) {
   }
 }
 
-async function handleLogin(user) {
-  isLoggedIn.value = true
-  
-  // 动态导入云同步函数
-  const { loadLibrariesFromCloud } = await import('./utils/storage')
-  const cloudLibraries = await loadLibrariesFromCloud()
-  if (cloudLibraries.success && cloudLibraries.data.length > 0) {
-    libraries.value = cloudLibraries.data
-    saveLibraries(libraries.value)
-  }
-  
-  if (activeLibraryId.value) {
-    await syncFromCloud(activeLibraryId.value)
+// ---------- 本地备份：导出/导入全部 localStorage 数据 ----------
+function handleExport() {
+  const ok = exportAllData()
+  if (!ok) {
+    window.alert('导出失败，请查看控制台日志')
   }
 }
 
-function handleLogout() {
-  isLoggedIn.value = false
+function triggerImport() {
+  importInputRef.value?.click()
 }
 
-async function syncToCloud() {
-  if (!isLoggedIn.value || !activeLibraryId.value) return
-  
-  if (authRef.value) {
-    authRef.value.setSyncStatus('syncing')
-  }
-  
-  // 动态导入云同步函数，Supabase 包仅在登录用户实际同步时加载
-  const { syncProgressToCloud, syncUIStateToCloud, syncLibrariesToCloud } = await import('./utils/storage')
-  
-  await syncProgressToCloud(activeLibraryId.value, progressMap.value)
-  await syncUIStateToCloud(activeLibraryId.value, {
-    currentTab: currentTab.value,
-    selectedCategory: selectedCategory.value,
-    selectedCompany: selectedCompany.value,
-    selectedPosition: selectedPosition.value,
-    currentIndex: currentIndex.value,
-    categoryIndexMap: categoryIndexMap.value
-  })
-  await syncLibrariesToCloud(libraries.value)
-  
-  if (authRef.value) {
-    authRef.value.setSyncStatus('synced')
-    setTimeout(() => {
-      if (authRef.value) {
-        authRef.value.setSyncStatus('idle')
-      }
-    }, 2000)
-  }
-}
+async function handleImport(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
 
-async function syncFromCloud(libraryId) {
-  if (!isLoggedIn.value) return
-  
-  if (authRef.value) {
-    authRef.value.setSyncStatus('syncing')
+  const confirmed = window.confirm(
+    '导入会覆盖当前所有本地数据（各库复习进度、题库配置、界面状态），确定继续吗？'
+  )
+  if (!confirmed) {
+    e.target.value = ''
+    return
   }
-  
-  // 动态导入云同步函数
-  const { loadProgressFromCloud, loadUIStateFromCloud } = await import('./utils/storage')
-  const progressResult = await loadProgressFromCloud(libraryId)
-  if (progressResult.success && Object.keys(progressResult.data).length > 0) {
-    progressMap.value = progressResult.data
-    saveProgress()
-  }
-  
-  const uiResult = await loadUIStateFromCloud(libraryId)
-  if (uiResult.success && uiResult.data) {
-    currentTab.value = uiResult.data.currentTab || 'review'
-    selectedCategory.value = uiResult.data.selectedCategory || 'all'
-    selectedCompany.value = uiResult.data.selectedCompany || ''
-    selectedPosition.value = uiResult.data.selectedPosition || ''
-    currentIndex.value = uiResult.data.currentIndex || 0
-    categoryIndexMap.value = uiResult.data.categoryIndexMap || {}
-  }
-  // 二级分类仅对面经库生效，其他库强制清空
-  if (!isSecondaryEnabled.value) {
-    selectedCompany.value = ''
-    selectedPosition.value = ''
-  }
-  
-  if (authRef.value) {
-    authRef.value.setSyncStatus('synced')
-    setTimeout(() => {
-      if (authRef.value) {
-        authRef.value.setSyncStatus('idle')
-      }
-    }, 2000)
+
+  try {
+    await importAllData(file)
+    // 导入成功后 importAllData 内部会刷新页面，无需在此处理
+  } catch (err) {
+    window.alert('导入失败：' + (err?.message || '文件格式不正确'))
+    e.target.value = ''
   }
 }
 </script>
@@ -649,6 +605,38 @@ async function syncFromCloud(libraryId) {
   gap: var(--spacing-md);
   flex-shrink: 0;
 }
+
+/* ========== 本地备份（导出/导入） ========== */
+.backup-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.btn-backup {
+  padding: 6px var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  min-height: var(--touch-target-min);
+}
+
+.btn-backup:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+@media (max-width: 575.98px) {
+  .btn-backup {
+    padding: 4px var(--spacing-sm);
+  }
+}
+
 
 .save-status {
   display: flex;

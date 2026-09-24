@@ -4,6 +4,9 @@ const AUDIO_PROGRESS_KEY = 'audio_generator_progress'
 const LIBRARIES_KEY = 'ebbinghaus_libraries'
 const ACTIVE_LIBRARY_KEY = 'ebbinghaus_active_library'
 
+// 全量备份时打包的 localStorage key 前缀（本应用产生的所有数据）
+const BACKUP_KEY_PREFIXES = ['ebbinghaus_', 'audio_generator_progress']
+
 export function saveUIState(state) {
   try {
     localStorage.setItem(UI_STATE_KEY, JSON.stringify(state))
@@ -29,7 +32,7 @@ export function saveToStorage(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     return true
   } catch (e) {
-    console.error('Failed to save to localStorage:', e)
+    console.error('Failed to save to storage:', e)
     return false
   }
 }
@@ -39,7 +42,7 @@ export function loadFromStorage() {
     const data = localStorage.getItem(STORAGE_KEY)
     return data ? JSON.parse(data) : {}
   } catch (e) {
-    console.error('Failed to load from localStorage:', e)
+    console.error('Failed to load from storage:', e)
     return {}
   }
 }
@@ -49,20 +52,9 @@ export function clearStorage() {
     localStorage.removeItem(STORAGE_KEY)
     return true
   } catch (e) {
-    console.error('Failed to clear localStorage:', e)
+    console.error('Failed to clear storage:', e)
     return false
   }
-}
-
-export function exportData(progressMap) {
-  const data = JSON.stringify(progressMap, null, 2)
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `ebbinghaus-backup-${new Date().toISOString().slice(0, 10)}.json`
-  a.click()
-  URL.revokeObjectURL(url)
 }
 
 export function saveAudioProgress(progress) {
@@ -93,22 +85,6 @@ export function clearAudioProgress() {
     console.error('Failed to clear audio progress:', e)
     return false
   }
-}
-
-export function importData(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result)
-        resolve(data)
-      } catch (err) {
-        reject(new Error('Invalid JSON file'))
-      }
-    }
-    reader.onerror = () => reject(new Error('Failed to read file'))
-    reader.readAsText(file)
-  })
 }
 
 export function saveLibraries(libraries) {
@@ -219,7 +195,7 @@ export function migrateOldData(libraryId) {
     if (oldUIState && !localStorage.getItem(`${UI_STATE_KEY}_${libraryId}`)) {
       const newKey = `${UI_STATE_KEY}_${libraryId}`
       localStorage.setItem(newKey, oldUIState)
-      console.log('Migrated UI state to library:', libraryId)
+      console.log('Migrated UI state data to library:', libraryId)
     }
 
     return true
@@ -234,167 +210,73 @@ export function hasOldData() {
          localStorage.getItem(UI_STATE_KEY) !== null
 }
 
-// Supabase 相关函数延迟加载，避免未登录用户承担包体积成本
-let _supabaseModule = null
-async function getSupabaseModule() {
-  if (!_supabaseModule) {
-    _supabaseModule = await import('./supabase.js')
-  }
-  return _supabaseModule
-}
+// ---------- 全量备份：导出/导入 localStorage 中本应用的全部数据 ----------
 
-export async function syncProgressToCloud(libraryId, progress) {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false, error: 'Supabase not configured' }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false, error: 'Not authenticated' }
-  
-  const records = Object.entries(progress).map(([questionId, data]) => ({
-    user_id: user.id,
-    library_id: libraryId,
-    question_id: questionId,
-    streak: data.streak || 0,
-    mastered: data.mastered || false,
-    pending_confirm: data.pendingConfirm || false,
-    last_wrong_time: data.lastWrongTime || null,
-    next_review_time: data.nextReviewTime || null,
-    history: data.history || []
-  }))
-  
-  if (records.length === 0) return { success: true }
-  
-  const { error } = await supabase
-    .from('progress')
-    .upsert(records, { onConflict: 'user_id,library_id,question_id' })
-  
-  if (error) {
-    console.error('Failed to sync progress to cloud:', error)
-    return { success: false, error: error.message }
-  }
-  
-  return { success: true }
-}
-
-export async function loadProgressFromCloud(libraryId) {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false, data: {} }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false, data: {} }
-  
-  const { data, error } = await supabase
-    .from('progress')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('library_id', libraryId)
-  
-  if (error) {
-    console.error('Failed to load progress from cloud:', error)
-    return { success: false, data: {} }
-  }
-  
-  const progress = {}
-  if (data) {
-    data.forEach(record => {
-      progress[record.question_id] = {
-        streak: record.streak || 0,
-        mastered: record.mastered || false,
-        pendingConfirm: record.pending_confirm || false,
-        lastWrongTime: record.last_wrong_time || null,
-        nextReviewTime: record.next_review_time || null,
-        history: record.history || []
+// 导出所有题库配置、各库复习进度、界面状态，下载为 JSON 文件。
+export function exportAllData() {
+  try {
+    const dump = {
+      __app: 'ebbinghaus-memory',
+      __exported_at: new Date().toISOString(),
+      data: {}
+    }
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && BACKUP_KEY_PREFIXES.some(prefix => key.startsWith(prefix))) {
+        dump.data[key] = localStorage.getItem(key)
       }
-    })
+    }
+
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `ebbinghaus-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    return true
+  } catch (e) {
+    console.error('Failed to export data:', e)
+    return false
   }
-  
-  return { success: true, data: progress }
 }
 
-export async function syncUIStateToCloud(libraryId, state) {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false }
-  
-  const { error } = await supabase
-    .from('ui_state')
-    .upsert({
-      user_id: user.id,
-      library_id: libraryId,
-      state: state,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id,library_id' })
-  
-  return !error
-}
+// 从备份 JSON 恢复：先清掉本应用的旧 key，再写入备份内容，完成后刷新页面。
+// 不解析每个字段的具体结构，按原始字符串原样写回，保证向前兼容。
+export function importAllData(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const dump = JSON.parse(e.target.result)
+        const data = dump?.data
+        if (!data || typeof data !== 'object' || dump?.__app !== 'ebbinghaus-memory') {
+          reject(new Error('不是本应用导出的备份文件'))
+          return
+        }
 
-export async function loadUIStateFromCloud(libraryId) {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false, data: null }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false, data: null }
-  
-  const { data, error } = await supabase
-    .from('ui_state')
-    .select('state')
-    .eq('user_id', user.id)
-    .eq('library_id', libraryId)
-    .single()
-  
-  if (error) {
-    return { success: false, data: null }
-  }
-  
-  return { success: true, data: data?.state || null }
-}
+        const staleKeys = []
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (key && BACKUP_KEY_PREFIXES.some(prefix => key.startsWith(prefix))) {
+            staleKeys.push(key)
+          }
+        }
+        staleKeys.forEach(key => localStorage.removeItem(key))
 
-export async function syncLibrariesToCloud(libraries) {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false }
-  
-  const records = libraries.map(lib => ({
-    user_id: user.id,
-    library_id: lib.id,
-    name: lib.name,
-    config: lib.config || {}
-  }))
-  
-  if (records.length === 0) return { success: true }
-  
-  const { error } = await supabase
-    .from('libraries')
-    .upsert(records, { onConflict: 'user_id,library_id' })
-  
-  return !error
-}
+        Object.entries(data).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            localStorage.setItem(key, value)
+          }
+        })
 
-export async function loadLibrariesFromCloud() {
-  const { supabase, getCurrentUser, isSupabaseConfigured } = await getSupabaseModule()
-  if (!isSupabaseConfigured()) return { success: false, data: [] }
-  
-  const user = await getCurrentUser()
-  if (!user) return { success: false, data: [] }
-  
-  const { data, error } = await supabase
-    .from('libraries')
-    .select('*')
-    .eq('user_id', user.id)
-  
-  if (error) {
-    return { success: false, data: [] }
-  }
-  
-  const libraries = (data || []).map(record => ({
-    id: record.library_id,
-    name: record.name,
-    config: record.config || {}
-  }))
-  
-  return { success: true, data: libraries }
+        window.location.reload()
+        resolve(true)
+      } catch (err) {
+        reject(err instanceof Error ? err : new Error('Invalid backup file'))
+      }
+    }
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsText(file)
+  })
 }
