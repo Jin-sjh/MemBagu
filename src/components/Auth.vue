@@ -78,7 +78,8 @@ import {
   getCurrentUser, 
   onAuthStateChange,
   handleAuthCallback,
-  isSupabaseConfigured 
+  isSupabaseConfigured,
+  getCachedSessionUser
 } from '../utils/supabase.js'
 
 const emit = defineEmits(['login', 'logout'])
@@ -143,10 +144,12 @@ onMounted(async () => {
       if (sessionData?.session?.user) {
         user.value = sessionData.session.user
       } else {
-        user.value = await getCurrentUser()
+        user.value = getCachedSessionUser() || await getCurrentUser()
       }
     } catch {
-      user.value = await getCurrentUser()
+      // 刷新令牌失败（网络不可达，如 ERR_CONNECTION_CLOSED）时降级用本地缓存会话，
+      // 避免弱网下把已登录用户显示成未登录
+      user.value = getCachedSessionUser() || await getCurrentUser()
     }
   }
   
@@ -190,7 +193,7 @@ async function handleLogin() {
 
   if (err) {
     // 兜底：锁异常等场景下服务端可能已成功登录，会话已持久化，按成功处理
-    const { data: sessionData } = await supabase.auth.getSession()
+    const { data: sessionData } = await supabase.auth.getSession().catch(() => ({ data: {} }))
     if (sessionData?.session?.user) {
       user.value = sessionData.session.user
       emit('login', sessionData.session.user)
