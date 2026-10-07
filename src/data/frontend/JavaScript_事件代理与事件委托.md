@@ -2,7 +2,7 @@
 category: JavaScript
 topic: 事件代理与事件委托
 type: bagu
-tags: [JavaScript]
+tags: [JavaScript, 事件冒泡, 事件捕获, 事件流]
 difficulty: medium
 created: 2026-07-24
 ---
@@ -77,3 +77,14 @@ function stopBubble(e) {
 
 ## 【回答】
 事件代理（Event Delegation），又称为事件委托，是JavaScript中绑定事件的常用技巧。顾名思义，"事件代理"就是把原本需要绑定的事件委托给父元素，让父元素负责事件监听。事件代理的原理是DOM元素的事件冒泡。使用事件代理的好处是可以提高性能。
+
+---
+
+## 【问题】
+什么是事件冒泡和事件捕获？执行顺序是什么？
+
+## 【回答】
+**事件捕获从外到内，事件冒泡从内到外**。捕获阶段：事件从 `window`/`document` 等最不具体的节点沿 DOM 树逐级向下传播到目标元素；冒泡阶段：事件从目标元素开始逐级向上传播回 `document`（部分浏览器到 `window`）。默认情况下事件处理程序在冒泡阶段执行，可通过 `addEventListener` 第三个参数改为捕获阶段执行。需要控制传播时使用 `event.stopPropagation()`（IE8 及以下用 `event.cancelBubble = true`）。
+
+## 【口诀】
+捕获：从外到内；冒泡：从内到外。

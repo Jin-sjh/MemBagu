@@ -59,10 +59,14 @@ vue-router 有哪些导航守卫？分别属于哪一类？
 Vue Router 的 Hash 模式和 History 模式有什么区别？
 
 ## 【回答】
-- **Hash 模式**：依赖 `#`，通常不向服务器发送 hash，兼容、fallback 简单。
-- **History 模式**：使用 `pushState`/`replaceState` 和 `popstate`，URL 更自然，但**服务器必须把未知路径 fallback 到入口**，否则刷新可能 404。
 
-两者都在 SPA 中通过地址改变切换视图，避免整页刷新。
+Hash 和 History 模式主要有**三个区别**：
+
+1. **URL 不同**：Hash 使用 `#`，例如 `/#/user`；History 是正常路径 `/user`。
+2. **实现原理不同**：Hash 主要利用 URL hash 和 `hashchange`；History 利用 HTML5 History API 的 `pushState`、`replaceState`，并通过 `popstate` 处理前进后退。
+3. **刷新行为不同**：Hash 中 `#` 后的内容不会发送给服务器，因此**通常不会产生路由 404**；History 刷新时会直接请求对应路径，因此**生产环境需要服务端配置 fallback**，把前端路由统一返回 `index.html`。
+
+两种模式在 SPA 内部进行路由跳转时，都**可以做到不刷新整个页面**。
 
 ---
 
